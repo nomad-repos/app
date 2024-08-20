@@ -5,8 +5,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nomad_app/config/config.dart';
 
-
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Bloquea la orientación del dispositivo en vertical
@@ -44,7 +42,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
     final goRouter = ref.watch(goRouterProvider);
 
     return MaterialApp.router(
-      theme: AppTheme().getTheme(), 
+      theme: AppTheme().getTheme(),
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

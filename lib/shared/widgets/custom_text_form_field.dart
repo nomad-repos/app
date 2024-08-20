@@ -12,19 +12,18 @@ class CustomTextFormField extends StatefulWidget {
   final String? Function(String?)? validator;
   final int maxLines;
 
-  const CustomTextFormField({
-    super.key, 
-    this.label, 
-    this.helper,
-    this.hint, 
-    this.errorMessage, 
-    this.initialValue,
-    this.obscureText = false,
-    this.keyboardType = TextInputType.text,
-    this.onChanged, 
-    this.validator, 
-    this.maxLines = 1
-  });
+  const CustomTextFormField(
+      {super.key,
+      this.label,
+      this.helper,
+      this.hint,
+      this.errorMessage,
+      this.initialValue,
+      this.obscureText = false,
+      this.keyboardType = TextInputType.text,
+      this.onChanged,
+      this.validator,
+      this.maxLines = 1});
 
   @override
   _CustomTextFormFieldState createState() => _CustomTextFormFieldState();
@@ -51,6 +50,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
     const borderRadius = Radius.circular(15);
 
     return Container(
+      width: MediaQuery.of(context).size.width * 0.7,
       decoration: const BoxDecoration(
         color: Colors.transparent,
         borderRadius: BorderRadius.only(
@@ -75,20 +75,25 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
         initialValue: widget.initialValue,
         style: const TextStyle(fontSize: 15, color: Colors.white),
         decoration: InputDecoration(
-          floatingLabelStyle: const TextStyle(color: Colors.white, fontSize: 18),
+          floatingLabelStyle:
+              const TextStyle(color: Colors.white, fontSize: 18),
           enabledBorder: border,
           focusedBorder: border,
-          errorBorder: border.copyWith(borderSide: const BorderSide(color: Colors.transparent)),
-          focusedErrorBorder: border.copyWith(borderSide: const BorderSide(color: Colors.transparent)),
+          errorBorder: border.copyWith(
+              borderSide: const BorderSide(color: Colors.transparent)),
+          focusedErrorBorder: border.copyWith(
+              borderSide: const BorderSide(color: Colors.transparent)),
           isDense: true,
           label: widget.label != null ? Text(widget.label!) : null,
           hintText: widget.hint,
-          hintStyle: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w300),
+          hintStyle: const TextStyle(
+              color: Colors.white, fontSize: 15, fontWeight: FontWeight.w300),
           helperText: widget.helper,
           alignLabelWithHint: true,
           errorText: widget.errorMessage,
           focusColor: colors.primary,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
           suffixIcon: widget.obscureText
               ? IconButton(
                   icon: Icon(
