@@ -48,11 +48,12 @@ class RegisterScreen extends ConsumerWidget {
                         hint: 'Contraseña',
                         obscureText: true,
                       ),
+
+                      
                       Expanded(child: Container()),
                       CustomFilledButton(
                           text: 'Unirme',
                           width: double.infinity,
-                          buttonColor: const Color.fromARGB(255, 248, 85, 35),
                           onPressed: () {}),
                       Expanded(child: Container()),
                     ])))

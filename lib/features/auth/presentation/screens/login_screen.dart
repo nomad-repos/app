@@ -20,7 +20,7 @@ class LoginScreen extends ConsumerWidget {
         ),
         Positioned.fill(
           child: Container(
-            color: const Color.fromARGB(255, 2, 15, 21).withOpacity(0.75),
+            color: const Color.fromARGB(255, 2, 15, 21).withOpacity(0.7),
           ),
         ),
         SafeArea(
@@ -57,10 +57,9 @@ class LoginScreen extends ConsumerWidget {
                     text: 'Iniciar sesión',
                     width: double.infinity,
                     onPressed: () {
-
+                      context.push('/home_screen');
                     }
                   ),
-
                 const SizedBox(height: 20),
 
                 CustomFilledButton(
