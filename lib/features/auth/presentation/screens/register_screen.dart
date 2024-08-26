@@ -30,12 +30,12 @@ class RegisterScreen extends ConsumerWidget {
                       const Text('Convertite en',
                           style: TextStyle(
                               color: Colors.white,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 30)),
+                              fontWeight: FontWeight.w200,
+                              fontSize: 25)),
                       const Text('nomad.',
                           style: TextStyle(
                               color: Colors.white,
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.bold,
                               fontSize: 40)),
                       Expanded(child: Container()),
                       const CustomTextFormField(hint: 'Nombre'),

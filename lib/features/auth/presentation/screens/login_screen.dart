@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import 'package:nomad_app/shared/shared.dart';
 
 class LoginScreen extends ConsumerWidget {
@@ -49,13 +50,19 @@ class LoginScreen extends ConsumerWidget {
                       style: TextStyle(
                           color: Colors.white, fontWeight: FontWeight.w300)),
                 ),
+                
                 Expanded(child: Container()),
+
                 CustomFilledButton(
                     text: 'Iniciar sesión',
                     width: double.infinity,
-                    buttonColor: const Color.fromARGB(255, 248, 85, 35),
-                    onPressed: () {}),
+                    onPressed: () {
+
+                    }
+                  ),
+
                 const SizedBox(height: 20),
+
                 CustomFilledButton(
                     text: 'Registrarse',
                     width: double.infinity,
