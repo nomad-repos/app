@@ -15,43 +15,57 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
         body: CustomScrollView(slivers: [
       SliverAppBar(
-        expandedHeight: MediaQuery.of(context).size.height * 0.2,
+        automaticallyImplyLeading: false,
+        floating: true,
+        expandedHeight: MediaQuery.of(context).size.height * 0.25,
+        title:
+            const Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      Text('Bienvenida ', 
+                      style: TextStyle(color: Colors.white)),
+                      Text('Miranda',
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
+                        )
+                    ]),
         flexibleSpace: FlexibleSpaceBar(
-          background: Stack(
-            children: [
-              Image.network(
-                "https://images.unsplash.com/photo-1468774871041-fc64dd5522f3?q=80&w=3132&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) {
-                    return child;
-                  }
-
-                  return Center(
-                    child: CircularProgressIndicator(
-                      value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                              loadingProgress.expectedTotalBytes!
-                          : null,
-                    ),
-                  );
-                },
-                fit: BoxFit.fitHeight,
-              ),
-              Positioned.fill(
-                child: Container(
-                  color: const Color.fromARGB(255, 2, 15, 21).withOpacity(0.2),
+          background: ColorFiltered(
+            colorFilter: ColorFilter.mode(
+              Colors.black.withOpacity(0.2), 
+              BlendMode.srcATop,
+            ),
+            child: ClipRect(
+              child: FractionallySizedBox(
+                alignment: const Alignment(0, 0.7), // Change alignment to focus on a specific part
+                widthFactor: 1.7,  // Scale down the width of the image to crop
+                heightFactor: 1.6,
+                child: Image.network(
+                  "https://images.unsplash.com/photo-1468774871041-fc64dd5522f3?q=80&w=3132&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) {
+                      return child;
+                    }
+                
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    );
+                  },
+                 fit: BoxFit.cover,
                 ),
               ),
-            ],
+            ),
           ),
         ),
-        pinned: true, // Keeps the SliverAppBar visible when scrolling
-        backgroundColor: Colors.transparent, // Makes the app bar transparent
       ),
-
       const SliverToBoxAdapter(
         child: ScrollHome()),
-    ]));
+    
+    ])
+
+    );
   }
 }
 
@@ -60,90 +74,80 @@ class ScrollHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Color.fromRGBO(244, 245, 246, 1),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30),
-          topRight: Radius.circular(30),
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(right:10, top:10, left: 13),
+          child: Row(children: [
+            CustomHomeText(label: 'Explorá '),
+            CustomHomeText(label: 'nomad.', fontWeight: FontWeight.w900)
+          ]),
         ),
-      ),
-      child: const SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
-        child: Padding(
-          padding: EdgeInsets.all(18),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.all(2),
-                child: Row(children: [
-                  CustomHomeText(label: 'Explorá '),
-                  CustomHomeText(
-                    label: 'nomad.',
-                    fontWeight: FontWeight.w900,
-                  )
-                ]),
-              ),
-
-              SizedBox(height: 5),
-
-              GestureDetectorWidget(
-                  url:
-                      "https://images.unsplash.com/photo-1506807520672-c4a8d5bbe260?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                  label:
-                      'Planificar Nuevo Viaje'), //widget on tap action (planificar viajes)
-
-              SizedBox(height: 5),
-
-              Padding(
-                padding: EdgeInsets.only(top: 10, bottom: 4),
-                child: CustomHomeText(
-                  label: 'Mis Viajes',
-                  fontsize: 21,
-                ),
-              ),
-
-              HorizontalListView(
-                  itemCount: 10,
-                  url:
-                      "https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"), //widget mis viajes listview
-
-              SizedBox(height: 5),
-
-              Padding(
-                padding: EdgeInsets.only(top: 10, bottom: 4),
-                child: CustomHomeText(
-                  label: 'Viajes Recomendados',
-                  fontsize: 21,
-                ),
-              ),
-
-              HorizontalListView(
-                  itemCount: 10,
-                  url:
-                      "https://images.unsplash.com/photo-1515859005217-8a1f08870f59?q=80&w=3210&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"),
-
-              SizedBox(height: 5),
-
-              Padding(
-                padding: EdgeInsets.only(top: 10, bottom: 4),
-                child: CustomHomeText(
-                  label: 'Recordá tus historia',
-                  fontsize: 21,
-                ),
-              ),
-
-              SizedBox(height: 5),
-
-              GestureDetectorWidget(
-                  url:
-                      'https://media.istockphoto.com/id/1971796553/photo/young-couple-is-standing-at-mountain-top-with-great-view.webp?b=1&s=612x612&w=0&k=20&c=IXoBQgZqFUb8SRI87J9BHWtbgyuuQiImJSt1pHAp5Cc=',
-                  label: 'Mis Aventuras')
-            ],
+    
+        SizedBox(height: 6),
+    
+        Align(
+          alignment: Alignment.topCenter,
+          child: GestureDetectorWidget(
+              url:
+                  "https://images.unsplash.com/photo-1506807520672-c4a8d5bbe260?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+              label:
+                  'Planificar Nuevo Viaje'),
+        ), //widget on tap action (planificar viajes)
+    
+        SizedBox(height: 5),
+    
+        Padding(
+          padding: EdgeInsets.only(right:10, top:10, left: 13),
+          child: CustomHomeText(
+            label: 'Mis Viajes',
+            fontsize: 21,
           ),
         ),
-      ),
+        SizedBox(height: 2),
+    
+        HorizontalListView(
+            itemCount: 10,
+            url:
+                "https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"), //widget mis viajes listview
+    
+        SizedBox(height: 5),
+    
+        Padding(
+          padding: EdgeInsets.only(right:10, top:10, left: 13),
+          child: CustomHomeText(
+            label: 'Viajes Recomendados',
+            fontsize: 21,
+          ),
+        ),
+        SizedBox(height: 2),
+    
+        HorizontalListView(
+            itemCount: 10,
+            url:
+                "https://images.unsplash.com/photo-1515859005217-8a1f08870f59?q=80&w=3210&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"),
+    
+        SizedBox(height: 5),
+    
+        Padding(
+          padding: EdgeInsets.only(right:10, top:10, left: 13),
+          child: CustomHomeText(
+            label: 'Recordá tus historia',
+            fontsize: 21,
+          ),
+        ),
+    
+        SizedBox(height: 2),
+    
+        Align(
+          alignment: Alignment.topCenter,
+          child: GestureDetectorWidget(
+              url:
+                  'https://media.istockphoto.com/id/1971796553/photo/young-couple-is-standing-at-mountain-top-with-great-view.webp?b=1&s=612x612&w=0&k=20&c=IXoBQgZqFUb8SRI87J9BHWtbgyuuQiImJSt1pHAp5Cc=',
+              label: 'Mis Aventuras'),
+        )
+      ],
     );
   }
 }
@@ -168,15 +172,15 @@ class HorizontalListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.15,
+      height: MediaQuery.of(context).size.height * 0.17,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: itemCount,
         itemBuilder: (context, index) {
           return Padding(
-            padding: const EdgeInsets.only(right: 13),
+            padding: const EdgeInsets.only(right: 10),
             child: Container(
-              width: MediaQuery.of(context).size.height * 0.15,
+              width: MediaQuery.of(context).size.height * 0.17,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
                   image: DecorationImage(
@@ -209,8 +213,8 @@ class GestureDetectorWidget extends StatelessWidget {
     return GestureDetector(
       onTap: () {},
       child: Container(
-          height: MediaQuery.of(context).size.height * 0.15,
-          width: MediaQuery.of(context).size.width * 0.92,
+          height: MediaQuery.of(context).size.height * 0.18,
+          width: MediaQuery.of(context).size.width * 0.93,
           decoration: BoxDecoration(
               boxShadow: const [
                 BoxShadow(
@@ -222,17 +226,17 @@ class GestureDetectorWidget extends StatelessWidget {
               image:
                   DecorationImage(image: NetworkImage(url), fit: BoxFit.cover)),
           child: Align(
-            alignment: AlignmentDirectional.bottomStart,
+            alignment: AlignmentDirectional.bottomCenter,
             child: Container(
-              height: MediaQuery.of(context).size.height * 0.15 * 0.2,
-              width: MediaQuery.of(context).size.width * 0.92,
+              height: MediaQuery.of(context).size.height * 0.15 * 0.3,
+              width: MediaQuery.of(context).size.width * 0.93,
               decoration: const BoxDecoration(
                   color: Color.fromRGBO(242, 100, 25, 0.82),
                   borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(16),
                       bottomRight: Radius.circular(16))),
-              child: Padding(
-                padding: const EdgeInsets.only(left: 14, top: 2, bottom: 2),
+              child: Align(
+                alignment: const Alignment(-0.85, 0),
                 child: Text(label,
                     style: const TextStyle(
                         color: Colors.white,
