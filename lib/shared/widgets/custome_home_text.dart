@@ -11,7 +11,7 @@ class CustomHomeText extends StatelessWidget {
     required this.label,
     this.fontWeight =  FontWeight.w200,
     this.color = const Color.fromARGB(255, 11, 65, 87),
-    this.fontsize = 25 ,
+    this.fontsize = 24 ,
   });
 
   @override

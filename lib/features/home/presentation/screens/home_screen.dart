@@ -17,7 +17,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       SliverAppBar(
         automaticallyImplyLeading: false,
         floating: true,
-        expandedHeight: MediaQuery.of(context).size.height * 0.25,
+        expandedHeight: MediaQuery.of(context).size.height * 0.2,
         title:
             const Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                       Text('Bienvenida ', 
@@ -32,30 +32,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               Colors.black.withOpacity(0.2), 
               BlendMode.srcATop,
             ),
-            child: ClipRect(
-              child: FractionallySizedBox(
-                alignment: const Alignment(0, 0.7), // Change alignment to focus on a specific part
-                widthFactor: 1.7,  // Scale down the width of the image to crop
-                heightFactor: 1.6,
-                child: Image.network(
-                  "https://images.unsplash.com/photo-1468774871041-fc64dd5522f3?q=80&w=3132&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) {
-                      return child;
-                    }
-                
-                    return Center(
-                      child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                                loadingProgress.expectedTotalBytes!
-                            : null,
-                      ),
-                    );
-                  },
-                 fit: BoxFit.cover,
-                ),
-              ),
+            child: Image.network(
+              "https://images.unsplash.com/photo-1468774871041-fc64dd5522f3?q=80&w=3132&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) {
+                  return child;
+                }
+            
+                return Center(
+                  child: CircularProgressIndicator(
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                        : null,
+                  ),
+                );
+              },
+             fit: BoxFit.cover,
             ),
           ),
         ),
@@ -78,15 +71,15 @@ class ScrollHome extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.only(right:10, top:10, left: 13),
+          padding: EdgeInsets.only(left:13, top: 13),
           child: Row(children: [
-            CustomHomeText(label: 'Explorá '),
-            CustomHomeText(label: 'nomad.', fontWeight: FontWeight.w900)
+            CustomHomeText(label: 'Explorá ', fontsize: 25,),
+            CustomHomeText(label: 'nomad.', fontWeight: FontWeight.w900, fontsize: 25,)
           ]),
         ),
-    
-        SizedBox(height: 6),
-    
+
+        SizedBox(height: 10),
+
         Align(
           alignment: Alignment.topCenter,
           child: GestureDetectorWidget(
@@ -102,7 +95,6 @@ class ScrollHome extends StatelessWidget {
           padding: EdgeInsets.only(right:10, top:10, left: 13),
           child: CustomHomeText(
             label: 'Mis Viajes',
-            fontsize: 21,
           ),
         ),
         SizedBox(height: 2),
@@ -118,7 +110,6 @@ class ScrollHome extends StatelessWidget {
           padding: EdgeInsets.only(right:10, top:10, left: 13),
           child: CustomHomeText(
             label: 'Viajes Recomendados',
-            fontsize: 21,
           ),
         ),
         SizedBox(height: 2),
@@ -134,7 +125,6 @@ class ScrollHome extends StatelessWidget {
           padding: EdgeInsets.only(right:10, top:10, left: 13),
           child: CustomHomeText(
             label: 'Recordá tus historia',
-            fontsize: 21,
           ),
         ),
     
@@ -178,11 +168,11 @@ class HorizontalListView extends StatelessWidget {
         itemCount: itemCount,
         itemBuilder: (context, index) {
           return Padding(
-            padding: const EdgeInsets.only(right: 10),
+            padding: EdgeInsets.only(right: 10, left: index == 0 ? 13 : 0),
             child: Container(
               width: MediaQuery.of(context).size.height * 0.17,
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(20),
                   image: DecorationImage(
                     image: NetworkImage(url),
                     fit: BoxFit.cover,
@@ -222,7 +212,7 @@ class GestureDetectorWidget extends StatelessWidget {
                     blurRadius: 5,
                     offset: Offset(3, 5))
               ],
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(20),
               image:
                   DecorationImage(image: NetworkImage(url), fit: BoxFit.cover)),
           child: Align(
@@ -233,14 +223,14 @@ class GestureDetectorWidget extends StatelessWidget {
               decoration: const BoxDecoration(
                   color: Color.fromRGBO(242, 100, 25, 0.82),
                   borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(16),
-                      bottomRight: Radius.circular(16))),
+                      bottomLeft: Radius.circular(20),
+                      bottomRight: Radius.circular(20))),
               child: Align(
                 alignment: const Alignment(-0.85, 0),
                 child: Text(label,
                     style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 15,
+                        fontSize: 18,
                         fontWeight: FontWeight.w300)),
               ),
             ),
