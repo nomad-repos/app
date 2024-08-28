@@ -136,7 +136,25 @@ class ScrollHome extends StatelessWidget {
               url:
                   'https://media.istockphoto.com/id/1971796553/photo/young-couple-is-standing-at-mountain-top-with-great-view.webp?b=1&s=612x612&w=0&k=20&c=IXoBQgZqFUb8SRI87J9BHWtbgyuuQiImJSt1pHAp5Cc=',
               label: 'Mis Aventuras'),
-        )
+        ),
+
+        SizedBox(height: 5),
+
+        Padding(
+          padding: EdgeInsets.only(right:10, top:10, left: 13),
+          child: CustomHomeText(
+            label: 'Itinerarios de la Comunidad',
+          ),
+        ),
+
+        SizedBox(height: 2),
+
+        HorizontalListView(
+            itemCount: 10,
+            url:
+                "https://media.istockphoto.com/id/1059713466/photo/teamwork-couple-climbing-helping-hand.webp?b=1&s=612x612&w=0&k=20&c=XqwznpAgGJapLnY2LonSJyMtVAay7aAMwSD184RTf6I="),
+
+
       ],
     );
   }

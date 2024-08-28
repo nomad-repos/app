@@ -19,6 +19,7 @@ class CustomHomeText extends StatelessWidget {
     return Text(label,
         textAlign: TextAlign.left,
         style: TextStyle(
+          
             color: color,
             fontWeight: fontWeight ,
             fontSize: fontsize));
