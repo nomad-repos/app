@@ -1,0 +1,1 @@
+export 'package:nomad_app/shared/models/user.dart';

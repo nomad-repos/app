@@ -21,7 +21,22 @@ class AuthRepositoryImpl implements AuthRepository{
   }
   
   @override
-  Future signUp(String name, String surname, String phone, String email, String password) {
-    return authDS.signUp(name, surname, phone, email, password);
+  Future signUp(String name, String surname, String email, String password) {
+    return authDS.signUp(name, surname, email, password);
+  }
+  
+  @override
+  Future changePassword(String email, String password) {
+    return authDS.changePassword(email, password);
+  }
+  
+  @override
+  Future checkRecoveryCode(String email, String code) {
+    return authDS.checkRecoveryCode(email, code);
+  }
+  
+  @override
+  Future sendRecoveryEmail(String email) {
+    return authDS.sendRecoveryEmail(email);
   }
 }

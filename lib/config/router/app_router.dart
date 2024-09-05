@@ -37,6 +37,12 @@ final goRouterProvider = Provider((ref) {
         GoRoute(
           path: '/home_screen',
           builder: (context, state) => const HomeScreen(),
+        ),
+
+        // Create Trip empieza aca
+        GoRoute(
+          path: '/plan_trip_form',
+          builder: (context, state) => const PlanTripForm(),
         )
       ],
       redirect: (context, state) async {
@@ -52,12 +58,24 @@ final goRouterProvider = Provider((ref) {
         if (authStatus == AuthStatus.authenticated &&
             registerStatus == RegisterStatus.registered) {
           if (isGoingTo == '/login' || isGoingTo == '/register') {
-            return '/home';
+            return '/home_screen';
           }
 
           if (isGoingTo == '/splash') {
-            return '/home';
+            return '/home_screen';
           }
+        }
+
+        if (authStatus == AuthStatus.authenticated && registerStatus == RegisterStatus.notRegistered) {
+          if (isGoingTo == '/register') {
+            return '/login';
+          }
+
+          if (isGoingTo == '/login') {
+            return '/login';
+          }
+
+          return null;
         }
 
         if (authStatus == AuthStatus.notAuthenticated &&

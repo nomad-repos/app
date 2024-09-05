@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nomad_app/shared/shared.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -10,53 +14,62 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
+
+
   @override
   Widget build(BuildContext context) {
+    final userInfo = ref.watch(userProvider);
+    
     return Scaffold(
-        body: CustomScrollView(slivers: [
+      body: CustomScrollView(slivers: [
       SliverAppBar(
         automaticallyImplyLeading: false,
         floating: true,
         expandedHeight: MediaQuery.of(context).size.height * 0.2,
-        title:
-            const Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                      Text('Bienvenida ', 
-                      style: TextStyle(color: Colors.white)),
-                      Text('Miranda',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
-                        )
-                    ]),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center, 
+          children: [
+            const Text(
+              'Bienvenida ', 
+              style: TextStyle(color: Colors.white)
+            ),
+            Text(
+              userInfo.user!.userName,
+              style: const TextStyle(
+                color: Colors.white, 
+                fontWeight: FontWeight.w800
+              ),
+            )
+          ]
+        ),
         flexibleSpace: FlexibleSpaceBar(
           background: ColorFiltered(
             colorFilter: ColorFilter.mode(
               Colors.black.withOpacity(0.2), 
               BlendMode.srcATop,
             ),
-            child: Image.network(
-              "https://images.unsplash.com/photo-1468774871041-fc64dd5522f3?q=80&w=3132&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) {
-                  return child;
+            child: FutureBuilder<File>(
+              future: DefaultCacheManager().getSingleFile(
+                "https://images.unsplash.com/photo-1468774871041-fc64dd5522f3?q=80&w=3132&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              ),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return const Center(child: Text('Error loading image'));
                 }
-            
-                return Center(
-                  child: CircularProgressIndicator(
-                    value: loadingProgress.expectedTotalBytes != null
-                        ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes!
-                        : null,
-                  ),
-                );
+
+                return Image.file(snapshot.data!, fit: BoxFit.cover);
               },
-             fit: BoxFit.cover,
             ),
           ),
         ),
       ),
+     
       const SliverToBoxAdapter(
         child: ScrollHome()),
     
-    ])
+      ])
 
     );
   }
@@ -67,10 +80,10 @@ class ScrollHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
+        const Padding(
           padding: EdgeInsets.only(left:13, top: 13),
           child: Row(children: [
             CustomHomeText(label: 'Explorá ', fontsize: 25,),
@@ -78,18 +91,18 @@ class ScrollHome extends StatelessWidget {
           ]),
         ),
 
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
 
         Align(
           alignment: Alignment.topCenter,
           child: GestureDetectorWidget(
-              url:
-                  "https://images.unsplash.com/photo-1506807520672-c4a8d5bbe260?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-              label:
-                  'Planificar Nuevo Viaje'),
+            url: "https://images.unsplash.com/photo-1506807520672-c4a8d5bbe260?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            label:'Planificar Nuevo Viaje',
+            onTap: () => context.push('/plan_trip_form')
+          ),
         ), //widget on tap action (planificar viajes)
     
-        SizedBox(height: 5),
+        const SizedBox(height: 5),
     
         Padding(
           padding: EdgeInsets.only(right:10, top:10, left: 13),
@@ -153,8 +166,6 @@ class ScrollHome extends StatelessWidget {
             itemCount: 10,
             url:
                 "https://media.istockphoto.com/id/1059713466/photo/teamwork-couple-climbing-helping-hand.webp?b=1&s=612x612&w=0&k=20&c=XqwznpAgGJapLnY2LonSJyMtVAay7aAMwSD184RTf6I="),
-
-
       ],
     );
   }
@@ -209,20 +220,23 @@ El ScheduleNewTripWidget es todo el cuadrado de Planificar Nuevo Viaje
 class GestureDetectorWidget extends StatelessWidget {
   final String url;
   final String label;
+  final Function()? onTap;
 
   const GestureDetectorWidget({
     super.key,
     required this.url,
     required this.label,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: onTap,
       child: Container(
           height: MediaQuery.of(context).size.height * 0.18,
           width: MediaQuery.of(context).size.width * 0.93,
+          
           decoration: BoxDecoration(
               boxShadow: const [
                 BoxShadow(
@@ -231,8 +245,9 @@ class GestureDetectorWidget extends StatelessWidget {
                     offset: Offset(3, 5))
               ],
               borderRadius: BorderRadius.circular(20),
-              image:
-                  DecorationImage(image: NetworkImage(url), fit: BoxFit.cover)),
+              image: DecorationImage(image: NetworkImage(url), fit: BoxFit.cover)
+            ),
+
           child: Align(
             alignment: AlignmentDirectional.bottomCenter,
             child: Container(
@@ -242,15 +257,18 @@ class GestureDetectorWidget extends StatelessWidget {
                   color: Color.fromRGBO(242, 100, 25, 0.82),
                   borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(20),
-                      bottomRight: Radius.circular(20))),
+                      bottomRight: Radius.circular(20))),  
               child: Align(
                 alignment: const Alignment(-0.85, 0),
-                child: Text(label,
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w300)),
+                child: Text(
+                  label,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w300)
+                ),
               ),
+            
             ),
           )),
     );

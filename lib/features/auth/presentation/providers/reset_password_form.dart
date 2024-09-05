@@ -53,13 +53,20 @@ class ResetPasswordFormNotifier extends StateNotifier<ResetPasswordFormState> {
     );
   }
 
+  emailWasNotSent() {
+    state = state.copyWith( wasEmailSent: false );
+  }
+
   //Este metodo sirve para mandarle el correo al backend con el email del usuario.
   onEmailSubmit() async {
     _touchEmailField();
-    if ( !state.isEmailValid ) return;
     state = state.copyWith( isPosting: true );
-    //await authNotifier.sendRecoveryEmail( state.email.value );
-    state = state.copyWith( isPosting: false, wasEmailSent: true );
+    final bool sent = await authNotifier.sendRecoveryEmail( state.email.value );
+    if ( sent ) {
+      state = state.copyWith( isPosting: false, wasEmailSent: true );
+    } else {
+      state = state.copyWith( isPosting: false );
+    }
   }
 
   _touchEmailField() {
@@ -70,25 +77,26 @@ class ResetPasswordFormNotifier extends StateNotifier<ResetPasswordFormState> {
     );
   }
 
-
   onVericationCodeSubmit() async {
     state = state.copyWith( isPosting: true );
-    //final resp = await authNotifier.verifyCode( state.email.value, state.verificationCode );
-    
-    //if ( resp.statusCode == 200 ) {
-    //  state = state.copyWith( isPosting: false, wasCodeVerified: true );
-    //} else {
-    //  state = state.copyWith( isPosting: false );
-    //}
+    final bool verified = await authNotifier.verifyCode( state.email.value, state.verificationCode );
+    if ( verified ) {
+      state = state.copyWith( isPosting: false, wasCodeVerified: true );
+    } else {
+      state = state.copyWith( isPosting: false );
+    }
   }
-
 
   onPasswordSubmit() async {
     _touchPasswordsFields();
     if ( !state.arePasswordsValid ) return;
     state = state.copyWith( isPosting: true );
-    //await authNotifier.resetPassword( state.email.value, state.verificationCode, state.firstPassword.value );
-    state = state.copyWith( isPosting: false );
+    final bool changed = await authNotifier.resetPassword( state.email.value, state.firstPassword.value );
+    if ( changed ) {
+      state = state.copyWith( isPosting: false, wasPasswordChanged: true );
+    } else {
+      state = state.copyWith( isPosting: false );
+    }
   }
 
   _touchPasswordsFields() {
@@ -113,6 +121,7 @@ class ResetPasswordFormState {
   final bool arePasswordsValid;
   final bool wasEmailSent;
   final bool wasCodeVerified;
+  final bool wasPasswordChanged;
   //Datos del formulario
   final Email email;
   final String verificationCode;
@@ -125,6 +134,7 @@ class ResetPasswordFormState {
     this.arePasswordsValid = false,
     this.wasEmailSent = false,
     this.wasCodeVerified = false,
+    this.wasPasswordChanged = false,
     this.email = const Email.pure(),
     this.verificationCode = '',
     this.firstPassword = const Password.pure(),
@@ -137,6 +147,7 @@ class ResetPasswordFormState {
     bool? arePasswordsValid,
     bool? wasEmailSent,
     bool? wasCodeVerified,
+    bool? wasPasswordChanged,
     Email? email,
     String? verificationCode,
     Password? firstPassword,
@@ -147,6 +158,7 @@ class ResetPasswordFormState {
     arePasswordsValid: arePasswordsValid ?? this.arePasswordsValid,
     wasEmailSent: wasEmailSent ?? this.wasEmailSent,
     wasCodeVerified: wasCodeVerified ?? this.wasCodeVerified,
+    wasPasswordChanged: wasPasswordChanged ?? this.wasPasswordChanged,
     email: email ?? this.email,
     verificationCode: verificationCode ?? this.verificationCode,
     firstPassword: firstPassword ?? this.firstPassword,

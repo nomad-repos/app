@@ -23,7 +23,7 @@ class AuthDSimpl implements AuthDS {
           };
 
           final resp = await dio.post(
-            '/login',
+            '/auth/login',
             data: loginJson,
           );
 
@@ -51,7 +51,7 @@ class AuthDSimpl implements AuthDS {
   Future checkAuthStatus(String token) async {
     try {
       final resp = await dio.post( 
-        '/validate-token',
+        '/auth/validate-token',
         options: Options(
           headers: {
             "authorization": "Bearer $token",
@@ -75,18 +75,17 @@ class AuthDSimpl implements AuthDS {
   }
   
   @override
-  Future signUp(String name, String surname, String phone, String email, String password) async {
+  Future signUp(String name, String surname, String email, String password) async {
     try {
         final signUpJson = {
-          "names"      : name,
-          "last_names" : surname,
-          "cellphone"  : phone,
+          "name"      : name,
+          "surname"    : surname,
           "email"      : email,
           "password"   : password
         };
 
         final resp = await dio.post(
-          '/sign-up',
+          '/auth/sign-up',
           data: signUpJson,
         );
 
@@ -98,11 +97,109 @@ class AuthDSimpl implements AuthDS {
         if(e.response?.statusCode == 400 ){
           throw CustomError(e.response?.data['msg'] ?? 'Credenciales incorrectas' );
         }
+        if( e.response?.statusCode == 500 ){
+          throw CustomError(e.response?.data['msg'] ?? 'Error interno, intente más tarde.' );
+        }
         if ( e.type == DioExceptionType.connectionTimeout ){
           throw CustomError('Revisar conexión a internet.');
         }
-        if( e.response?.statusCode == 401 ){
-          throw CustomError('Inicio de sesión inválido.');
+        throw Exception();
+    } catch (e) {
+        throw Exception();
+    }
+  }
+  
+  @override
+  Future changePassword(String email, String password) async {
+    try {
+        final signUpJson = {
+          "email"      : email,
+          "new_password"   : password
+        };
+
+        final resp = await dio.post(
+          '/auth/forgot-password/reset-password',
+          data: signUpJson,
+        );
+
+        if (resp.statusCode == 200) {
+          return resp;
+        } 
+
+      } on DioException catch (e) {
+        if(e.response?.statusCode == 400 ){
+          throw CustomError(e.response?.data['msg'] ?? 'Credenciales incorrectas' );
+        }
+        if( e.response?.statusCode == 500 ){
+          throw CustomError(e.response?.data['msg'] ?? 'Error interno, intente más tarde.' );
+        }
+        if ( e.type == DioExceptionType.connectionTimeout ){
+          throw CustomError('Revisar conexión a internet.');
+        }
+        throw Exception();
+    } catch (e) {
+        throw Exception();
+    }
+  }
+  
+  @override
+  Future checkRecoveryCode(String email, String code) async {
+    try {
+        final signUpJson = {
+          "email"  : email,
+          "code"   : code
+        };
+
+        final resp = await dio.post(
+          '/auth/forgot-password/validate-code',
+          data: signUpJson,
+        );
+
+        if (resp.statusCode == 200) {
+          return resp;
+        } 
+
+      } on DioException catch (e) {
+        if(e.response?.statusCode == 400 ){
+          throw CustomError(e.response?.data['msg'] ?? 'Credenciales incorrectas' );
+        }
+        if( e.response?.statusCode == 500 ){
+          throw CustomError(e.response?.data['msg'] ?? 'Error interno, intente más tarde.' );
+        }
+        if ( e.type == DioExceptionType.connectionTimeout ){
+          throw CustomError('Revisar conexión a internet.');
+        }
+        throw Exception();
+    } catch (e) {
+        throw Exception();
+    }
+  }
+  
+  @override
+  Future sendRecoveryEmail(String email) async {
+     try {
+        final signUpJson = {
+          "email"  : email,
+        };
+
+        final resp = await dio.post(
+          '/auth/forgot-password/send-email',
+          data: signUpJson,
+        );
+
+        if (resp.statusCode == 200) {
+          return resp;
+        } 
+
+      } on DioException catch (e) {
+        if(e.response?.statusCode == 400 ){
+          throw CustomError(e.response?.data['msg'] ?? 'Credenciales incorrectas' );
+        }
+        if( e.response?.statusCode == 500 ){
+          throw CustomError(e.response?.data['msg'] ?? 'Error interno, intente más tarde.' );
+        }
+        if ( e.type == DioExceptionType.connectionTimeout ){
+          throw CustomError('Revisar conexión a internet.');
         }
         throw Exception();
     } catch (e) {

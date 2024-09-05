@@ -1,5 +1,6 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nomad_app/shared/shared.dart';
 
 import '../../../../helpers/helpers.dart';
 
@@ -11,9 +12,12 @@ final authProvider = StateNotifierProvider<AuthNotifier,AuthState>((ref) {
   final authRepository = AuthRepositoryImpl();
   final keyValueStorage = KeyValueStorageImpl();
 
+  final userNotifier = ref.watch(userProvider.notifier); 
+
   return AuthNotifier(
     authRepository: authRepository,
     keyValueStorage: keyValueStorage,
+    userNotifier: userNotifier,
   );
 });
 
@@ -21,10 +25,12 @@ final authProvider = StateNotifierProvider<AuthNotifier,AuthState>((ref) {
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthRepository authRepository;
   final KeyValueStorageServices keyValueStorage;
+  final UserNotifier userNotifier;
 
   AuthNotifier({ 
     required this.authRepository,
     required this.keyValueStorage,
+    required this.userNotifier,
   }): super( AuthState() ) {
     checkAuthStatus(); 
   }
@@ -36,11 +42,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
       if (resp.statusCode == 200){ 
         keyValueStorage.setKeyValue<String>('token', resp.data['access_token']);
 
-        //final User user = User.fromJson(resp.data['data']['user']);        
-        //final List<Event> userEvents = resp.data['data']['events'].map<Event>((event) => Event.fromJson(event)).toList();
+        final User user = User.fromJson(resp.data['user']);        
 
-        //await userNotifier.setUser(user);
-        //await userNotifier.setEvents(userEvents);
+        userNotifier.saveUserData(user);
 
         state = state.copyWith(
           errorMessage: '',
@@ -64,13 +68,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
     if (token == null) return logout(); //Marco el estado como no autentificado
     try {
       final resp = await authRepository.checkAuthStatus(token); //Hacemos el trabajo de ver si el usuario esta autentificado o no.
+      
+      print(resp.data['user']);
+      
       if (resp.statusCode == 200){
         
-        //final User user = User.fromJson(resp.data['data']['user']);
-        //final List<Event> userEvents = resp.data['data']['events'].map<Event>((event) => Event.fromJson(event)).toList();
+        final User user = User.fromJson(resp.data['user']);
 
-        //await userNotifier.setUser(user);
-        //await userNotifier.setEvents(userEvents);
+        userNotifier.saveUserData(user);
         
         _setLoggedUser(resp); 
       }
@@ -100,9 +105,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
   }
 
-  Future<void> registerUser( String name, String surname, String email, String password, String phone ) async {
+  Future<void> registerUser( String name, String surname, String email, String password ) async {
     try {
-      final resp = await authRepository.signUp( name, surname, phone, email, password );
+      final resp = await authRepository.signUp( name, surname, email, password );
 
       if (resp.statusCode == 200){
         state = state.copyWith(
@@ -121,13 +126,67 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  void loginAsGuest() {
-    state = state.copyWith(
-      authStatus: AuthStatus.notAuthenticated,
-      registerStatus: RegisterStatus.guest,
-      errorMessage: '',
-      statusMessage: ''
-    );
+  //Metodo para enviar el correo de recuperacion de contraseña
+  Future<bool> sendRecoveryEmail( String email ) async {
+    try {
+      final resp = await authRepository.sendRecoveryEmail( email );
+
+      if (resp.statusCode == 200){
+        state = state.copyWith(
+          statusMessage: 'Correo enviado correctamente, revise su bandeja de entrada.',
+          errorMessage: '',
+        );
+      }
+      return true;
+    } catch (e) {
+      state = state.copyWith(
+        statusMessage: '',
+        errorMessage: 'Error al enviar el correo, por favor intente de nuevo más tarde.',
+      );
+    }
+    return false;
+  }
+
+  //Metodo para verificar el codigo de recuperacion
+  Future<bool> verifyCode( String email, String code ) async {
+    try {
+      final resp = await authRepository.checkRecoveryCode( email, code );
+
+      if (resp.statusCode == 200){
+        state = state.copyWith(
+          statusMessage: 'Código verificado correctamente.',
+          errorMessage: '',
+        );
+      }
+      return true;
+    } catch (e) {
+      state = state.copyWith(
+        statusMessage: '',
+        errorMessage: 'Error al verificar el código, por favor intente de nuevo más tarde.',
+      );
+    }
+    return false;
+  }
+
+  //Metodo para cambiar la contraseña
+  Future<bool> resetPassword( String email, String password ) async {
+    try {
+      final resp = await authRepository.changePassword( email, password );
+
+      if (resp.statusCode == 200){
+        state = state.copyWith(
+          statusMessage: 'Contraseña cambiada correctamente.',
+          errorMessage: '',
+        );
+      }
+      return true;
+    } catch (e) {
+      state = state.copyWith(
+        statusMessage: '',
+        errorMessage: 'Error al cambiar la contraseña, por favor intente de nuevo más tarde.',
+      );
+    }
+    return false;
   }
 }
 

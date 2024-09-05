@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class CustomTextFormField extends StatefulWidget {
+class CustomTextFormFieldAuth extends StatefulWidget {
   final String? label;
   final String? helper;
   final String? hint;
@@ -12,7 +12,7 @@ class CustomTextFormField extends StatefulWidget {
   final String? Function(String?)? validator;
   final int maxLines;
 
-  const CustomTextFormField(
+  const CustomTextFormFieldAuth(
       {super.key,
       this.label,
       this.helper,
@@ -29,7 +29,7 @@ class CustomTextFormField extends StatefulWidget {
   _CustomTextFormFieldState createState() => _CustomTextFormFieldState();
 }
 
-class _CustomTextFormFieldState extends State<CustomTextFormField> {
+class _CustomTextFormFieldState extends State<CustomTextFormFieldAuth> {
   bool _obscureText = true;
 
   @override
@@ -80,9 +80,9 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
           enabledBorder: border,
           focusedBorder: border,
           errorBorder: border.copyWith(
-              borderSide: const BorderSide(color: Colors.transparent)),
+              borderSide: const BorderSide(color: Colors.white)),
           focusedErrorBorder: border.copyWith(
-              borderSide: const BorderSide(color: Colors.transparent)),
+              borderSide: const BorderSide(color: Colors.white)),
           isDense: true,
           label: widget.label != null ? Text(widget.label!) : null,
           hintText: widget.hint,
