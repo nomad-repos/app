@@ -42,7 +42,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
       if (resp.statusCode == 200){ 
         keyValueStorage.setKeyValue<String>('token', resp.data['access_token']);
 
-        final User user = User.fromJson(resp.data['user']);        
+        final User user = User.fromJson(resp.data['user']);    
+
+        print(user);    
 
         userNotifier.saveUserData(user);
 
@@ -58,7 +60,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } on CustomError catch (e) {
       logout( e.message ); 
     } catch (e){
-      logout( "Error" );
+      logout( e.toString() );
     }
   }
 

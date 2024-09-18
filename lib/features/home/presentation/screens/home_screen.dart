@@ -29,12 +29,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center, 
           children: [
+            
             const Text(
               'Bienvenida ', 
               style: TextStyle(color: Colors.white)
             ),
+
             Text(
-              userInfo.user!.userName,
+              userInfo.user!.userSurname,
               style: const TextStyle(
                 color: Colors.white, 
                 fontWeight: FontWeight.w800

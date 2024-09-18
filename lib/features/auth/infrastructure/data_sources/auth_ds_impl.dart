@@ -43,7 +43,7 @@ class AuthDSimpl implements AuthDS {
         }
         throw Exception();
     } catch (e) {
-        throw Exception();
+        throw CustomError(e.toString());
     }
   }
 

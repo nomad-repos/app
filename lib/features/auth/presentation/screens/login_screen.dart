@@ -93,7 +93,9 @@ class LoginScreen extends ConsumerWidget {
                 ),
 
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    context.push('/home_screen');
+                  },
                   style: TextButton.styleFrom(
                     splashFactory:
                         NoSplash.splashFactory, // Elimina el efecto de splash
