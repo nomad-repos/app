@@ -1,13 +1,10 @@
-
 import 'package:nomad_app/features/home/home.dart';
 
-class PlanTripRepositoryImpl implements PlanTripRepository{
-
+class PlanTripRepositoryImpl implements PlanTripRepository {
   final PlanTripDS planTripDS;
 
-  PlanTripRepositoryImpl({
-    PlanTripDS? planTripDS 
-  }) : planTripDS = planTripDS ?? PlanTripDSimpl();
+  PlanTripRepositoryImpl({PlanTripDS? planTripDS})
+      : planTripDS = planTripDS ?? PlanTripDSimpl();
 
   @override
   Future getCountries(String token) {
@@ -17,5 +14,12 @@ class PlanTripRepositoryImpl implements PlanTripRepository{
   @override
   Future getCities(String isoCode, String token) {
     return planTripDS.getCities(isoCode, token);
+  }
+
+  @override
+  Future createTrip(String token, int userId, String name, DateTime initDate,
+      DateTime endDate, List locations) {
+    return planTripDS.createTrip(
+        token, userId, name, initDate, endDate, locations);
   }
 }

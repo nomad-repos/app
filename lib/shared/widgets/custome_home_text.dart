@@ -9,8 +9,8 @@ class CustomHomeText extends StatelessWidget {
   const CustomHomeText({
     super.key,
     required this.label,
-    this.fontWeight =  FontWeight.w200,
-    this.color = const Color.fromARGB(255, 11, 65, 87),
+    this.fontWeight =  FontWeight.w400,
+    this.color = const Color.fromRGBO(51, 101, 138, 1),
     this.fontsize = 24 ,
   });
 

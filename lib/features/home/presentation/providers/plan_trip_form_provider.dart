@@ -1,14 +1,14 @@
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:nomad_app/features/home/home.dart';
 import 'package:nomad_app/helpers/helpers.dart';
 import 'package:nomad_app/shared/shared.dart';
 
-final planTripFormProvider = StateNotifierProvider<PlanTripNotifier,PlanTripState>((ref) {
-
+final planTripFormProvider =
+    StateNotifierProvider<PlanTripNotifier, PlanTripState>((ref) {
   final keyValueStorage = KeyValueStorageImpl();
   final planTripRepository = PlanTripRepositoryImpl();
+  
 
   return PlanTripNotifier(
     keyValueStorage: keyValueStorage,
@@ -16,23 +16,21 @@ final planTripFormProvider = StateNotifierProvider<PlanTripNotifier,PlanTripStat
   );
 });
 
-
 class PlanTripNotifier extends StateNotifier<PlanTripState> {
   final PlanTripRepository planTripRepository;
   final KeyValueStorageServices keyValueStorage;
 
-  PlanTripNotifier({ 
-    required this.planTripRepository,
-    required this.keyValueStorage,
-  }): super( PlanTripState() ){
+  PlanTripNotifier(
+      {required this.planTripRepository,
+      required this.keyValueStorage,
+      })
+      : super(PlanTripState()) {
     getCountries();
   }
-
 
   Future<void> getCountries() async {
     try {
       final token = await keyValueStorage.getValue<String>('token');
-
 
       // Asumes que siempre hay token, porque si no hay no se accede a esta pantalla.
       final resp = await planTripRepository.getCountries(token!);
@@ -46,17 +44,17 @@ class PlanTripNotifier extends StateNotifier<PlanTripState> {
         // Actualizar el estado con los países obtenidos
         state = state.copyWith(
           countries: countries,
-        ); 
+        );
       }
     } catch (e) {
       //TODO: Manejar errores
     }
   }
 
-  Future<void> getCities( String isoCode ) async {
+  Future<void> getCities(String isoCode) async {
     try {
       final token = await keyValueStorage.getValue<String>('token');
-      
+
       // Asumes que siempre hay token, porque si no hay no se accede a esta pantalla.
       final resp = await planTripRepository.getCities(isoCode, token!);
 
@@ -69,29 +67,27 @@ class PlanTripNotifier extends StateNotifier<PlanTripState> {
         // Actualizar el estado con los países obtenidos
         state = state.copyWith(
           locations: locations,
-        ); 
+        );
       }
     } catch (e) {
       print(e.toString());
     }
   }
 
-  Future<void> selectCountry( Country country ) async {
+  Future<void> selectCountry(Country country) async {
     try {
-
       state = state.copyWith(
         selectedLocation: null,
         selectedCountry: country,
-      );                                                                                                                                               
+      );
 
       await getCities(country.isoCode);
-
     } catch (e) {
       //TODO: Manejar los errores
     }
   }
 
-  void selectLocation( Location location ) {
+  void selectLocation(Location location) {
     state = state.copyWith(
       selectedLocation: location,
     );
@@ -101,8 +97,7 @@ class PlanTripNotifier extends StateNotifier<PlanTripState> {
     return state.locations.contains(state.selectedLocation);
   }
 
-
-  onNameChange( String value ){
+  onNameChange(String value) {
     state = state.copyWith(
       name: value,
     );
@@ -115,24 +110,32 @@ class PlanTripNotifier extends StateNotifier<PlanTripState> {
       'endDate': () => state = state.copyWith(endDate: value),
       'isAlone': () => state = state.copyWith(isAlone: value),
     };
-    updates[key]?.call();  // Si la clave existe, se llama la función correspondiente.
+    updates[key]
+        ?.call(); // Si la clave existe, se llama la función correspondiente.
   }
 
-  
-  onLocationsChange(Location? location, String operation){
+  onLocationsChange(Location? location, String operation) {
     if (operation == 'add') {
       if (!state.selectedLocations.contains(state.selectedLocation)) {
-        state = state.copyWith(selectedLocations: [...state.selectedLocations, state.selectedLocation!]);
+        state = state.copyWith(selectedLocations: [
+          ...state.selectedLocations,
+          state.selectedLocation!
+        ]);
       }
     } else {
-      state = state.copyWith(selectedLocations: state.selectedLocations.where((loc) => loc != state.selectedLocation).toList());
+      state = state.copyWith(
+          selectedLocations: state.selectedLocations
+              .where((loc) => loc != state.selectedLocation)
+              .toList());
     }
   }
 
   bool isFormValid() {
-    return state.name.isNotEmpty && state.initDate.isNotEmpty && state.endDate.isNotEmpty && state.selectedLocations.isNotEmpty;
+    return state.name.isNotEmpty &&
+        state.initDate.isNotEmpty &&
+        state.endDate.isNotEmpty &&
+        state.selectedLocations.isNotEmpty;
   }
-
 
   Future<void> createTrip() async {
     //TODO: Implementar esta función
@@ -171,47 +174,39 @@ class PlanTripState {
 
   PlanTripState({
     this.isPosting = false,
-
     this.name = '',
     this.initDate = '',
     this.endDate = '',
     this.isAlone = true,
     this.selectedCountry,
     this.selectedLocation,
-
     this.selectedLocations = const [],
-
     this.countries = const [],
     this.locations = const [],
   });
 
   PlanTripState copyWith({
     bool? isPosting,
-
     String? name,
     String? initDate,
     String? endDate,
     bool? isAlone,
     Country? selectedCountry,
     Location? selectedLocation,
-
     List<Location>? selectedLocations,
-
     List<Country>? countries,
     List<Location>? locations,
-  }) => PlanTripState(
-    isPosting: isPosting ?? this.isPosting,
-
-    name: name ?? this.name,
-    initDate: initDate ?? this.initDate,
-    endDate: endDate ?? this.endDate,
-    isAlone: isAlone ?? this.isAlone,
-    selectedCountry: selectedCountry ?? this.selectedCountry,
-    selectedLocation: selectedLocation ?? this.selectedLocation,
-
-    selectedLocations: selectedLocations ?? this.selectedLocations,
-
-    countries: countries ?? this.countries,
-    locations: locations ?? this.locations,
-  );
+  }) =>
+      PlanTripState(
+        isPosting: isPosting ?? this.isPosting,
+        name: name ?? this.name,
+        initDate: initDate ?? this.initDate,
+        endDate: endDate ?? this.endDate,
+        isAlone: isAlone ?? this.isAlone,
+        selectedCountry: selectedCountry ?? this.selectedCountry,
+        selectedLocation: selectedLocation ?? this.selectedLocation,
+        selectedLocations: selectedLocations ?? this.selectedLocations,
+        countries: countries ?? this.countries,
+        locations: locations ?? this.locations,
+      );
 }

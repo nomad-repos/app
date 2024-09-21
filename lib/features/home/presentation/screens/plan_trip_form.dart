@@ -215,7 +215,8 @@ class _CustomAppBar extends StatelessWidget {
     
                 const Text(
                   'Planificá.',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
+                  style: TextStyle(color: Colors.white, fontSize: 20
+                  , fontWeight: FontWeight.w400),
                 ),
     
                 Expanded(child: Container()),

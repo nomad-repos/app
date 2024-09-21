@@ -31,15 +31,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           children: [
             
             const Text(
-              'Bienvenida ', 
-              style: TextStyle(color: Colors.white)
+              'Bienvenido ', 
+              style: TextStyle(color: Colors.white,
+              fontWeight: FontWeight.w400,
+              fontSize: 25)
             ),
 
             Text(
               userInfo.user!.userSurname,
               style: const TextStyle(
                 color: Colors.white, 
-                fontWeight: FontWeight.w800
+                fontWeight: FontWeight.w900,
+                fontSize: 25
               ),
             )
           ]
