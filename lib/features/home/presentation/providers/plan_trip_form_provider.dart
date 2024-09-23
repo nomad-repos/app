@@ -138,22 +138,37 @@ class PlanTripNotifier extends StateNotifier<PlanTripState> {
   }
 
   Future<void> createTrip() async {
-    //TODO: Implementar esta función
+    if ( !isFormValid() ){
+      state = state.copyWith( isPosting: false );
+      return;
+    }
 
-    /*
-      Hay que validar el formulario (función de arriba)
-      Si el formulario es válido, se crear el viaje
-      Si no es válido, se muestra un mensaje de error
+    state = state.copyWith( isPosting: true );
 
-      Hay que hacer la funcion que va a recibir los parametros necesarios para crear el viaje (ver los contratos)
-      en el PlanTripRepository y su implementacion en PlanTripRepositoryImpl y tambien en PlanTripDS y su implemtacion en PlanTripDSImpl
+    try {
+      final token = await keyValueStorage.getValue<String>('token');
 
-      La funcion en el provider del PlanTripRepository 
+      final userId = await keyValueStorage.getValue<int>('userId');
 
-      Solo para aclarar, se manejan futures y asincornias porque se tiene que esperar la respuesta de la API 
+      final locations = state.selectedLocations.map((location) => {
+      "country_iso": location.countryIso,
+      "location_id": location.id,
+      }).toList();
 
-      Suerte :)
-    */
+      final resp = await planTripRepository.createTrip(
+        token!, 
+        userId!, 
+        state.name, 
+        state.initDate, 
+        state.endDate, 
+        locations);
+
+    } catch (e) {
+      //TODO: Manejar errores
+    } finally {
+    state = state.copyWith(isPosting: false);
+  }
+   
   }
 }
 
