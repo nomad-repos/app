@@ -43,7 +43,7 @@ class _PlanTripFormState extends ConsumerState<PlanTripForm> {
               children: [
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 50),
                     child: Column(
                       children: [
                         
@@ -140,8 +140,8 @@ class _PlanTripFormState extends ConsumerState<PlanTripForm> {
                               'Viajo solo', 
                               style: TextStyle(
                                 color: AppTheme().getTheme().primaryColor, 
-                                fontSize: 16, 
-                                fontWeight: ref.watch(planTripFormProvider).isAlone ? FontWeight.w300 : FontWeight.w500,
+                                fontSize: 17, 
+                                fontWeight: ref.watch(planTripFormProvider).isAlone ? FontWeight.w300 : FontWeight.w600,
                               )
                             ),
                             Expanded(child: Container()),
@@ -154,8 +154,8 @@ class _PlanTripFormState extends ConsumerState<PlanTripForm> {
                               'Acompañado', 
                               style: TextStyle(
                                 color: AppTheme().getTheme().primaryColor, 
-                                fontSize: 16, 
-                                fontWeight: ref.watch(planTripFormProvider).isAlone ? FontWeight.w500 : FontWeight.w300,
+                                fontSize: 17, 
+                                fontWeight: ref.watch(planTripFormProvider).isAlone ? FontWeight.w600 : FontWeight.w300,
                               )
                             ),
                           ],
@@ -216,7 +216,7 @@ class _CustomAppBar extends StatelessWidget {
                 const Text(
                   'Planificá.',
                   style: TextStyle(color: Colors.white, fontSize: 20
-                  , fontWeight: FontWeight.w400),
+                  , fontWeight: FontWeight.w500 ),
                 ),
     
                 Expanded(child: Container()),
@@ -274,14 +274,14 @@ class CustomTextFormFieldTrip extends ConsumerWidget {
         TextFormField(
           style: TextStyle(
             color: AppTheme().getTheme().primaryColor, 
-            fontSize: 16,
-            fontWeight: FontWeight.w500
+            fontSize: 17,
+            fontWeight: FontWeight.w600
           ),  
           decoration: InputDecoration(
           hintText: hintText, 
           hintStyle: TextStyle(
             color: AppTheme().getTheme().primaryColor, 
-            fontSize: 16
+            fontSize: 17
           ),
 
           focusedBorder: UnderlineInputBorder(
@@ -322,8 +322,8 @@ class CustomDropdown<T> extends StatelessWidget {
     return DropdownButtonFormField<T>(
       style: TextStyle(
         color: AppTheme().getTheme().primaryColor, 
-        fontSize: 16,
-        fontWeight: FontWeight.w500
+        fontSize: 17,
+        fontWeight: FontWeight.w600
       ),
       icon: Icon(Icons.arrow_drop_down_circle_rounded, color: AppTheme().getTheme().primaryColor),
       value: initialItem,
@@ -331,7 +331,7 @@ class CustomDropdown<T> extends StatelessWidget {
         hintText: hintText,
         hintStyle: TextStyle(
           color: AppTheme().getTheme().primaryColor, 
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w600,
         ),
         focusedBorder: UnderlineInputBorder(
           borderSide: BorderSide(
@@ -402,8 +402,8 @@ class _ListOfLocationsState extends ConsumerState<ListOfLocations> {
     ? Wrap(children: planTripForm.selectedLocations.map((location) => _locationWidget(context: context, location: location, ref: ref)).toList()) 
     : const Center(
       child: Padding(
-        padding: EdgeInsets.all(10),
-        child: Text('No hay lugares', style: TextStyle(fontSize: 16, color: Colors.black54, fontWeight: FontWeight.bold)),
+        padding: EdgeInsets.only( bottom: 10, top: 5),
+        child: Text('No hay lugares', style: TextStyle(fontSize: 13, color: Colors.black54, fontWeight: FontWeight.w400)),
       ),
     );
   }

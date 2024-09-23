@@ -45,8 +45,8 @@ class LoginScreen extends ConsumerWidget {
 
                 CustomTextFormFieldAuth(
                   hint: 'Email',
-                  onChanged: (value) => ref.watch(loginFormProvider.notifier).onEmailChange(value),
-                  errorMessage: loginForm.isFormPosted ? loginForm.email.errorMessage : null,
+                  //onChanged: (value) => ref.watch(loginFormProvider.notifier).onEmailChange(value),
+                 //errorMessage: loginForm.isFormPosted ? loginForm.email.errorMessage : null,
                 ),
 
                 const SizedBox(height: 30),
@@ -54,8 +54,8 @@ class LoginScreen extends ConsumerWidget {
                 CustomTextFormFieldAuth(
                   hint: 'Contraseña',
                   obscureText: true,
-                  onChanged: (value) => ref.watch(loginFormProvider.notifier).onPasswordChanged(value),
-                  errorMessage: loginForm.isFormPosted ? loginForm.password.errorMessage : null,
+                 // onChanged: (value) => ref.watch(loginFormProvider.notifier).onPasswordChanged(value),
+                 // errorMessage: loginForm.isFormPosted ? loginForm.password.errorMessage : null,
                 ),
 
                 TextButton(
@@ -77,8 +77,9 @@ class LoginScreen extends ConsumerWidget {
                     text: 'Iniciar sesión',
                     width: double.infinity,
                     onPressed: () {
-                      ref.watch(loginFormProvider.notifier).onFormSubmit(); 
-                      FocusScope.of(context).unfocus();
+                      //ref.watch(loginFormProvider.notifier).onFormSubmit(); 
+                      //FocusScope.of(context).unfocus();
+                      context.push('/plan_trip_form');
                     }
                   ),
                 const SizedBox(height: 20),

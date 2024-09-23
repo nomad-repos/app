@@ -37,7 +37,8 @@ class _DateTimePickerState extends State<DateTimePicker> {
       readOnly: true,
       style: TextStyle(
         color: AppTheme().getTheme().primaryColor,
-        fontWeight: FontWeight.w500,
+        fontWeight: FontWeight.w600,
+        fontSize: 17
       ),
       decoration: InputDecoration(
 
