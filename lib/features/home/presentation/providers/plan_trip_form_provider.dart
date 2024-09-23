@@ -8,7 +8,6 @@ final planTripFormProvider =
     StateNotifierProvider<PlanTripNotifier, PlanTripState>((ref) {
   final keyValueStorage = KeyValueStorageImpl();
   final planTripRepository = PlanTripRepositoryImpl();
-  
 
   return PlanTripNotifier(
     keyValueStorage: keyValueStorage,
@@ -20,11 +19,10 @@ class PlanTripNotifier extends StateNotifier<PlanTripState> {
   final PlanTripRepository planTripRepository;
   final KeyValueStorageServices keyValueStorage;
 
-  PlanTripNotifier(
-      {required this.planTripRepository,
-      required this.keyValueStorage,
-      })
-      : super(PlanTripState()) {
+  PlanTripNotifier({
+    required this.planTripRepository,
+    required this.keyValueStorage,
+  }) : super(PlanTripState()) {
     getCountries();
   }
 
@@ -138,37 +136,36 @@ class PlanTripNotifier extends StateNotifier<PlanTripState> {
   }
 
   Future<void> createTrip() async {
-    if ( !isFormValid() ){
-      state = state.copyWith( isPosting: false );
+    if (!isFormValid()) {
+      state = state.copyWith(isPosting: false);
       return;
     }
 
-    state = state.copyWith( isPosting: true );
+    state = state.copyWith(isPosting: true);
 
     try {
       final token = await keyValueStorage.getValue<String>('token');
 
       final userId = await keyValueStorage.getValue<int>('userId');
 
-      final locations = state.selectedLocations.map((location) => {
-      "country_iso": location.countryIso,
-      "location_id": location.id,
-      }).toList();
+      final locations = state.selectedLocations
+          .map((location) => {
+                "country_iso": location.countryIso,
+                "location_id": location.id,
+              })
+          .toList();
 
-      final resp = await planTripRepository.createTrip(
-        token!, 
-        userId!, 
-        state.name, 
-        state.initDate, 
-        state.endDate, 
-        locations);
+      final resp = await planTripRepository.createTrip(token!, userId!,
+          state.name, state.initDate, state.endDate, locations);
 
+      if (resp.statusCode == 200) {
+        print("exito"); //para probar
+      }
     } catch (e) {
       //TODO: Manejar errores
     } finally {
-    state = state.copyWith(isPosting: false);
-  }
-   
+      state = state.copyWith(isPosting: false);
+    }
   }
 }
 
