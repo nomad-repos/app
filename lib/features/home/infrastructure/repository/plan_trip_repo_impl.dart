@@ -17,8 +17,8 @@ class PlanTripRepositoryImpl implements PlanTripRepository {
   }
 
   @override
-  Future createTrip(String token, int userId, String name, DateTime initDate,
-      DateTime endDate, List locations) {
+  Future createTrip(String token, int userId, String name, String initDate,
+      String endDate, List locations) {
     return planTripDS.createTrip(
         token, userId, name, initDate, endDate, locations);
   }

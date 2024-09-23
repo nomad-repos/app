@@ -73,14 +73,15 @@ class PlanTripDSimpl implements PlanTripDS {
   }
 
   @override
-  Future createTrip(String token, int userId, String name, DateTime initDate,
-      DateTime endDate, List locations) async {
+  Future createTrip(String token, int userId, String name, String initDate,
+      String endDate, List locations) async {
+        
     try {
       final createTripJson = {
         "user_id": userId,
         "trip_name": name,
-        "start_date": initDate.toIso8601String(),
-        "end_date": endDate.toIso8601String(),
+        "start_date": initDate,
+        "end_date": endDate,
         "locations": locations
       };
 

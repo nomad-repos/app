@@ -31,6 +31,10 @@ class Location {
         localityId: json["locality_id"],
       );
 
+  get countryIso => null;
+
+  get id => null;
+
   Map<String, dynamic> toJson() => {
         "locality_name": localityName,
         "locality_latitude": latitude,
