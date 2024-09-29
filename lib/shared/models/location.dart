@@ -9,7 +9,7 @@ class Location {
   double latitude;
   double longitude;
   String isoCode;
-  String localityId;
+  int localityId;
 
   Location({
     required this.localityName,

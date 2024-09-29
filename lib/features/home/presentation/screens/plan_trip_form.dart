@@ -21,12 +21,6 @@ class PlanTripForm extends ConsumerStatefulWidget {
 class _PlanTripFormState extends ConsumerState<PlanTripForm> {
 
   @override
-  void initState() {
-    super.initState();
-    ref.read(planTripFormProvider.notifier).getCountries();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final planTripProvider = ref.watch(planTripFormProvider.notifier);
 
@@ -168,6 +162,8 @@ class _PlanTripFormState extends ConsumerState<PlanTripForm> {
                 CustomFilledButton(
                   text: 'Explorá con nomad!',
                   onPressed: () {
+
+                    ref.watch(planTripFormProvider.notifier).createTrip();
                     
                   },
                 ),

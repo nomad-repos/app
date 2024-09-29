@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import 'package:nomad_app/features/home/home.dart';
+import 'package:nomad_app/features/trips/trip.dart';
 
 import '../../features/auth/auth.dart';
 import 'app_router_notifier.dart';
@@ -43,7 +45,22 @@ final goRouterProvider = Provider((ref) {
         GoRoute(
           path: '/plan_trip_form',
           builder: (context, state) => const PlanTripForm(),
-        )
+        ),
+
+        GoRoute(
+          path: '/home_trip_screen',
+          builder: (context, state) => const HomeTripScreen(),
+        ),
+
+        GoRoute(
+          path: '/wallet_screen',
+          builder: (context, state) => const WalletScreen(),
+        ),
+        
+        GoRoute(
+          path: '/calendar_screen',
+          builder: (context, state) => const CalendarScreen(),
+        ),
       ],
       redirect: (context, state) async {
         final String isGoingTo = state.matchedLocation;

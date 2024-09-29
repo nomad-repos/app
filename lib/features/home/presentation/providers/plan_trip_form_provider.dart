@@ -6,22 +6,36 @@ import 'package:nomad_app/shared/shared.dart';
 
 final planTripFormProvider =
     StateNotifierProvider<PlanTripNotifier, PlanTripState>((ref) {
+  
   final keyValueStorage = KeyValueStorageImpl();
   final planTripRepository = PlanTripRepositoryImpl();
+  
+  final userState = ref.watch(userProvider);
+  final errorHomeNotifier = ref.watch(errorHomeProvider.notifier); 
 
   return PlanTripNotifier(
     keyValueStorage: keyValueStorage,
     planTripRepository: planTripRepository,
+
+    userState: userState,
+    errorHomeNotifier : errorHomeNotifier,
   );
 });
 
 class PlanTripNotifier extends StateNotifier<PlanTripState> {
+
   final PlanTripRepository planTripRepository;
   final KeyValueStorageServices keyValueStorage;
+
+  final UserState userState;
+  final ErrorHomeNotifer errorHomeNotifier;
 
   PlanTripNotifier({
     required this.planTripRepository,
     required this.keyValueStorage,
+
+    required this.userState,
+    required this.errorHomeNotifier,
   }) : super(PlanTripState()) {
     getCountries();
   }
@@ -135,6 +149,18 @@ class PlanTripNotifier extends StateNotifier<PlanTripState> {
         state.selectedLocations.isNotEmpty;
   }
 
+  String formatDate(String date) {
+    // Parsear la fecha desde el formato dd/MM/yyyy
+    DateTime parsedDate = DateTime.parse(
+        '${date.split('/')[2]}-${date.split('/')[1]}-${date.split('/')[0]}');
+    
+    // Convertir al formato yyyy-MM-dd
+    String formattedDate = '${parsedDate.year}-${parsedDate.month.toString().padLeft(2, '0')}-${parsedDate.day.toString().padLeft(2, '0')}';
+    
+    return formattedDate;
+  }
+
+
   Future<void> createTrip() async {
     if (!isFormValid()) {
       state = state.copyWith(isPosting: false);
@@ -144,25 +170,29 @@ class PlanTripNotifier extends StateNotifier<PlanTripState> {
     state = state.copyWith(isPosting: true);
 
     try {
-      final token = await keyValueStorage.getValue<String>('token');
+      final token = await keyValueStorage.getValue<String>('token'); // Delete
+      final userId = userState.user!.userId;
 
-      final userId = await keyValueStorage.getValue<int>('userId');
+
 
       final locations = state.selectedLocations
           .map((location) => {
-                "country_iso": location.countryIso,
-                "location_id": location.id,
+                "country_iso": location.isoCode,
+                "location_id": location.localityId,
               })
           .toList();
 
-      final resp = await planTripRepository.createTrip(token!, userId!,
-          state.name, state.initDate, state.endDate, locations);
+      print(locations);
 
-      if (resp.statusCode == 200) {
-        print("exito"); //para probar
-      }
+      final resp = await planTripRepository.createTrip(token!, userId, state.name, formatDate(state.initDate), formatDate(state.endDate), locations);
+      
+      print(resp.statusCode);
+      print(resp);
+      //Aca va la creación del viaje.
+
     } catch (e) {
-      //TODO: Manejar errores
+      print(e);
+      errorHomeNotifier.setError(ErrorHomeStatus.generalError, e.toString());
     } finally {
       state = state.copyWith(isPosting: false);
     }

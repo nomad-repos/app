@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nomad_app/features/home/home.dart';
 import 'package:nomad_app/shared/shared.dart';
+
+import '../../../trips/trip.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -47,6 +50,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             )
           ]
         ),
+
         flexibleSpace: FlexibleSpaceBar(
           background: ColorFiltered(
             colorFilter: ColorFilter.mode(
@@ -69,6 +73,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
         ),
+
       ),
      
       const SliverToBoxAdapter(
@@ -80,14 +85,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 }
 
-class ScrollHome extends StatelessWidget {
+class ScrollHome extends ConsumerWidget {
   const ScrollHome({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    
+    final homeState = ref.watch(homeProvider);
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+
         const Padding(
           padding: EdgeInsets.only(left:13, top: 13),
           child: Row(children: [
@@ -109,46 +118,58 @@ class ScrollHome extends StatelessWidget {
     
         const SizedBox(height: 5),
     
-        Padding(
+        const Padding(
           padding: EdgeInsets.only(right:10, top:10, left: 13),
           child: CustomHomeText(
             label: 'Mis Viajes',
           ),
         ),
-        SizedBox(height: 2),
+
+        const SizedBox(height: 2),
     
-        HorizontalListView(
-            itemCount: 10,
-            url:
-                "https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"), //widget mis viajes listview
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.17,
+          child: ListView.builder(
+            itemBuilder: (context, index) {
+              return TripSquare(
+                trip: homeState.trips[index],
+                index: index,
+              );
+            },
+            itemCount: homeState.trips.length,
+            scrollDirection: Axis.horizontal,
+          ),
+        ),
+
+
+        const SizedBox(height: 5),
     
-        SizedBox(height: 5),
-    
-        Padding(
+        const Padding(
           padding: EdgeInsets.only(right:10, top:10, left: 13),
           child: CustomHomeText(
             label: 'Viajes Recomendados',
           ),
         ),
-        SizedBox(height: 2),
+
+        const SizedBox(height: 2),
     
-        HorizontalListView(
+        const HorizontalListView(
             itemCount: 10,
             url:
                 "https://images.unsplash.com/photo-1515859005217-8a1f08870f59?q=80&w=3210&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"),
     
-        SizedBox(height: 5),
+        const SizedBox(height: 5),
     
-        Padding(
+        const Padding(
           padding: EdgeInsets.only(right:10, top:10, left: 13),
           child: CustomHomeText(
             label: 'Recordá tus historia',
           ),
         ),
     
-        SizedBox(height: 2),
+        const SizedBox(height: 2),
     
-        Align(
+        const Align(
           alignment: Alignment.topCenter,
           child: GestureDetectorWidget(
               url:
@@ -156,18 +177,18 @@ class ScrollHome extends StatelessWidget {
               label: 'Mis Aventuras'),
         ),
 
-        SizedBox(height: 5),
+        const SizedBox(height: 5),
 
-        Padding(
+        const Padding(
           padding: EdgeInsets.only(right:10, top:10, left: 13),
           child: CustomHomeText(
             label: 'Itinerarios de la Comunidad',
           ),
         ),
 
-        SizedBox(height: 2),
+        const SizedBox(height: 2),
 
-        HorizontalListView(
+        const HorizontalListView(
             itemCount: 10,
             url:
                 "https://media.istockphoto.com/id/1059713466/photo/teamwork-couple-climbing-helping-hand.webp?b=1&s=612x612&w=0&k=20&c=XqwznpAgGJapLnY2LonSJyMtVAay7aAMwSD184RTf6I="),
@@ -276,6 +297,66 @@ class GestureDetectorWidget extends StatelessWidget {
             
             ),
           )),
+    );
+  }
+}
+
+
+class TripSquare extends ConsumerWidget {
+  final Trip trip;
+  final int index;
+  const TripSquare({super.key, required this.trip, required this.index});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+
+    final tripNotifier = ref.watch(tripProvider.notifier);
+
+    return GestureDetector(
+      onTap: () {
+        tripNotifier.setTrip(trip);
+        context.push('/home_trip_screen');
+      },
+      child: Stack(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(right: 10, left: index == 0 ? 13 : 0),
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.17,
+              width: MediaQuery.of(context).size.height * 0.17,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                image: DecorationImage(
+                  image: NetworkImage(trip.photoUrl),
+                  fit: BoxFit.cover,
+                )
+              ), 
+            ),
+          ),
+      
+           Positioned(
+            top: 5,
+            left: 20,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(color: Colors.white, width: 1),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Text(
+                  trip.tripName,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+            )
+          ),
+        ],
+      ),
     );
   }
 }

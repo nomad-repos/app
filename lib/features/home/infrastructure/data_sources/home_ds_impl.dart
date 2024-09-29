@@ -19,7 +19,7 @@ class HomeDSimpl implements HomeDS {
   Future getTrips(String userId, String token) async {
     try {
         final resp = await dio.get( 
-          '/trips/get?user_id=$userId',
+          '/trips/get_trips?user_id=$userId',
           options: Options(
             headers: {
               "authorization": "Bearer $token",

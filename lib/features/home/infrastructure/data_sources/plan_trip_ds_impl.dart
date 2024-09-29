@@ -85,24 +85,25 @@ class PlanTripDSimpl implements PlanTripDS {
         "locations": locations
       };
 
+      print(createTripJson);
+
       final resp = await dio.post(
-        '/trip/create_trip',
+        '/trips/create_trip',
         data: createTripJson,
         options: Options(headers: {
           "authorization": "Bearer $token",
-          "Content-Type": "application/json"
         }),
       );
 
       if (resp.statusCode == 200) {
         return resp.data;
       }
+
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
         throw CustomError(
             e.response?.data['msg'] ?? 'Invalid format');
       }
-
       if (e.type == DioExceptionType.connectionTimeout) {
         throw CustomError('Revisar conexión a internet.');
       }

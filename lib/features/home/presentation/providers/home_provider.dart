@@ -28,13 +28,16 @@ class HomeNotifier extends StateNotifier<HomeState> {
     required this.homeRepository,
     required this.keyValueStorage,
     required this.userNotifier,
-  }): super( HomeState() );
+  }): super( HomeState() ){
+    getTrips();
+  }
 
 
-  Future<void> getTrips( String userId, String token ) async { 
+  Future<void> getTrips() async { 
     try {
       final token = await keyValueStorage.getValue<String>('token');
-      
+      final userId = userNotifier.state.user!.userId.toString();
+
       final resp = await homeRepository.getTrips( userId, token! ); // Si o si hay un token porque si no hay token no se puede acceder a esta pantalla.
 
       if (resp.statusCode == 200) {

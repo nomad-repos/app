@@ -1,3 +1,5 @@
+
+export 'package:nomad_app/shared/widgets/custom_nav_bar.dart';
 export 'package:nomad_app/shared/widgets/date_time_picker.dart';
 export 'package:nomad_app/shared/widgets/custome_home_text.dart';
 export 'package:nomad_app/shared/widgets/custom_filled_button.dart';
