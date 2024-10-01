@@ -16,6 +16,12 @@ class ErrorHomeNotifer extends StateNotifier<ErrorHomerState> {
           errorType: type
         );
         break;
+      case ErrorHomeStatus.datesError:
+        state = state.copyWith(
+          errorMessage: 'Las fechas seleccionadas no son válidas',
+          errorType: ErrorHomeStatus.datesError
+        );
+        break;
       default:
         state = state.copyWith(
           errorMessage: '',
@@ -29,6 +35,7 @@ class ErrorHomeNotifer extends StateNotifier<ErrorHomerState> {
 enum ErrorHomeStatus {
   none,
   generalError,
+  datesError,
 }
 
 class ErrorHomerState {

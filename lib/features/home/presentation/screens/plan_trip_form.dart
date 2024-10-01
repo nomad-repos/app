@@ -8,6 +8,8 @@ import 'package:go_router/go_router.dart';
 import 'package:nomad_app/config/config.dart';
 import 'package:nomad_app/config/theme/app_theme.dart';
 import 'package:nomad_app/features/home/home.dart';
+import 'package:nomad_app/features/trips/trip.dart';
+import 'package:nomad_app/helpers/helpers.dart';
 import 'package:nomad_app/shared/shared.dart';
 
 
@@ -24,163 +26,184 @@ class _PlanTripFormState extends ConsumerState<PlanTripForm> {
   Widget build(BuildContext context) {
     final planTripProvider = ref.watch(planTripFormProvider.notifier);
 
-    return Scaffold(
-      body: CustomScrollView(
-        slivers: [
+    ref.listen(errorHomeProvider, (previous, next) {
+      if ( next.errorMessage.isEmpty ) return;
+        showSnackbar( context, next.errorMessage, Colors.red );
+    });
 
-          const _CustomAppBar(),
-     
+    return Stack(
+      children: [
 
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: Column(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 50),
-                    child: Column(
-                      children: [
-                        
-                        CustomTextFormFieldTrip(
-                          hintText: 'Nombre del viaje',
-                          onChanged: (value) {
-                            planTripProvider.onValueChange('name', value);
-                          },
-                        ),
-                          
-                        const SizedBox(height: 20),
-                          
-                        CustomDropdown<Country>(
-                          items: ref.watch(planTripFormProvider).countries,
-                          initialItem: ref.watch(planTripFormProvider).selectedCountry,
-                          hintText: 'País de destino',
-                          onChanged: (value) {
-                            planTripProvider.selectCountry(value);
-                          },
-                        ),
-                                  
-                        const SizedBox(height: 20),
-                          
-                        Row(
+        Scaffold(
+          body: CustomScrollView(
+            slivers: [
+        
+              const _CustomAppBar(),
+         
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 50),
+                        child: Column(
                           children: [
-                            // El Dropdown ocupa el espacio disponible
-                            Expanded(
-                              child: CustomDropdown<Location>(
-                                items: ref.watch(planTripFormProvider).locations,
-                                initialItem: planTripProvider.locationInLocations()
-                                    ? ref.watch(planTripFormProvider).selectedLocation
-                                    : null,
-                                hintText: 'Localidad de destino',
-                                onChanged: (value) {
-                                  planTripProvider.selectLocation(value);
-                                },
-                              ),
+                            
+                            CustomTextFormFieldTrip(
+                              hintText: 'Nombre del viaje',
+                              onChanged: (value) {
+                                planTripProvider.onValueChange('name', value);
+                              },
                             ),
-
-                            const SizedBox(width: 10),
-
-                            // El botón tiene un ancho fijo
-                            SizedBox(
-                              child: IconButton(
-                                onPressed: () => ref.watch(planTripFormProvider).selectedLocation != null
-                                    ? planTripProvider.onLocationsChange(null, 'add')
-                                    : null, 
-                                icon: Icon(Icons.add, color: AppTheme().getTheme().primaryColor )
-                              )
+                              
+                            const SizedBox(height: 20),
+                              
+                            CustomDropdown<Country>(
+                              items: ref.watch(planTripFormProvider).countries,
+                              initialItem: ref.watch(planTripFormProvider).selectedCountry,
+                              hintText: 'País de destino',
+                              onChanged: (value) {
+                                planTripProvider.selectCountry(value);
+                              },
                             ),
-                          ],
-                        ),
-
-
-                        const SizedBox(height: 20),
-
-                        const ListOfLocations(),
-                                  
-                        const SizedBox(height: 20),
-                                  
-                        Row(
-                          children: [
-                            Expanded(
-                              child: DateTimePicker(
-                                hintText: "Inicio", 
-                                onDateChanged: ( String date ){
-                                  planTripProvider.onValueChange('initDate', date);
-                                }, 
-                                firstDate: DateTime.now(),
-                                lastDate:  DateTime.now().add(const Duration(days: 730)),
-                              ),
+                                      
+                            const SizedBox(height: 20),
+                              
+                            Row(
+                              children: [
+                                // El Dropdown ocupa el espacio disponible
+                                Expanded(
+                                  child: CustomDropdown<Location>(
+                                    items: ref.watch(planTripFormProvider).locations,
+                                    initialItem: planTripProvider.locationInLocations()
+                                        ? ref.watch(planTripFormProvider).selectedLocation
+                                        : null,
+                                    hintText: 'Localidad de destino',
+                                    onChanged: (value) {
+                                      planTripProvider.selectLocation(value);
+                                    },
+                                  ),
+                                ),
+        
+                                const SizedBox(width: 10),
+        
+                                // El botón tiene un ancho fijo
+                                SizedBox(
+                                  child: IconButton(
+                                    onPressed: () => ref.watch(planTripFormProvider).selectedLocation != null
+                                        ? planTripProvider.onLocationsChange(null, 'add')
+                                        : null, 
+                                    icon: Icon(Icons.add, color: AppTheme().getTheme().primaryColor )
+                                  )
+                                ),
+                              ],
                             ),
-                                  
-                            const SizedBox(width: 20),
-                                  
-                            Expanded(
-                              child: DateTimePicker(
-                                hintText: "Finalización", 
-                                onDateChanged: ( String date ){
-                                  planTripProvider.onValueChange('endDate', date);
-                                }, 
-                                firstDate: DateTime.now(),
-                                lastDate:  DateTime.now().add(const Duration(days: 730)),
-                              ),
+        
+        
+                            const SizedBox(height: 20),
+        
+                            const ListOfLocations(),
+                                      
+                            const SizedBox(height: 20),
+                                      
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: DateTimePicker(
+                                    hintText: "Inicio", 
+                                    onDateChanged: ( String date ){
+                                      planTripProvider.onValueChange('initDate', date);
+                                    }, 
+                                    firstDate: DateTime.now(),
+                                    lastDate:  DateTime.now().add(const Duration(days: 730)),
+                                  ),
+                                ),
+                                      
+                                const SizedBox(width: 20),
+                                      
+                                Expanded(
+                                  child: DateTimePicker(
+                                    hintText: "Finalización", 
+                                    onDateChanged: ( String date ){
+                                      planTripProvider.onValueChange('endDate', date);
+                                    }, 
+                                    firstDate: DateTime.now(),
+                                    lastDate:  DateTime.now().add(const Duration(days: 730)),
+                                  ),
+                                )
+                              ],
+                            ),
+                          
+                            const SizedBox(height: 20),
+                                      
+                            Row(
+                              children: [
+                                Text(
+                                  'Viajo solo', 
+                                  style: TextStyle(
+                                    color: AppTheme().getTheme().primaryColor, 
+                                    fontSize: 17, 
+                                    fontWeight: ref.watch(planTripFormProvider).isAlone ? FontWeight.w300 : FontWeight.w600,
+                                  )
+                                ),
+                                Expanded(child: Container()),
+                                Switch(
+                                  value: ref.watch(planTripFormProvider).isAlone, 
+                                  onChanged: (value) => planTripProvider.onValueChange('isAlone', value)
+                                ),
+                                Expanded(child: Container()),
+                                Text(
+                                  'Acompañado', 
+                                  style: TextStyle(
+                                    color: AppTheme().getTheme().primaryColor, 
+                                    fontSize: 17, 
+                                    fontWeight: ref.watch(planTripFormProvider).isAlone ? FontWeight.w600 : FontWeight.w300,
+                                  )
+                                ),
+                              ],
                             )
+                                      
                           ],
                         ),
-                      
-                        const SizedBox(height: 20),
-                                  
-                        Row(
-                          children: [
-                            Text(
-                              'Viajo solo', 
-                              style: TextStyle(
-                                color: AppTheme().getTheme().primaryColor, 
-                                fontSize: 17, 
-                                fontWeight: ref.watch(planTripFormProvider).isAlone ? FontWeight.w300 : FontWeight.w600,
-                              )
-                            ),
-                            Expanded(child: Container()),
-                            Switch(
-                              value: ref.watch(planTripFormProvider).isAlone, 
-                              onChanged: (value) => planTripProvider.onValueChange('isAlone', value)
-                            ),
-                            Expanded(child: Container()),
-                            Text(
-                              'Acompañado', 
-                              style: TextStyle(
-                                color: AppTheme().getTheme().primaryColor, 
-                                fontSize: 17, 
-                                fontWeight: ref.watch(planTripFormProvider).isAlone ? FontWeight.w600 : FontWeight.w300,
-                              )
-                            ),
-                          ],
-                        )
-                                  
-                      ],
+                      ),
                     ),
-                  ),
+                    CustomFilledButton(
+                      text: 'Explorá con nomad!',
+                      onPressed: () async {
+        
+                        bool state= await ref.watch(planTripFormProvider.notifier).createTrip();
+                        if (state) {
+                          await ref.watch(tripProvider.notifier).setTrip(ref.watch(homeProvider).trips.last);
+                          context.replace('/home_trip_screen');
+                        }
+                        
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                  ],
                 ),
-                CustomFilledButton(
-                  text: 'Explorá con nomad!',
-                  onPressed: () {
+              ),
+            ],
+          )
+        ),
 
-                    ref.watch(planTripFormProvider.notifier).createTrip();
-                    
-                  },
-                ),
-                const SizedBox(height: 20),
-              ],
+        Visibility(
+          visible: ref.watch(planTripFormProvider).isPosting ,
+          child: Container(
+            color: Colors.black.withOpacity(0.5),
+            child: const Center(
+              child: CircularProgressIndicator(),
             ),
-          ),
-        ],
-      )
+          )
+        ),
+      ],
     );
   }
 }
 
 class _CustomAppBar extends StatelessWidget {
-  const _CustomAppBar({
-    super.key,
-  });
+  const _CustomAppBar();
 
   @override
   Widget build(BuildContext context) {

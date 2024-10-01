@@ -12,6 +12,7 @@ final planTripFormProvider =
   
   final userState = ref.watch(userProvider);
   final errorHomeNotifier = ref.watch(errorHomeProvider.notifier); 
+  final homeNotifier = ref.watch(homeProvider.notifier);
 
   return PlanTripNotifier(
     keyValueStorage: keyValueStorage,
@@ -19,6 +20,7 @@ final planTripFormProvider =
 
     userState: userState,
     errorHomeNotifier : errorHomeNotifier,
+    homeNotifer : homeNotifier,
   );
 });
 
@@ -29,6 +31,7 @@ class PlanTripNotifier extends StateNotifier<PlanTripState> {
 
   final UserState userState;
   final ErrorHomeNotifer errorHomeNotifier;
+  final HomeNotifier homeNotifer;
 
   PlanTripNotifier({
     required this.planTripRepository,
@@ -36,6 +39,7 @@ class PlanTripNotifier extends StateNotifier<PlanTripState> {
 
     required this.userState,
     required this.errorHomeNotifier,
+    required this.homeNotifer,
   }) : super(PlanTripState()) {
     getCountries();
   }
@@ -161,10 +165,15 @@ class PlanTripNotifier extends StateNotifier<PlanTripState> {
   }
 
 
-  Future<void> createTrip() async {
+  Future<bool> createTrip() async {
     if (!isFormValid()) {
       state = state.copyWith(isPosting: false);
-      return;
+      errorHomeNotifier.setError(ErrorHomeStatus.generalError, 'Por favor, completa todos los campos');
+      return false;
+    } else if (DateTime.parse(formatDate(state.initDate)).isAfter(DateTime.parse(formatDate(state.endDate)))) {
+      state = state.copyWith(isPosting: false);
+      errorHomeNotifier.setError(ErrorHomeStatus.datesError, null);
+      return false;
     }
 
     state = state.copyWith(isPosting: true);
@@ -173,8 +182,6 @@ class PlanTripNotifier extends StateNotifier<PlanTripState> {
       final token = await keyValueStorage.getValue<String>('token'); // Delete
       final userId = userState.user!.userId;
 
-
-
       final locations = state.selectedLocations
           .map((location) => {
                 "country_iso": location.isoCode,
@@ -182,17 +189,14 @@ class PlanTripNotifier extends StateNotifier<PlanTripState> {
               })
           .toList();
 
-      print(locations);
+      await planTripRepository.createTrip(token!, userId, state.name, formatDate(state.initDate), formatDate(state.endDate), locations);
+      await homeNotifer.getTrips();
 
-      final resp = await planTripRepository.createTrip(token!, userId, state.name, formatDate(state.initDate), formatDate(state.endDate), locations);
-      
-      print(resp.statusCode);
-      print(resp);
-      //Aca va la creación del viaje.
+      return true;
 
     } catch (e) {
-      print(e);
       errorHomeNotifier.setError(ErrorHomeStatus.generalError, e.toString());
+      return false;
     } finally {
       state = state.copyWith(isPosting: false);
     }

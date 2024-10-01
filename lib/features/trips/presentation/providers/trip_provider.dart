@@ -22,6 +22,7 @@ class TripNotifier extends StateNotifier<TripState> {
   setTrip(Trip trip) {
     final DateTime tripStartDate = HttpDate.parse(trip.tripStartDate);
     final DateTime tripEndDate =  HttpDate.parse(trip.tripFinishDate);
+    
     final daysFromStart = tripStartDate.difference(DateTime.now()).inDays;
     final daysFromEnd = tripEndDate.difference(DateTime.now()).inDays;
 
@@ -30,9 +31,6 @@ class TripNotifier extends StateNotifier<TripState> {
         ? 'Faltan $daysFromStart días'
         : 'Estas en tu viaje' 
       : 'Tu viaje terminó';
-
-
-    print(text);
 
     state = state.copyWith(
       trip: trip,
