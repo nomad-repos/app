@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nomad_app/features/auth/auth.dart';
+import 'package:nomad_app/helpers/helpers.dart';
+
 import 'package:nomad_app/shared/shared.dart';
 
 class LoginScreen extends ConsumerWidget {
@@ -8,6 +11,15 @@ class LoginScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
+    final loginForm = ref.watch(loginFormProvider);
+
+    ref.listen(authProvider, (previous, next) {
+      if (next.errorMessage.isNotEmpty) {
+        showSnackbar(context, next.errorMessage, Colors.red);
+      }
+    });
+
     return Scaffold(
         body: Stack(
       children: [
@@ -19,7 +31,7 @@ class LoginScreen extends ConsumerWidget {
         ),
         Positioned.fill(
           child: Container(
-            color: const Color.fromARGB(255, 2, 15, 21).withOpacity(0.75),
+            color: const Color.fromARGB(255, 2, 15, 21).withOpacity(0.7),
           ),
         ),
         SafeArea(
@@ -28,15 +40,24 @@ class LoginScreen extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+
                 Expanded(child: Container()),
-                const CustomTextFormField(
+
+                CustomTextFormFieldAuth(
                   hint: 'Email',
+                  onChanged: (value) => ref.watch(loginFormProvider.notifier).onEmailChange(value),
+                  errorMessage: loginForm.isFormPosted ? loginForm.email.errorMessage : null,
                 ),
+
                 const SizedBox(height: 30),
-                const CustomTextFormField(
+
+                CustomTextFormFieldAuth(
                   hint: 'Contraseña',
                   obscureText: true,
+                  onChanged: (value) => ref.watch(loginFormProvider.notifier).onPasswordChanged(value),
+                  errorMessage: loginForm.isFormPosted ? loginForm.password.errorMessage : null,
                 ),
+
                 TextButton(
                   onPressed: () {
                     context.push('/reset_password');
@@ -49,34 +70,57 @@ class LoginScreen extends ConsumerWidget {
                       style: TextStyle(
                           color: Colors.white, fontWeight: FontWeight.w300)),
                 ),
+                
                 Expanded(child: Container()),
+
                 CustomFilledButton(
                     text: 'Iniciar sesión',
                     width: double.infinity,
-                    buttonColor: const Color.fromARGB(255, 248, 85, 35),
-                    onPressed: () {}),
-                const SizedBox(height: 20),
-                CustomFilledButton(
-                    text: 'Registrarse',
-                    width: double.infinity,
-                    buttonColor: Colors.transparent,
                     onPressed: () {
-                      context.push('/register');
-                    }),
+                      ref.watch(loginFormProvider.notifier).onFormSubmit(); 
+                      FocusScope.of(context).unfocus(); 
+                    }
+                  ),
+                const SizedBox(height: 20),
+
+                CustomFilledButton(
+                  text: 'Registrarse',
+                  width: double.infinity,
+                  buttonColor: Colors.transparent,
+                  onPressed: () {
+                    context.push('/register');
+                  }
+                ),
+
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    context.push('/home_screen');
+                  },
                   style: TextButton.styleFrom(
                     splashFactory:
                         NoSplash.splashFactory, // Elimina el efecto de splash
                   ),
                   child: const Text('Continuar como invitado',
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.w300)),
+                    style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.w300
+                    )
+                  ),
                 ),
               ],
             ),
           ),
         ),
+
+        Visibility(
+          visible: ref.watch(loginFormProvider).isPosting ,
+          child: Container(
+            color: Colors.black.withOpacity(0.5),
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ),
+          )
+        ),
+
       ],
     ));
   }

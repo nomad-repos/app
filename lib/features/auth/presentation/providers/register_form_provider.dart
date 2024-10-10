@@ -18,7 +18,7 @@ final registerFormProvider = StateNotifierProvider.autoDispose<RegisterFormNotif
 
 class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
 
-  final Function(String, String, String, String, String) registerUserCallback;
+  final Function(String, String, String, String) registerUserCallback;
 
   RegisterFormNotifier({
     required this.registerUserCallback,
@@ -28,7 +28,7 @@ class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
     final newName = PlainText.dirty(value);
     state = state.copyWith(
       name: newName,
-      isValid: Formz.validate([ newName, state.surname, state.email, state.password, state.phone])
+      isValid: Formz.validate([ newName, state.surname, state.email, state.password])
     );
   }
 
@@ -36,15 +36,7 @@ class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
     final newSurname = PlainText.dirty(value);
     state = state.copyWith(
       surname: newSurname,
-      isValid: Formz.validate([ state.name, newSurname, state.email, state.password, state.phone])
-    );
-  }
-
-  onPhoneChange( String value ) {
-    final newPhone = Number.dirty(value);
-    state = state.copyWith(
-      phone: newPhone,
-      isValid: Formz.validate([ state.name, state.surname, state.email, state.password, newPhone ])
+      isValid: Formz.validate([ state.name, newSurname, state.email, state.password])
     );
   }
   
@@ -52,7 +44,7 @@ class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
     final newEmail = Email.dirty(value);
     state = state.copyWith(
       email: newEmail,
-      isValid: Formz.validate([ state.name, state.surname, newEmail, state.password, state.phone ])
+      isValid: Formz.validate([ state.name, state.surname, newEmail, state.password ])
     );
   }
 
@@ -60,29 +52,26 @@ class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
     final newPassword = Password.dirty(value);
     state = state.copyWith(
       password: newPassword,
-      isValid: Formz.validate([state.name, state.surname, state.email, newPassword, state.phone ])
+      isValid: Formz.validate([state.name, state.surname, state.email, newPassword])
     );
   }
 
   onFormSubmit() async {
     state = state.copyWith( isPosting: true );
-
     _touchEveryField();
-
-    if ( !state.isValid ) return;
-
-    await registerUserCallback( state.name.value, state.surname.value, state.email.value, state.password.value, state.phone.value );
-
+    if ( !state.isValid ){
+      state = state.copyWith( isPosting: false );
+      return;
+    }
+    await registerUserCallback( state.name.value, state.surname.value, state.email.value, state.password.value );
     state = state.copyWith( isPosting: false );
     }
 
   _touchEveryField() {
-
     final email    = Email.dirty(state.email.value);
     final password = Password.dirty(state.password.value);
     final name     = PlainText.dirty(state.name.value);
     final surname  = PlainText.dirty(state.surname.value);
-    final phone    = Number.dirty(state.phone.value);
 
 
     state = state.copyWith(
@@ -91,20 +80,7 @@ class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
       password: password,
       name: name,
       surname: surname,
-      phone: phone,
-      isValid: Formz.validate([ email, password, name, surname, phone ])
-    );
-  }
-
-  cleanForm(){
-    state = state.copyWith(
-      isFormPosted: false,
-      email: const Email.pure(),
-      password: const Password.pure(),
-      name: const PlainText.pure(),
-      surname: const PlainText.pure(),
-      phone: const Number.pure(),
-      isValid: false
+      isValid: Formz.validate([ email, password, name, surname ])
     );
   }
 
@@ -122,7 +98,6 @@ class RegisterFormState {
   final Password password;
   final PlainText name;
   final PlainText surname;
-  final Number phone;
 
   RegisterFormState({
     this.isPosting = false,
@@ -132,7 +107,6 @@ class RegisterFormState {
     this.password = const Password.pure(),
     this.name = const PlainText.pure(),
     this.surname = const PlainText.pure(),
-    this.phone = const Number.pure(),
   });
 
   RegisterFormState copyWith({
@@ -143,7 +117,6 @@ class RegisterFormState {
     Password? password,
     PlainText? name,
     PlainText? surname,
-    Number? phone,
   }) => RegisterFormState(
     isPosting: isPosting ?? this.isPosting,
     isFormPosted: isFormPosted ?? this.isFormPosted,
@@ -152,7 +125,6 @@ class RegisterFormState {
     password: password ?? this.password,
     name: name ?? this.name,
     surname: surname ?? this.surname,
-    phone: phone ?? this.phone,
   );
 
   @override

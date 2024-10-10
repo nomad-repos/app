@@ -27,7 +27,10 @@ class CustomFilledButton extends StatelessWidget {
                   side: BorderSide(
                       color: buttonColor == Colors.transparent
                           ? Colors.white
-                          : Colors.transparent))),
+                          : Colors.transparent
+                        )
+                      ),
+                    ),
           onPressed: onPressed,
           child: Text(text)),
     );

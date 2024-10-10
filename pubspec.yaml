@@ -19,11 +19,15 @@ dependencies:
   formz: ^0.7.0
   flutter_localizations:
     sdk: flutter
+  flutter_cache_manager: ^3.4.1
+  animated_custom_dropdown: ^3.1.1
+  persistent_bottom_nav_bar: ^6.2.1
+  syncfusion_flutter_calendar: ^20.2.44
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.0
+  flutter_lints: ^4.0.0
 
 flutter:
   uses-material-design: true
