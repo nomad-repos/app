@@ -6,6 +6,8 @@
         android:label="nomad_app"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyB9jXhCtKr1Jt-KTdgLVY3HPkC87FnOZtY"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
