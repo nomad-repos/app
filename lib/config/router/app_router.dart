@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -61,6 +62,12 @@ final goRouterProvider = Provider((ref) {
           path: '/calendar_screen',
           builder: (context, state) => const CalendarScreen(),
         ),
+
+        GoRoute(
+          path: '/find_activity_screen',
+          builder: (context, state) => const FindActivityScreen(),
+    
+        )
       ],
       redirect: (context, state) async {
         final String isGoingTo = state.matchedLocation;

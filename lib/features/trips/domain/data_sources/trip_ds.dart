@@ -1,5 +1,7 @@
 abstract class TripDs {
+  Future getLocations(int tripId, String token);
 
-  //Future getTrips( String userId, String token );
+  Future getCategories(String token);
 
+  Future getActivites(String token, String localityLocation, int categoryId);
 }

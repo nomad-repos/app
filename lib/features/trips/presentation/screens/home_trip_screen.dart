@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nomad_app/features/trips/presentation/presentation.dart';
+import 'package:nomad_app/features/trips/presentation/providers/find_activity_provider.dart';
 
 import 'package:nomad_app/features/trips/trip.dart';
 import 'package:nomad_app/shared/shared.dart';
@@ -19,348 +20,263 @@ class HomeTripScreen extends ConsumerWidget {
     final tripState = ref.watch(tripProvider);
 
     return Scaffold(
+      extendBody: true,
       body: Stack(
         children: [
           Positioned.fill(
             child: Image.asset(
-              'assets/iniciarsesion.jpg',
-              fit: BoxFit.cover,
+              'assets/registro.jpg',
+              fit: BoxFit.fill,
             ),
           ),
           Positioned.fill(
             child: Container(
-              color: const Color.fromARGB(255, 2, 15, 21).withOpacity(0.7),
+              color: const Color.fromARGB(255, 2, 15, 21).withOpacity(0.6),
             ),
           ),
            SingleChildScrollView(
-             child: SafeArea(
-              child: SizedBox(
-                width: double.infinity,
-                child: Column(
-                  children: <Widget>[
-                    
-                    //Botones de navegación
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Row(
-                        children: [
-                          IconButton(
-                            onPressed: () {
-                              context.go('/home_screen');
-                            }, 
-                            icon: const Icon(Icons.arrow_back, color: Colors.white),
-                          ),
-                                  
-                          Expanded(child: Container()),
-                                  
-                          IconButton(
-                            onPressed: () {
-                              context.go('/home_screen');
-                            }, 
-                            icon: const Icon(Icons.add, color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    ),
-              
-                    SizedBox(height: MediaQuery.of(context).size.height * 0.05),
-                    
-                    //Nombre del viaje
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: Text(
-                          "Mi viaje ${tripState.trip!.tripName}", 
-                          textAlign: TextAlign.start,
-                          style: const TextStyle(
-                            color: Colors.white, 
-                            fontSize: 30, 
-                            fontWeight: FontWeight.w300, 
-                            overflow: TextOverflow.ellipsis,
-                          )
+             child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: MediaQuery.of(context).size.height
+              ),
+               child: SafeArea(
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Column(
+                    children: <Widget>[
+                      
+                      //Botones de navegación
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Row(
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                context.go('/home_screen');
+                              }, 
+                              icon: const Icon(Icons.arrow_back, color: Colors.white),
+                            ),
+                                    
+                            Expanded(child: Container()),
+                                    
+                            IconButton(
+                              onPressed: () {
+                                context.go('/home_screen');
+                              }, 
+                              icon: const Icon(Icons.add, color: Colors.white),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-              
-                    const SizedBox(height: 20),
-             
-                    //Dias restantes
-                    Row(
-                      children: [
-                        Container(
-                          height: 2,
-                          width: MediaQuery.of(context).size.width * 0.4,
-                          color: Colors.deepOrange,
-                        ),
-              
-                        Container(
-                          padding: const  EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          width: MediaQuery.of(context).size.width * 0.5,
-                          decoration: BoxDecoration(
-                            color: Colors.deepOrange,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+                      
+                      //Nombre del viaje
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: SizedBox(
+                          width: double.infinity,
                           child: Text(
-                            tripState.dayRemaining,
-                            textAlign: TextAlign.center, 
+                            "Mi viaje ${tripState.trip!.tripName}", 
+                            textAlign: TextAlign.start,
                             style: const TextStyle(
                               color: Colors.white, 
-                              fontSize: 20
+                              fontSize: 30, 
+                              fontWeight: FontWeight.w600, 
+                              overflow: TextOverflow.ellipsis,
                             )
                           ),
                         ),
-              
-                        Container(
-                          height: 2,
-                          width: MediaQuery.of(context).size.width * 0.1,
-                          color: Colors.deepOrange,
-                        ),
-                      ],
-                    ),
-             
-                    const SizedBox(height: 50),
-             
-                    //Te sugerimos
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        width: double.infinity,
-                        
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.white),
-                        ),
-                      
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            
-                            const Text(
-                              "Te sugerimos", 
-                              style: TextStyle(
+                      ),
+                
+                      const SizedBox(height: 20),
+               
+                      //Dias restantes
+                      Row(
+                        children: [
+                          Container(
+                            height: 2,
+                            width: MediaQuery.of(context).size.width * 0.4,
+                            color: Colors.deepOrange,
+                          ),
+                
+                          Container(
+                            padding: const  EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            decoration: BoxDecoration(
+                              color: Colors.deepOrange,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Text(
+                              tripState.dayRemaining,
+                              textAlign: TextAlign.center, 
+                              style: const TextStyle(
                                 color: Colors.white, 
                                 fontSize: 20
                               )
                             ),
-                            
-                            const SizedBox(height: 10),
-             
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                              
-                                  SuggestButton(
-                                    label: 'Restoran', 
-                                    icon: Icons.restaurant, 
-                                    onTap: () {
-                                      print('Restoran');
-                                    }
-                                  ),
-                              
-                                  const SizedBox(width: 10),
-                              
-                                  SuggestButton(
-                                    label: "Transporte", 
-                                    icon: Icons.directions_bus, 
-                                    onTap: () {
-                                      print('Transporte');
-                                    }
-                                  ),
-                              
-                                  const SizedBox(width: 10),
-                              
-                                  SuggestButton(
-                                    label: "Shopping", 
-                                    icon: Icons.shopping_cart, 
-                                    onTap: () {
-                                      print('Shopping');
-                                    }
-                                  ),
-             
-                                  const SizedBox(width: 10),
-             
-                                  SuggestButton(
-                                    label: 'Cafés', 
-                                    icon: Icons.local_cafe, 
-                                    onTap: () {
-                                      print('Cafés');
-                                    }
-                                  ),
-                              
-                                  const SizedBox(width: 10),
-                              
-                                  SuggestButton(
-                                    label: "Actividades", 
-                                    icon: Icons.local_activity, 
-                                    onTap: () {
-                                      print('Actividades');
-                                    }
-                                  ),
-                                  
-                                  
-                                ],
-                              ),
-                            ),
-                            
-                            const SizedBox(height: 5),
-                          ],
-                        ),
+                          ),
+                
+                          Container(
+                            height: 2,
+                            width: MediaQuery.of(context).size.width * 0.1,
+                            color: Colors.deepOrange,
+                          ),
+                        ],
                       ),
-                    ),
-             
-                    const SizedBox(height: 20),
-             
-                    //Mis archivos
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        width: double.infinity,
+               
+                      const SizedBox(height: 50),
+               
+                      //Te sugerimos
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          width: double.infinity,
+                          
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: Colors.white),
+                          ),
                         
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.white),
-                        ),
-                      
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            
-                            const Text(
-                              "Mis archivos", 
-                              style: TextStyle(
-                                color: Colors.white, 
-                                fontSize: 20
-                              )
-                            ),
-                            
-                            const SizedBox(height: 10),
-             
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
                               
-                                  SuggestButton(
-                                    label: 'Comprobante', 
-                                    icon: Icons.receipt, 
-                                    onTap: () {
-                                      print('Comprobante');
-                                    }
-                                  ),
-                              
-                                  const SizedBox(width: 10),
-                              
-                                  SuggestButton(
-                                    label: "Entradas", 
-                                    icon: Icons.confirmation_number, 
-                                    onTap: () {
-                                      print('Entradas');
-                                    }
-                                  ),
-                              
-                                  const SizedBox(width: 10),
-                              
-                                  SuggestButton(
-                                    label: "Pasajes", 
-                                    icon: Icons.airplanemode_active, 
-                                    onTap: () {
-                                      print('Pasajes');
-                                    }
-                                  ),
-             
-                                  const SizedBox(width: 10),
-             
-                                  SuggestButton(
-                                    label: 'Transporte', 
-                                    icon: Icons.directions_bus, 
-                                    onTap: () {
-                                      print('Transporte');
-                                    }
-                                  ),
-                              
-                                  const SizedBox(width: 10),
-                              
-                                  SuggestButton(
-                                    label: "Otros", 
-                                    icon: Icons.add, 
-                                    onTap: () {
-                                      print('Otros');
-                                    }
-                                  ),
-                                  
-                                  
-                                ],
+                              const Text(
+                                "Te sugerimos", 
+                                style: TextStyle(
+                                  color: Colors.white, 
+                                  fontSize: 20
+                                )
                               ),
-                            ),
-                            
-                            const SizedBox(height: 5),
-                          ],
+                              
+                              const SizedBox(height: 6),
+               
+                              Container(
+                                height: 80,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: tripState.categories.length,
+                                  itemBuilder: (context, index){
+                                    return Padding(
+                                      padding: const EdgeInsets.only(right: 4, left: 4),
+                                      child: CustomSuggestButton(
+                                        category: tripState.categories[index],
+                                        onTap: (){
+                                          ref.watch(findActivityProvider.notifier).onCategoryHomeChange(tripState.categories[index]);
+                                          context.go('/find_activity_screen');
+                                        }
+                                      ),
+                                    );
+                                  }
+                                ),
+                              ),
+                              
+                              
+                              const SizedBox(height: 5),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    
-                    const SizedBox(height: 20),
-             
-                    //Guardados
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        width: double.infinity,
+               
+                      const SizedBox(height: 20),
+               
+                      //Mis archivos
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          width: double.infinity,
+                          
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: Colors.white),
+                          ),
                         
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.white),
-                        ),
-                      
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            
-                            const Text(
-                              "Guardados", 
-                              style: TextStyle(
-                                color: Colors.white, 
-                                fontSize: 20
-                              )
-                            ),
-                            
-                            const SizedBox(height: 10),
-             
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
                               
-                                  SuggestButton(
-                                    label: 'Actividades', 
-                                    icon: Icons.save, 
-                                    onTap: () {
-                                      print('Actividades');
-                                    }
-                                  ),
-                                ],
+                              const Text(
+                                "Mis archivos", 
+                                style: TextStyle(
+                                  color: Colors.white, 
+                                  fontSize: 20
+                                )
                               ),
-                            ),
-                            
-                            const SizedBox(height: 5),
-                          ],
+                              
+                              const SizedBox(height: 10),
+               
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    
+                                    
+                                  ],
+                                ),
+                              ),
+                              
+                              const SizedBox(height: 5),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-
-                    const SizedBox(height: 40),
-                  ],
+                      
+                      const SizedBox(height: 20),
+               
+                      //Guardados
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          width: double.infinity,
+                          
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: Colors.white),
+                          ),
+                        
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              
+                              const Text(
+                                "Guardados", 
+                                style: TextStyle(
+                                  color: Colors.white, 
+                                  fontSize: 20
+                                )
+                              ),
+                              
+                              const SizedBox(height: 10),
+               
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                
+                                    
+                                  ],
+                                ),
+                              ),
+                              
+                              const SizedBox(height: 5),
+                            ],
+                          ),
+                        ),
+                      ),
+               
+                      const SizedBox(height: 40),
+                    ],
+                  ),
                 ),
-              ),
-            ), 
+                           ),
+             ), 
           ),
         ],
       ),
@@ -372,48 +288,10 @@ class HomeTripScreen extends ConsumerWidget {
           context.push('/calendar_screen');   
         }, 
         backgroundColor: Colors.deepOrange,
+        shape: const CircleBorder(),
         child: const Icon(Icons.calendar_today),
       ),
       bottomNavigationBar: const CustomBottomNavigationBar(),
-    );
-  }
-}
-
-
-
-class SuggestButton extends ConsumerWidget {
-  final String label;
-  final IconData icon;
-  final Function() onTap;
-
-  const SuggestButton({required this.label, required this.icon, required this.onTap, super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.black.withOpacity(0.5),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: Colors.white, size: 30,),
-            
-            const SizedBox(height: 5),
-      
-            Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white, 
-                fontSize: 12
-              )
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

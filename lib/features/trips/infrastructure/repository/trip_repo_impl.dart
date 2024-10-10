@@ -8,4 +8,19 @@ class TripRepositoryImpl implements TripRepository{
   TripRepositoryImpl({
     TripDs? tripDs 
   }) : tripDs = tripDs ?? TripDSimpl();
+  
+  @override
+  Future getLocations(int tripId, String token) {
+    return tripDs.getLocations(tripId, token);
+  }
+  
+  @override
+  Future getCategories(String token) {
+    return tripDs.getCategories(token);
+  }
+  
+  @override
+  Future getActivites(String token, String localityLocation, int categoryId) {
+    return tripDs.getActivites(token, localityLocation, categoryId);
+  }
 }

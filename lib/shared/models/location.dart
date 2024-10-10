@@ -11,13 +11,12 @@ class Location {
   String isoCode;
   int localityId;
 
-  Location({
-    required this.localityName,
-    required this.latitude,
-    required this.longitude,
-    required this.isoCode,
-    required this.localityId
-  });
+  Location(
+      {required this.localityName,
+      required this.latitude,
+      required this.longitude,
+      required this.isoCode,
+      required this.localityId});
 
   factory Location.fromJson(Map<String, dynamic> json) => Location(
         localityName: json["locality_name"],
@@ -34,6 +33,9 @@ class Location {
   get countryIso => null;
 
   get id => null;
+  
+  double get _latitude => latitude;
+ double get _longitude => longitude;
 
   Map<String, dynamic> toJson() => {
         "locality_name": localityName,

@@ -24,7 +24,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final userInfo = ref.watch(userProvider);
     
     return Scaffold(
-      body: CustomScrollView(slivers: [
+      body: CustomScrollView( 
+        slivers: [
       SliverAppBar(
         automaticallyImplyLeading: false,
         floating: true,
@@ -110,7 +111,7 @@ class ScrollHome extends ConsumerWidget {
         Align(
           alignment: Alignment.topCenter,
           child: GestureDetectorWidget(
-            url: "https://images.unsplash.com/photo-1506807520672-c4a8d5bbe260?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            url: "https://images.unsplash.com/photo-1506807520672-c4a68d5bbe260?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
             label:'Planificar Nuevo Viaje',
             onTap: () => context.push('/plan_trip_form')
           ),
