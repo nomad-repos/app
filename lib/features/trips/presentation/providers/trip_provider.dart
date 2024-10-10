@@ -1,7 +1,10 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nomad_app/features/trips/trip.dart';
 import 'dart:io';
 import 'package:nomad_app/shared/shared.dart';
+import 'package:nomad_app/shared/widgets/trip/day_widget.dart';
 
 import '../../../../helpers/services/services.dart';
 
@@ -48,6 +51,30 @@ class TripNotifier extends StateNotifier<TripState> {
       dayRemaining: text,
     );
   }
+
+  List<Widget> getDayWidgets() {
+    final trip = state.trip;
+    if (trip == null) return [];
+
+    final DateTime tripStartDate = HttpDate.parse(trip.tripStartDate);
+    final DateTime tripEndDate =  HttpDate.parse(trip.tripFinishDate);
+
+    final List<Widget> days = [];
+    for (int i = 0; i < tripEndDate.difference(tripStartDate).inDays; i++) {
+      days.add(
+        DayWidget(day: tripStartDate.add(Duration(days: i))),
+      );
+    }
+    return days;
+  }
+
+  void selectDay(DateTime day) {
+    state = state.copyWith(
+      daySelected: day,
+    );
+    print(state.daySelected);
+  }
+
 
   Future<List<Location>?> getLocations(int tripId) async {
     List<Location>? locations;
@@ -103,26 +130,34 @@ class TripNotifier extends StateNotifier<TripState> {
 class TripState {
   final Trip? trip;
   final String dayRemaining;
-  final String selectedCategory;
+  final DateTime? daySelected;  
+
   final List<Category> categories;
+  final String selectedCategory;
 
   TripState({
     this.trip,
     this.dayRemaining = '',
+    this.daySelected,
+    
     this.selectedCategory = '',
     this.categories = const [],
   });
 
   TripState copyWith({
     Trip? trip,
-    String? dayRemaining,
-    String? selectedCategory,
+    String? dayRemaining, 
+    DateTime? daySelected,
+
     List<Category>? categories,
-  }) =>
-      TripState(
-        trip: trip ?? trip,
-        dayRemaining: dayRemaining ?? this.dayRemaining,
-        selectedCategory: selectedCategory ?? this.selectedCategory,
-        categories: categories ?? this.categories,
-      );
+    String? selectedCategory,
+
+  }) => TripState(
+    trip: trip ?? this.trip,
+    dayRemaining: dayRemaining ?? this.dayRemaining,
+    daySelected: daySelected ?? this.daySelected,
+
+    categories: categories ?? this.categories,
+    selectedCategory: selectedCategory ?? this.selectedCategory,
+  );
 }

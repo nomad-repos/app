@@ -1,5 +1,4 @@
 
-
 export 'package:nomad_app/shared/widgets/custom_suggest_button.dart';
 export 'package:nomad_app/shared/widgets/custom_nav_bar.dart';
 export 'package:nomad_app/shared/widgets/date_time_picker.dart';

@@ -64,9 +64,23 @@ final goRouterProvider = Provider((ref) {
         ),
 
         GoRoute(
+          path: '/calendar_screen',
+          builder: (context, state) => const CalendarScreen(),
+        ),
+
+        GoRoute(
+          path: '/create_event_screen',
+          builder: (context, state) => const CreateEventScreen(),
+        ),
+
+        GoRoute(
+          path: "/map_activity_screen",
+          builder: (context, state) => const MapActivityScreen(),
+        ),
+        
+        GoRoute(
           path: '/find_activity_screen',
           builder: (context, state) => const FindActivityScreen(),
-    
         )
       ],
       redirect: (context, state) async {

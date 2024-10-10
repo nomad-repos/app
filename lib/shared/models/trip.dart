@@ -29,8 +29,8 @@ class Trip {
         tripId: json["trip_id"],
         photoUrl: json["photo_url"],
         tripFinishDate: json["trip_finish_date"],
-        tripName: json["trip_name"],
         tripStartDate: json["trip_start_date"],
+        tripName: json["trip_name"],
         tripState: json["trip_state"],
       );
 
@@ -38,8 +38,8 @@ class Trip {
         "trip_id": tripId,
         "photo_url": photoUrl,
         "trip_finish_date": tripFinishDate,
-        "trip_name": tripName,
         "trip_start_date": tripStartDate,
+        "trip_name": tripName,
         "trip_state": tripState,
       };
 

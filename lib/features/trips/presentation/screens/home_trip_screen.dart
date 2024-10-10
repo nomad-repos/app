@@ -1,12 +1,10 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nomad_app/features/trips/presentation/presentation.dart';
 import 'package:nomad_app/features/trips/presentation/providers/find_activity_provider.dart';
-
 import 'package:nomad_app/features/trips/trip.dart';
 import 'package:nomad_app/shared/shared.dart';
 
@@ -82,7 +80,7 @@ class HomeTripScreen extends ConsumerWidget {
                             style: const TextStyle(
                               color: Colors.white, 
                               fontSize: 30, 
-                              fontWeight: FontWeight.w600, 
+                              fontWeight: FontWeight.w300, 
                               overflow: TextOverflow.ellipsis,
                             )
                           ),
@@ -132,17 +130,14 @@ class HomeTripScreen extends ConsumerWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          width: double.infinity,
-                          
+                          width: double.infinity,                        
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(color: Colors.white),
-                          ),
-                        
+                          ),                       
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              
+                            children: [       
                               const Text(
                                 "Te sugerimos", 
                                 style: TextStyle(
@@ -173,8 +168,6 @@ class HomeTripScreen extends ConsumerWidget {
                                   }
                                 ),
                               ),
-                              
-                              
                               const SizedBox(height: 5),
                             ],
                           ),
@@ -188,13 +181,11 @@ class HomeTripScreen extends ConsumerWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          width: double.infinity,
-                          
+                          width: double.infinity,                         
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(color: Colors.white),
-                          ),
-                        
+                          ),                        
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -214,12 +205,12 @@ class HomeTripScreen extends ConsumerWidget {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                   children: [
+
                                     
                                     
                                   ],
                                 ),
-                              ),
-                              
+                              ),                         
                               const SizedBox(height: 5),
                             ],
                           ),
@@ -233,13 +224,11 @@ class HomeTripScreen extends ConsumerWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          width: double.infinity,
-                          
+                          width: double.infinity,                     
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(color: Colors.white),
-                          ),
-                        
+                          ),                        
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -260,7 +249,6 @@ class HomeTripScreen extends ConsumerWidget {
                                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                   children: [
                                 
-                                    
                                   ],
                                 ),
                               ),
@@ -270,7 +258,6 @@ class HomeTripScreen extends ConsumerWidget {
                           ),
                         ),
                       ),
-               
                       const SizedBox(height: 40),
                     ],
                   ),
@@ -292,6 +279,7 @@ class HomeTripScreen extends ConsumerWidget {
         child: const Icon(Icons.calendar_today),
       ),
       bottomNavigationBar: const CustomBottomNavigationBar(),
+
     );
   }
 }
