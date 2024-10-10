@@ -54,6 +54,7 @@ class CustomBottomNavigationBar extends ConsumerWidget {
               label: 'Perfil',
             ),
           ],
+          iconSize: 28,
           selectedItemColor: Colors.deepOrange, // Color de los íconos seleccionados
           unselectedItemColor: Colors.grey, // Color de los íconos no seleccionados
           type: BottomNavigationBarType.fixed, // Asegura que los íconos no desaparezcan

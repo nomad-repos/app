@@ -1,42 +1,57 @@
-
 import 'dart:convert';
 
-Activity activityFromJson(String str) => Activity.fromJson(json.decode(str));
+Activity acivityFromJson(String str) => Activity.fromJson(json.decode(str));
 
-String activityToJson(Activity data) => json.encode(data.toJson());
+String acivityToJson(Activity data) => json.encode(data.toJson());
 
 class Activity {
-    String activityTitle;
-    double activityLatitude;
-    double activityLongitude;
-    String? activityPhotoUrl;
-    int localityId;
-    int categoryId;
+    String activityAddress;
+    String activityExtId;
+    ActivityLocation activityLocation;
+    String activityName;
+    String activityPhotosUri;
 
     Activity({
-        required this.activityTitle,
-        required this.activityLatitude,
-        required this.activityLongitude,
-        this.activityPhotoUrl,
-        required this.localityId,
-        required this.categoryId,
+        required this.activityAddress,
+        required this.activityExtId,
+        required this.activityLocation,
+        required this.activityName,
+        required this.activityPhotosUri,
     });
 
     factory Activity.fromJson(Map<String, dynamic> json) => Activity(
-        activityTitle: json["activity_title"],
-        activityLatitude: json["activity_latitude"]?.toDouble(),
-        activityLongitude: json["activity_longitude"]?.toDouble(),
-        activityPhotoUrl: json["activity_photo_url"],
-        localityId: json["locality_id"],
-        categoryId: json["category_id"],
+        activityAddress: json["activity_address"],
+        activityExtId: json["activity_ext_id"],
+        activityLocation: ActivityLocation.fromJson(json["activity_location"]),
+        activityName: json["activity_name"],
+        activityPhotosUri: json["activity_photos_uri"],
     );
 
     Map<String, dynamic> toJson() => {
-        "activity_title": activityTitle,
-        "activity_latitude": activityLatitude,
-        "activity_longitude": activityLongitude,
-        "activity_photo_url": activityPhotoUrl,
-        "locality_id": localityId,
-        "category_id": categoryId,
+        "activity_address": activityAddress,
+        "activity_ext_id": activityExtId,
+        "activity_location": activityLocation.toJson(),
+        "activity_name": activityName,
+        "activity_photos_uri": activityPhotosUri,
+    };
+}
+
+class ActivityLocation {
+    double latitude;
+    double longitude;
+
+    ActivityLocation({
+        required this.latitude,
+        required this.longitude,
+    });
+
+    factory ActivityLocation.fromJson(Map<String, dynamic> json) => ActivityLocation(
+        latitude: json["latitude"]?.toDouble(),
+        longitude: json["longitude"]?.toDouble(),
+    );
+
+    Map<String, dynamic> toJson() => {
+        "latitude": latitude,
+        "longitude": longitude,
     };
 }

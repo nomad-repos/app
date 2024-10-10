@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nomad_app/features/trips/presentation/presentation.dart';
+import 'package:nomad_app/features/trips/presentation/providers/find_activity_provider.dart';
+import 'package:nomad_app/features/trips/trip.dart';
 import 'package:nomad_app/shared/shared.dart';
 
 
@@ -15,25 +18,26 @@ class HomeTripScreen extends ConsumerWidget {
     final tripState = ref.watch(tripProvider);
 
     return Scaffold(
+      extendBody: true,
       body: Stack(
         children: [
           Positioned.fill(
             child: Image.asset(
-              'assets/iniciarsesion.jpg',
-              fit: BoxFit.cover,
+              'assets/registro.jpg',
+              fit: BoxFit.fill,
             ),
           ),
           Positioned.fill(
             child: Container(
-              color: const Color.fromARGB(255, 2, 15, 21).withOpacity(0.7),
+              color: const Color.fromARGB(255, 2, 15, 21).withOpacity(0.6),
             ),
           ),
            SingleChildScrollView(
-            child: ConstrainedBox(
+             child: ConstrainedBox(
               constraints: BoxConstraints(
-                minHeight: MediaQuery.of(context).size.height,
+                minHeight: MediaQuery.of(context).size.height
               ),
-              child: SafeArea(
+               child: SafeArea(
                 child: SizedBox(
                   width: double.infinity,
                   child: Column(
@@ -99,7 +103,7 @@ class HomeTripScreen extends ConsumerWidget {
                             width: MediaQuery.of(context).size.width * 0.5,
                             decoration: BoxDecoration(
                               color: Colors.deepOrange,
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(16),
                             ),
                             child: Text(
                               tripState.dayRemaining,
@@ -126,17 +130,14 @@ class HomeTripScreen extends ConsumerWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          width: double.infinity,
-                          
+                          width: double.infinity,                        
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(16),
                             border: Border.all(color: Colors.white),
-                          ),
-                        
+                          ),                       
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              
+                            children: [       
                               const Text(
                                 "Te sugerimos", 
                                 style: TextStyle(
@@ -145,67 +146,28 @@ class HomeTripScreen extends ConsumerWidget {
                                 )
                               ),
                               
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 6),
                
-                              SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                
-                                    SuggestButton(
-                                      label: 'Restoran', 
-                                      icon: Icons.restaurant, 
-                                      onTap: () {
-                                        print('Restoran');
-                                      }
-                                    ),
-                                
-                                    const SizedBox(width: 10),
-                                
-                                    SuggestButton(
-                                      label: "Transporte", 
-                                      icon: Icons.directions_bus, 
-                                      onTap: () {
-                                        print('Transporte');
-                                      }
-                                    ),
-                                
-                                    const SizedBox(width: 10),
-                                
-                                    SuggestButton(
-                                      label: "Shopping", 
-                                      icon: Icons.shopping_cart, 
-                                      onTap: () {
-                                        print('Shopping');
-                                      }
-                                    ),
-               
-                                    const SizedBox(width: 10),
-               
-                                    SuggestButton(
-                                      label: 'Cafés', 
-                                      icon: Icons.local_cafe, 
-                                      onTap: () {
-                                        print('Cafés');
-                                      }
-                                    ),
-                                
-                                    const SizedBox(width: 10),
-                                
-                                    SuggestButton(
-                                      label: "Actividades", 
-                                      icon: Icons.local_activity, 
-                                      onTap: () {
-                                        print('Actividades');
-                                      }
-                                    ),
-                                    
-                                    
-                                  ],
+                              Container(
+                                height: 80,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: tripState.categories.length,
+                                  itemBuilder: (context, index){
+                                    return Padding(
+                                      padding: const EdgeInsets.only(right: 4, left: 4),
+                                      child: CustomSuggestButton(
+                                        category: tripState.categories[index],
+                                        onTap: (){
+                                          ref.watch(findActivityProvider.notifier).onCategoryHomeChange(tripState.categories[index]);
+                                          context.go('/find_activity_screen');
+                                        }
+                                      ),
+                                    );
+                                  }
                                 ),
                               ),
-                              
                               const SizedBox(height: 5),
                             ],
                           ),
@@ -219,13 +181,11 @@ class HomeTripScreen extends ConsumerWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          width: double.infinity,
-                          
+                          width: double.infinity,                         
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(16),
                             border: Border.all(color: Colors.white),
-                          ),
-                        
+                          ),                        
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -245,60 +205,12 @@ class HomeTripScreen extends ConsumerWidget {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                   children: [
-                                
-                                    SuggestButton(
-                                      label: 'Comprobante', 
-                                      icon: Icons.receipt, 
-                                      onTap: () {
-                                        print('Comprobante');
-                                      }
-                                    ),
-                                
-                                    const SizedBox(width: 10),
-                                
-                                    SuggestButton(
-                                      label: "Entradas", 
-                                      icon: Icons.confirmation_number, 
-                                      onTap: () {
-                                        print('Entradas');
-                                      }
-                                    ),
-                                
-                                    const SizedBox(width: 10),
-                                
-                                    SuggestButton(
-                                      label: "Pasajes", 
-                                      icon: Icons.airplanemode_active, 
-                                      onTap: () {
-                                        print('Pasajes');
-                                      }
-                                    ),
-               
-                                    const SizedBox(width: 10),
-               
-                                    SuggestButton(
-                                      label: 'Transporte', 
-                                      icon: Icons.directions_bus, 
-                                      onTap: () {
-                                        print('Transporte');
-                                      }
-                                    ),
-                                
-                                    const SizedBox(width: 10),
-                                
-                                    SuggestButton(
-                                      label: "Otros", 
-                                      icon: Icons.add, 
-                                      onTap: () {
-                                        print('Otros');
-                                      }
-                                    ),
+
                                     
                                     
                                   ],
                                 ),
-                              ),
-                              
+                              ),                         
                               const SizedBox(height: 5),
                             ],
                           ),
@@ -312,13 +224,11 @@ class HomeTripScreen extends ConsumerWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          width: double.infinity,
-                          
+                          width: double.infinity,                     
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(16),
                             border: Border.all(color: Colors.white),
-                          ),
-                        
+                          ),                        
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -339,13 +249,6 @@ class HomeTripScreen extends ConsumerWidget {
                                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                   children: [
                                 
-                                    SuggestButton(
-                                      label: 'Actividades', 
-                                      icon: Icons.save, 
-                                      onTap: () {
-                                        print('Actividades');
-                                      }
-                                    ),
                                   ],
                                 ),
                               ),
@@ -355,13 +258,12 @@ class HomeTripScreen extends ConsumerWidget {
                           ),
                         ),
                       ),
-              
                       const SizedBox(height: 40),
                     ],
                   ),
                 ),
-              ),
-            ), 
+                           ),
+             ), 
           ),
         ],
       ),
@@ -373,49 +275,11 @@ class HomeTripScreen extends ConsumerWidget {
           context.push('/calendar_screen');   
         }, 
         backgroundColor: Colors.deepOrange,
+        shape: const CircleBorder(),
         child: const Icon(Icons.calendar_today),
       ),
       bottomNavigationBar: const CustomBottomNavigationBar(),
 
-    );
-  }
-}
-
-
-
-class SuggestButton extends ConsumerWidget {
-  final String label;
-  final IconData icon;
-  final Function() onTap;
-
-  const SuggestButton({required this.label, required this.icon, required this.onTap, super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.black.withOpacity(0.5),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: Colors.white, size: 30,),
-            
-            const SizedBox(height: 5),
-      
-            Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white, 
-                fontSize: 12
-              )
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

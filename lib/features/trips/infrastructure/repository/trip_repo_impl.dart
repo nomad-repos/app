@@ -25,4 +25,20 @@ class TripRepositoryImpl implements TripRepository{
   Future<void> getEvent(int eventId, String token) {
     return tripDs.getEvent(eventId, token);
   }
+  
+  @override
+  Future getLocations(int tripId, String token) {
+    return tripDs.getLocations(tripId, token);
+  }
+  
+  @override
+  Future getCategories(String token) {
+    return tripDs.getCategories(token);
+  }
+  
+  @override
+  Future getActivites(String token, String localityLocation, int categoryId) {
+    return tripDs.getActivites(token, localityLocation, categoryId);
+  }
 }
+
