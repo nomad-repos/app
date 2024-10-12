@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nomad_app/shared/shared.dart';
+import 'package:nomad_app/features/trips/presentation/presentation.dart';
 
 class DayWidget extends ConsumerStatefulWidget {
   final DateTime day;

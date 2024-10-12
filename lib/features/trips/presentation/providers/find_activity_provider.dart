@@ -1,28 +1,32 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nomad_app/features/trips/trip.dart';
 
 import '../../../../helpers/helpers.dart';
 import '../../../../shared/models/models.dart';
-import '../../domain/domain.dart';
-import '../../infrastructure/infrastructure.dart';
 
 final findActivityProvider =
     StateNotifierProvider<FindActivityNotifier, FindActivityState>((ref) {
   final keyValueStorage = KeyValueStorageImpl();
   final tripRepository = TripRepositoryImpl();
+  final createEventNotifier = ref.watch(createEventProvider.notifier);
 
   return FindActivityNotifier(
     keyValueStorage: keyValueStorage,
     tripRepository: tripRepository,
+    createEventNotifier: createEventNotifier,
   );
 });
 
 class FindActivityNotifier extends StateNotifier<FindActivityState> {
   final KeyValueStorageServices keyValueStorage;
   final TripRepository tripRepository;
+  final CreateEventNotifier createEventNotifier;
 
   FindActivityNotifier({
     required this.keyValueStorage,
     required this.tripRepository,
+    required this.createEventNotifier,
   }) : super(FindActivityState());
 
   // Actualizar la categoría seleccionada
@@ -49,13 +53,24 @@ class FindActivityNotifier extends StateNotifier<FindActivityState> {
     );
   }
 
-  Future<List<Activity>?> getActivities(String location, int categoryId) async {
+  Future<List<Activity>?> getActivities(BuildContext context) async {
+    state = state.copyWith(isPosting: true);
+    
+    validateFields();
+    
+    if (!state.isValid){
+      showSnackbar(context,"Debes completar todos los campos", Colors.red);
+      state = state.copyWith(isPosting: false);
+      return null;
+    }
+
     List<Activity>? activities;
     try {
       final token = await keyValueStorage.getValue<String>('token');
+      final String location = '${state.selectedLocation!.latitude},${state.selectedLocation!.longitude}';
+      final int categoryId = state.selectedCategory!.categoryId;
 
-      final resp = await tripRepository.getActivites(token!, location,
-          categoryId); // Si o si hay un token porque si no hay token no se puede acceder a esta pantalla.
+      final resp = await tripRepository.getActivites(token!, location, categoryId); 
 
       if (resp.statusCode == 200) {
         // Mapeo de la lista de países desde el JSON a objetos Country
@@ -67,23 +82,30 @@ class FindActivityNotifier extends StateNotifier<FindActivityState> {
       }
     } catch (e) {
       resetActivityList();
-      //TODO: Manejar los errores
-    }
-    print(state.activities);
+    } finally {
+      state = state.copyWith(isPosting: false);
+    } 
     return activities;
   }
 
   void selectCategory(Category category) {
     state = state.copyWith(selectedCategory: category);
-    print('Selected Category: ${category.catergoryName}');
   }
 
   void resetActivityList() {
     state = state.copyWith(activities: []);
   }
+  
+  void validateFields() {
+    final isValid = state.selectedCategory != null && state.selectedLocation != null;
+    state = state.copyWith(isValid: isValid);
+  }
 }
 
 class FindActivityState {
+  final bool isValid;
+  final bool isPosting;
+
   final Category? categoryHome;
 
   final Category? selectedCategory;
@@ -91,6 +113,9 @@ class FindActivityState {
   final List<Activity>? activities;
 
   FindActivityState({
+    this.isValid = false,
+    this.isPosting = false,
+
     this.categoryHome,
     this.selectedCategory,
     this.selectedLocation,
@@ -98,12 +123,18 @@ class FindActivityState {
   });
 
   FindActivityState copyWith({
+    bool? isValid,
+    bool? isPosting,
+
     Category? categoryHome,
     Category? selectedCategory,
     Location? selectedLocation,
     List<Activity>? activities,
   }) =>
       FindActivityState(
+        isValid: isValid ?? this.isValid,
+        isPosting: isPosting ?? this.isPosting,
+
         categoryHome: categoryHome ?? this.categoryHome,
         selectedCategory: selectedCategory ?? this.selectedCategory,
         selectedLocation: selectedLocation ?? this.selectedLocation,

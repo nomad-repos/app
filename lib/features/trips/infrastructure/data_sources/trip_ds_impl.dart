@@ -1,11 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/intl.dart';
 import 'package:nomad_app/features/trips/trip.dart';
 import 'package:nomad_app/helpers/helpers.dart';
 import 'package:nomad_app/shared/models/activity.dart';
 import 'package:nomad_app/shared/models/event.dart';
-
-import '../../../../helpers/helpers.dart';
 
 class TripDSimpl implements TripDs {
   final dio = Dio(BaseOptions(
@@ -16,7 +15,7 @@ class TripDSimpl implements TripDs {
   @override
   Future getLocations(int tripId, String token) async {
     try {
-      final resp = await dio.get('/trip/get_trip_locations?trip_id=$tripId',
+      final resp = await dio.get('/trips/get_trip_locations?trip_id=$tripId',
           options: Options(
             headers: {
               "authorization": "Bearer $token",
@@ -100,25 +99,32 @@ class TripDSimpl implements TripDs {
   }
   
   @override
-  Future<void> createEvent(Event event, Activity activity, String token) async {
+  Future<void> createEvent(Event event, Activity activity, String token, int locationId) async {
     try {
+
+      final DateFormat timeFormat = DateFormat('HH:mm:ss');
+      final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+
       final createEventJson = {    
-          "event": {
-            "event_title": event.eventTitle,
-            "event_date": event.eventDate,
-            "event_start_time": event.eventStartTime,
-            "event_finish_time": event.eventFinishTime,
-            "trip_id": event.tripId,
-          },
-          "activity":{
-            "activity_title": activity.activityTitle,
-            "activity_latitude": activity.activityLatitude,
-            "activity_longitude": activity.activityLongitude,
-            "activity_photo_url": activity.activityPhotoUrl,
-            "locality_id": activity.localityId,
-            "category_id": activity.categoryId,
-        }
+            "event": {
+              "event_title": event.eventTitle,
+              "event_description": event.eventDescription,
+              "event_date": dateFormat.format(event.eventDate),
+              "event_start_time": timeFormat.format(event.eventStartTime),
+              "event_finish_time": timeFormat.format(event.eventFinishTime),
+              "trip_id": event.tripId,
+            },
+            "activity":{
+              "activity_address": activity.activityAddress,
+              "activity_ext_id": activity.activityExtId,
+              "activity_title": activity.activityName,
+              "activity_latitude": activity.activityLocation.latitude,
+              "activity_longitude": activity.activityLocation.longitude,
+              "activity_photo_url": activity.activityPhotosUri,
+              "locality_id": locationId,
+          }
       };
+
 
       final resp = await dio.post(
         '/events/create_event',
@@ -133,6 +139,7 @@ class TripDSimpl implements TripDs {
       }
 
     } on DioException catch (e) {
+      print(e.response?.data);
       if (e.response?.statusCode == 400) {
         throw CustomError(
             e.response?.data['msg'] ?? 'Invalid format');
@@ -151,9 +158,9 @@ class TripDSimpl implements TripDs {
   }
 
   @override
-  Future<void> getAllEvent(int tripId, String token) async {
+  Future getAllEvent(int tripId, String token) async {
     try {
-      final resp = await dio.get('/events/get_all?=$tripId',
+      final resp = await dio.get('/events/get_all?trip_id=$tripId',
         options: Options(
           headers: {
             "authorization": "Bearer $token",
@@ -161,8 +168,9 @@ class TripDSimpl implements TripDs {
         ));
 
       if (resp.statusCode == 200) {
-        return resp.data;
+        return resp;
       }
+
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
         throw CustomError(

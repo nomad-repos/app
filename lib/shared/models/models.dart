@@ -1,3 +1,4 @@
+export 'package:nomad_app/shared/models/get_event.dart';
 export 'package:nomad_app/shared/models/category.dart';
 export 'package:nomad_app/shared/models/user.dart';
 export 'package:nomad_app/shared/models/country.dart';

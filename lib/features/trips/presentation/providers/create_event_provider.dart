@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:nomad_app/features/trips/trip.dart';
 
 import 'package:nomad_app/helpers/helpers.dart';
 import 'package:nomad_app/shared/shared.dart';
@@ -7,12 +9,16 @@ import 'package:nomad_app/shared/shared.dart';
 final createEventProvider = StateNotifierProvider<CreateEventNotifier,CreateEventState>((ref) {
   final keyValueStorage = KeyValueStorageImpl();
   final tripRepository = TripRepositoryImpl();
-  final tripState = ref.watch(tripProvider); 
+  
+  final tripNotifier = ref.watch(tripProvider.notifier); 
+  final errorProvider = ref.watch(errorTripProvider.notifier);
 
   return CreateEventNotifier(
     keyValueStorage: keyValueStorage,
     tripRepository: tripRepository,
-    tripState: tripState,
+
+    tripNotifier: tripNotifier,
+    errorProvider: errorProvider, 
   );
 });
 
@@ -20,12 +26,16 @@ final createEventProvider = StateNotifierProvider<CreateEventNotifier,CreateEven
 class CreateEventNotifier extends StateNotifier<CreateEventState> {
   final KeyValueStorageServices keyValueStorage;
   final TripRepository tripRepository;
-  final TripState tripState;
+
+  final TripNotifier tripNotifier;
+  final ErrorTripNotifer errorProvider;
 
   CreateEventNotifier({ 
     required this.keyValueStorage,
     required this.tripRepository,
-    required this.tripState,
+
+    required this.tripNotifier,
+    required this.errorProvider,
   }): super( CreateEventState());
 
   void loadEventForEdit() {
@@ -48,21 +58,17 @@ class CreateEventNotifier extends StateNotifier<CreateEventState> {
 
   void validateForm() {
     final isValid = state.name.isNotEmpty && state.description.isNotEmpty && state.date != null && state.startTime != null && state.endTime != null;
-    print(state.name);
-    print(state.description);
-    print(state.date);
-    print(state.startTime);
-    print(state.endTime);
     state = state.copyWith(isValid: isValid);
   }
 
   Event createObjectEvent() {
     final event = Event(
       eventTitle: state.name, 
+      eventDescription: state.description,
       eventDate: state.date!, 
       eventStartTime: DateTime(state.date!.year, state.date!.month, state.date!.day, state.startTime!.hour, state.startTime!.minute),
       eventFinishTime: DateTime(state.date!.year, state.date!.month, state.date!.day, state.endTime!.hour, state.endTime!.minute),
-      tripId: tripState.trip!.tripId,
+      tripId: tripNotifier.state.trip!.tripId,
     );
     return event;
   }
@@ -70,60 +76,38 @@ class CreateEventNotifier extends StateNotifier<CreateEventState> {
   void createEvent( BuildContext context ) async {
     validateForm();
     if (!state.isValid){
-      showSnackbar(context, 'Todos los campos son requeridos', Colors.red);
+      errorProvider.setError(ErrorTripStatus.errorInvalidForm, null);
       return;
-    };
+    }
     
     state = state.copyWith(isPosting: true);
 
     try {
       final token = await keyValueStorage.getValue<String>('token');
       final event = createObjectEvent();
-      
-            // Guardar el evento (ya sea crear o actualizar)
+      final activity = state.activity!; 
+      final int locationId = tripNotifier.state.trip!.tripId;
+
       if (state.isEditing) {
-        // Actualizar evento
+
       } else {
-        //await tripRepository.createEvent(event, activity, token!);
+        await tripRepository.createEvent(event, activity, token!, locationId);
+        await tripNotifier.getEvents();
+        context.push('/home_trip_screen');
       }
-      
-
     } catch (e) {
-      showSnackbar(context, 'Error al crear el evento', Colors.red);
+      errorProvider.setError(ErrorTripStatus.errorCreatingEvent, null);
+    } finally {
+      state = state.copyWith(isPosting: false);
     }
+
   }
 
-  String getMonthName(int month) {
-    switch (month) {
-      case 1: return 'Enero';
-      case 2: return 'Febrero';
-      case 3: return 'Marzo';
-      case 4: return 'Abril';
-      case 5: return 'Mayo';
-      case 6: return 'Junio';
-      case 7: return 'Julio';
-      case 8: return 'Agosto';
-      case 9: return 'Septiembre';
-      case 10: return 'Octubre';
-      case 11: return 'Noviembre';
-      case 12: return 'Diciembre';
-      default: return '';
-    }
+  void selectActivity(Activity activity) {
+    state = state.copyWith(activity: activity);
   }
 
-  String getFormattedDate() {
-    if (state.date == null) return '';
-    switch (state.date!.weekday) {
-      case 1: return 'Lunes, ${state.date!.day} de ${getMonthName(state.date!.month)}';
-      case 2: return 'Martes, ${state.date!.day} de ${getMonthName(state.date!.month)}';
-      case 3: return 'Miércoles, ${state.date!.day} de ${getMonthName(state.date!.month)}';
-      case 4: return 'Jueves, ${state.date!.day} de ${getMonthName(state.date!.month)}';
-      case 5: return 'Viernes, ${state.date!.day} de ${getMonthName(state.date!.month)}';
-      case 6: return 'Sábado, ${state.date!.day} de ${getMonthName(state.date!.month)}';
-      case 7: return 'Domingo, ${state.date!.day} de ${getMonthName(state.date!.month)}';
-      default: return '';
-    }
-  }
+  
 }
 
 class CreateEventState {
@@ -138,6 +122,7 @@ class CreateEventState {
   final TimeOfDay? endTime;
 
   final Event? event;
+  final Activity? activity;
 
   CreateEventState({
     this.isPosting = false,
@@ -151,6 +136,7 @@ class CreateEventState {
     this.endTime,
 
     this.event,
+    this.activity,
   });
 
   CreateEventState copyWith({
@@ -165,6 +151,7 @@ class CreateEventState {
     TimeOfDay? endTime,
 
     Event? event,
+    Activity? activity,
 
   }) => CreateEventState(
     isPosting: isPosting ?? this.isPosting,
@@ -178,5 +165,6 @@ class CreateEventState {
     endTime: endTime ?? this.endTime,
 
     event: event ?? this.event,
+    activity: activity ?? this.activity,
   );
 }

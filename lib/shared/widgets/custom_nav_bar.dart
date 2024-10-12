@@ -29,10 +29,8 @@ class CustomBottomNavigationBar extends ConsumerWidget {
                 context.replace('/wallet_screen');
                 break;
               case 2:
-                context.replace('/create_event_screen');
                 break;
               case 3:
-                context.replace('/map_activity_screen');
                 break;
             }
           },

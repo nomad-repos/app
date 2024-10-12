@@ -9,5 +9,6 @@
 
     "[dart]":{
         "editor.formatOnSave": false 
-    }
+    },
+    "cmake.ignoreCMakeListsMissing": true
 }

@@ -12,12 +12,12 @@ class TripRepositoryImpl implements TripRepository{
   }) : tripDs = tripDs ?? TripDSimpl();
 
   @override
-  Future<void> createEvent(Event event, Activity activity, String token) {
-    return tripDs.createEvent(event, activity, token);
+  Future<void> createEvent(Event event, Activity activity, String token, int locationId) {
+    return tripDs.createEvent(event, activity, token, locationId);
   }
 
   @override
-  Future<void> getAllEvent(int tripId, String token) {
+  Future getAllEvent(int tripId, String token) {
     return tripDs.getAllEvent(tripId, token);
   }
 

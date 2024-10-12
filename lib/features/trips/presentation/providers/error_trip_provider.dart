@@ -16,6 +16,18 @@ class ErrorTripNotifer extends StateNotifier<ErrorTripState> {
           errorType: type
         );
         break;
+      case ErrorTripStatus.errorInvalidForm:
+        state = state.copyWith(
+          errorMessage: message ?? 'Por favor completa todos los campos',
+          errorType: type
+        );
+        break;
+      case ErrorTripStatus.errorCreatingEvent:
+        state = state.copyWith(
+          errorMessage: message ?? 'Error al crear el evento',
+          errorType: type
+        );
+        break;
       default:
         state = state.copyWith(
           errorMessage: '',
@@ -29,6 +41,8 @@ class ErrorTripNotifer extends StateNotifier<ErrorTripState> {
 enum ErrorTripStatus {
   none,
   generalError,
+  errorInvalidForm,
+  errorCreatingEvent,
 }
 
 class ErrorTripState {

@@ -1,9 +1,12 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nomad_app/features/trips/presentation/presentation.dart'; // Asegúrate de tener el modelo de `Event`.
+import 'package:nomad_app/features/trips/presentation/presentation.dart';
+import 'package:nomad_app/shared/utils/utils.dart'; // Asegúrate de tener el modelo de `Event`.
 
 class CreateEventScreen extends ConsumerStatefulWidget {
 
@@ -91,7 +94,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                               const Icon(Icons.access_time, color: Colors.grey),
                               const SizedBox(width: 10),
                               Text(
-                                ref.watch(createEventProvider.notifier).getFormattedDate(), 
+                                getFormattedDate(ref.watch(createEventProvider).date),
                                 style: 
                                 const TextStyle(fontWeight: FontWeight.bold)
                               ),
@@ -101,12 +104,19 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                       ),
 
                       const SizedBox(height: 20),
-
                       SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.3, 
+                        height: MediaQuery.of(context).size.height * 0.3,
                         child: CalendarDatePicker(
-                          initialDate: trip.daySelected ?? HttpDate.parse(trip.trip!.tripStartDate),
-                          firstDate: HttpDate.parse(trip.trip!.tripStartDate),
+                          initialDate: trip.daySelected == null 
+                            ? HttpDate.parse(trip.trip!.tripStartDate).isBefore(DateTime.now()) 
+                              ? DateTime.now() 
+                              : HttpDate.parse(trip.trip!.tripStartDate)
+                            : trip.daySelected!.isBefore(HttpDate.parse(trip.trip!.tripStartDate)) 
+                              ? HttpDate.parse(trip.trip!.tripStartDate) 
+                              : trip.daySelected!, 
+                          firstDate: HttpDate.parse(trip.trip!.tripStartDate).isBefore(DateTime.now()) 
+                            ? DateTime.now() 
+                            : HttpDate.parse(trip.trip!.tripStartDate),
                           lastDate: HttpDate.parse(trip.trip!.tripFinishDate),
                           onDateChanged: (date) => ref.read(createEventProvider.notifier).onDateChanged(date),
                         ),
@@ -124,7 +134,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                                 decoration: InputDecoration(
                                   hintText: ref.watch(createEventProvider).startTime == null 
                                     ? 'Inicio' 
-                                    : "${ref.watch(createEventProvider).startTime!.hour}:${ref.watch(createEventProvider).startTime!.minute}",
+                                    : formatTimeOfDay(ref.watch(createEventProvider).startTime),
                                   hintStyle: ref.watch(createEventProvider).startTime == null 
                                     ? const TextStyle(color: Colors.grey) 
                                     : const TextStyle(color: Colors.black),
@@ -150,7 +160,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                                 decoration: InputDecoration(
                                   hintText: ref.watch(createEventProvider).endTime == null 
                                     ? 'Fin' 
-                                    : "${ref.watch(createEventProvider).endTime!.hour}:${ref.watch(createEventProvider).endTime!.minute}",
+                                    : formatTimeOfDay(ref.watch(createEventProvider).endTime),
                                   hintStyle: ref.watch(createEventProvider).endTime == null 
                                     ? const TextStyle(color: Colors.grey) 
                                     : const TextStyle(color: Colors.black),
@@ -209,6 +219,26 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                       
                       const Divider(),
 
+                      GestureDetector(
+                        onTap: () {
+                          print("hola mundod");
+                          context.push('/map_activity_screen');
+                        },
+                        child: ListTile(
+                          leading: const Icon(Icons.place, color: Colors.grey),
+                          title: TextFormField(
+                            decoration: InputDecoration(
+                              hintText: ref.watch(createEventProvider).activity!.activityAddress,
+                              hintStyle: const TextStyle(color: Colors.grey),
+                              border: InputBorder.none,
+                            ),
+                            readOnly: true,
+                          ),
+                        ),
+                      ),
+
+                      const Divider(),
+
                       const SizedBox(height: 20),
 
                       Row(
@@ -216,31 +246,13 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                         children: [
                           TextButton(
                             onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('¿Desea cancelar?', textAlign: TextAlign.center),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        context.pop();
-                                      },
-                                      child: const Text('Cancelar', style: TextStyle(color: Colors.red)),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: const Text('Continuar'),
-                                    ),
-                                  ],
-                                ),
-                              );
+                              context.pop();
                             },
                             child: const Text('Cancelar'),
                           ),
                           TextButton(
                             onPressed: () {
+                              FocusScope.of(context).unfocus();
                               ref.read(createEventProvider.notifier).createEvent(context);
                             },
                             child: const Text('Guardar'),
@@ -252,6 +264,16 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                 ),
               ),
             ),
+          ),
+
+          Visibility(
+            visible: ref.watch(createEventProvider).isPosting,
+            child: Container(
+              color: Colors.black.withOpacity(0.5),
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            )
           ),
         ],
       ),

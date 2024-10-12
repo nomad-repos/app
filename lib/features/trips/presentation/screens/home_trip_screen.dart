@@ -1,20 +1,36 @@
-
 import 'package:flutter/material.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nomad_app/features/trips/presentation/presentation.dart';
-import 'package:nomad_app/features/trips/presentation/providers/find_activity_provider.dart';
 import 'package:nomad_app/features/trips/trip.dart';
 import 'package:nomad_app/shared/shared.dart';
 
-
-class HomeTripScreen extends ConsumerWidget {
+class HomeTripScreen extends ConsumerStatefulWidget {
   const HomeTripScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) { 
+  ConsumerState<HomeTripScreen> createState() => _HomeTripScreenState();
+}
 
+class _HomeTripScreenState extends ConsumerState<HomeTripScreen> {
+  Trip? trip;
+
+  @override
+  void initState() {
+    super.initState();
+    // Asignar la actividad si está disponible
+    Future.microtask(() {
+      final tripState = ref.read(tripProvider);
+      if (tripState.trip != null) {
+        setState(() {
+          trip = tripState.trip;
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final tripState = ref.watch(tripProvider);
 
     return Scaffold(
@@ -32,18 +48,17 @@ class HomeTripScreen extends ConsumerWidget {
               color: const Color.fromARGB(255, 2, 15, 21).withOpacity(0.6),
             ),
           ),
-           SingleChildScrollView(
-             child: ConstrainedBox(
+          SingleChildScrollView(
+            child: ConstrainedBox(
               constraints: BoxConstraints(
-                minHeight: MediaQuery.of(context).size.height
+                minHeight: MediaQuery.of(context).size.height,
               ),
-               child: SafeArea(
+              child: SafeArea(
                 child: SizedBox(
                   width: double.infinity,
                   child: Column(
                     children: <Widget>[
-                      
-                      //Botones de navegación
+                      // Botones de navegación
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Row(
@@ -51,45 +66,41 @@ class HomeTripScreen extends ConsumerWidget {
                             IconButton(
                               onPressed: () {
                                 context.go('/home_screen');
-                              }, 
+                              },
                               icon: const Icon(Icons.arrow_back, color: Colors.white),
                             ),
-                                    
                             Expanded(child: Container()),
-                                    
                             IconButton(
                               onPressed: () {
                                 context.go('/home_screen');
-                              }, 
+                              },
                               icon: const Icon(Icons.add, color: Colors.white),
                             ),
                           ],
                         ),
                       ),
-                
                       SizedBox(height: MediaQuery.of(context).size.height * 0.05),
-                      
-                      //Nombre del viaje
+                      // Nombre del viaje
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: SizedBox(
                           width: double.infinity,
                           child: Text(
-                            "Mi viaje ${tripState.trip!.tripName}", 
+                            trip != null
+                                ? "Mi viaje ${trip!.tripName}"
+                                : "Cargando viaje...",
                             textAlign: TextAlign.start,
                             style: const TextStyle(
-                              color: Colors.white, 
-                              fontSize: 30, 
-                              fontWeight: FontWeight.w300, 
+                              color: Colors.white,
+                              fontSize: 30,
+                              fontWeight: FontWeight.w300,
                               overflow: TextOverflow.ellipsis,
-                            )
+                            ),
                           ),
                         ),
                       ),
-                
                       const SizedBox(height: 20),
-               
-                      //Dias restantes
+                      // Días restantes
                       Row(
                         children: [
                           Container(
@@ -97,9 +108,8 @@ class HomeTripScreen extends ConsumerWidget {
                             width: MediaQuery.of(context).size.width * 0.4,
                             color: Colors.deepOrange,
                           ),
-                
                           Container(
-                            padding: const  EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                             width: MediaQuery.of(context).size.width * 0.5,
                             decoration: BoxDecoration(
                               color: Colors.deepOrange,
@@ -107,14 +117,10 @@ class HomeTripScreen extends ConsumerWidget {
                             ),
                             child: Text(
                               tripState.dayRemaining,
-                              textAlign: TextAlign.center, 
-                              style: const TextStyle(
-                                color: Colors.white, 
-                                fontSize: 20
-                              )
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(color: Colors.white, fontSize: 20),
                             ),
                           ),
-                
                           Container(
                             height: 2,
                             width: MediaQuery.of(context).size.width * 0.1,
@@ -122,50 +128,45 @@ class HomeTripScreen extends ConsumerWidget {
                           ),
                         ],
                       ),
-               
                       const SizedBox(height: 50),
-               
-                      //Te sugerimos
+                      // Te sugerimos
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          width: double.infinity,                        
+                          width: double.infinity,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(color: Colors.white),
-                          ),                       
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [       
+                            children: [
                               const Text(
-                                "Te sugerimos", 
-                                style: TextStyle(
-                                  color: Colors.white, 
-                                  fontSize: 20
-                                )
+                                "Te sugerimos",
+                                style: TextStyle(color: Colors.white, fontSize: 20),
                               ),
-                              
                               const SizedBox(height: 6),
-               
-                              Container(
+                              SizedBox(
                                 height: 80,
                                 child: ListView.builder(
                                   scrollDirection: Axis.horizontal,
-                                  physics: const NeverScrollableScrollPhysics(),
                                   itemCount: tripState.categories.length,
-                                  itemBuilder: (context, index){
+                                  itemBuilder: (context, index) {
                                     return Padding(
-                                      padding: const EdgeInsets.only(right: 4, left: 4),
+                                      padding: const EdgeInsets.symmetric(horizontal: 4),
                                       child: CustomSuggestButton(
                                         category: tripState.categories[index],
-                                        onTap: (){
-                                          ref.watch(findActivityProvider.notifier).onCategoryHomeChange(tripState.categories[index]);
+                                        onTap: () {
+                                          ref
+                                              .watch(findActivityProvider.notifier)
+                                              .onCategoryHomeChange(
+                                                  tripState.categories[index]);
                                           context.go('/find_activity_screen');
-                                        }
+                                        },
                                       ),
                                     );
-                                  }
+                                  },
                                 ),
                               ),
                               const SizedBox(height: 5),
@@ -173,113 +174,80 @@ class HomeTripScreen extends ConsumerWidget {
                           ),
                         ),
                       ),
-               
                       const SizedBox(height: 20),
-               
-                      //Mis archivos
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          width: double.infinity,                         
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: Colors.white),
-                          ),                        
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              
-                              const Text(
-                                "Mis archivos", 
-                                style: TextStyle(
-                                  color: Colors.white, 
-                                  fontSize: 20
-                                )
-                              ),
-                              
-                              const SizedBox(height: 10),
-               
-                              SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-
-                                    
-                                    
-                                  ],
-                                ),
-                              ),                         
-                              const SizedBox(height: 5),
-                            ],
-                          ),
-                        ),
+                      // Mis archivos
+                      buildSection(
+                        title: "Mis archivos",
+                        children: [], // Añadir tus widgets aquí
                       ),
-                      
                       const SizedBox(height: 20),
-               
-                      //Guardados
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          width: double.infinity,                     
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: Colors.white),
-                          ),                        
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              
-                              const Text(
-                                "Guardados", 
-                                style: TextStyle(
-                                  color: Colors.white, 
-                                  fontSize: 20
-                                )
-                              ),
-                              
-                              const SizedBox(height: 10),
-               
-                              SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                
-                                  ],
-                                ),
-                              ),
-                              
-                              const SizedBox(height: 5),
-                            ],
-                          ),
-                        ),
+                      // Guardados
+                      buildSection(
+                        title: "Guardados",
+                        children: [], // Añadir tus widgets aquí
                       ),
                       const SizedBox(height: 40),
                     ],
                   ),
                 ),
-                           ),
-             ), 
+              ),
+            ),
           ),
+
+          Visibility(
+            visible: tripState.isPosting,
+            child: Container(
+              color: Colors.black.withOpacity(0.5),
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          )
         ],
       ),
-
-
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
-        onPressed: (){
-          context.push('/calendar_screen');   
-        }, 
+        onPressed: () async {
+          await ref.read(tripProvider.notifier).getEvents();
+          context.push('/calendar_screen');
+        },
         backgroundColor: Colors.deepOrange,
         shape: const CircleBorder(),
         child: const Icon(Icons.calendar_today),
       ),
       bottomNavigationBar: const CustomBottomNavigationBar(),
+    );
+  }
 
+  Padding buildSection({required String title, required List<Widget> children}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        width: double.infinity,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            const SizedBox(height: 10),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: children,
+              ),
+            ),
+            const SizedBox(height: 5),
+          ],
+        ),
+      ),
     );
   }
 }

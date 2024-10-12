@@ -72,6 +72,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final resp = await authRepository.checkAuthStatus(token); //Hacemos el trabajo de ver si el usuario esta autentificado o no.
       
       print(resp.data['user']);
+      print(token);
       
       if (resp.statusCode == 200){
         

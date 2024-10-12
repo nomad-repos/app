@@ -5,6 +5,7 @@ import 'package:nomad_app/features/trips/trip.dart';
 import 'dart:io';
 import 'package:nomad_app/shared/shared.dart';
 import 'package:nomad_app/shared/widgets/trip/day_widget.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../../../../helpers/services/services.dart';
 
@@ -37,10 +38,10 @@ class TripNotifier extends StateNotifier<TripState> {
     final daysFromEnd = tripEndDate.difference(DateTime.now()).inDays;
 
     final String text = daysFromStart > 0
-        ? daysFromEnd > 0
-            ? 'Faltan $daysFromStart días'
-            : 'Estas en tu viaje'
-        : 'Tu viaje terminó';
+        ? 'Faltan $daysFromStart días'
+        : daysFromEnd > 0 
+            ? 'Estas en tu viaje'
+            : 'Tu viaje terminó';
 
     final List<Location>? locations = await getLocations(trip.tripId);
 
@@ -72,7 +73,6 @@ class TripNotifier extends StateNotifier<TripState> {
     state = state.copyWith(
       daySelected: day,
     );
-    print(state.daySelected);
   }
 
 
@@ -103,12 +103,9 @@ class TripNotifier extends StateNotifier<TripState> {
     try {
       final token = await keyValueStorage.getValue<String>('token');
 
-      final resp = await tripRepository.getCategories(
-          token!); // Si o si hay un token porque si no hay token no se puede acceder a esta pantalla.
+      final resp = await tripRepository.getCategories(token!); 
 
       if (resp.statusCode == 200) {
-
-        // Mapeo de la lista de países desde el JSON a objetos Country
         categories = (resp.data['categories'] as List).map((category) {
           return Category.fromJson(category);
         }).toList();
@@ -121,13 +118,49 @@ class TripNotifier extends StateNotifier<TripState> {
     return categories;
   }
 
+  Future<List<GetEvent>?> getEvents() async {
+    List<GetEvent>? events;
+    try {
+      final token = await keyValueStorage.getValue<String>('token');
+
+      final resp = await tripRepository.getAllEvent(state.trip!.tripId, token!); 
+
+      events = (resp.data['events'] as List).map((event) {
+        return GetEvent.fromJson(event);
+      }).toList();
+
+      state = state.copyWith(events: events);
+
+    } catch (e) {
+      //TODO: Manejar los errores
+    }
+    return events;
+  }
+
+
+  List<Appointment> getAppointments(List<GetEvent> events) {
+  return events.map((event) {
+    return Appointment(
+      startTime: DateTime.parse(event.date + ' ' + event.startTime), // Combinamos la fecha y la hora de inicio
+      endTime: DateTime.parse(event.date + ' ' + event.finishTime),  // Combinamos la fecha y la hora de finalización
+      subject: event.title,
+      notes: event.eventDescription,
+      id: event.eventId,
+    );
+  }).toList();
+}
+
+
+
+
   void selectCategory(String categoryName) {
     state = state.copyWith(selectedCategory: categoryName);
-    print('Selected Category: $categoryName');
   }
 }
 
 class TripState {
+  final bool isPosting;
+  
   final Trip? trip;
   final String dayRemaining;
   final DateTime? daySelected;  
@@ -135,16 +168,24 @@ class TripState {
   final List<Category> categories;
   final String selectedCategory;
 
+  final List<GetEvent> events;
+
   TripState({
+    this.isPosting = false,
+
     this.trip,
     this.dayRemaining = '',
     this.daySelected,
     
     this.selectedCategory = '',
     this.categories = const [],
+
+    this.events = const [],
   });
 
   TripState copyWith({
+    bool? isPosting,
+
     Trip? trip,
     String? dayRemaining, 
     DateTime? daySelected,
@@ -152,12 +193,18 @@ class TripState {
     List<Category>? categories,
     String? selectedCategory,
 
+    List<GetEvent>? events,
+
   }) => TripState(
+    isPosting: isPosting ?? this.isPosting,
+
     trip: trip ?? this.trip,
     dayRemaining: dayRemaining ?? this.dayRemaining,
     daySelected: daySelected ?? this.daySelected,
 
     categories: categories ?? this.categories,
     selectedCategory: selectedCategory ?? this.selectedCategory,
+
+    events: events ?? this.events,
   );
 }

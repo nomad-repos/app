@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nomad_app/features/trips/presentation/presentation.dart';
+import 'package:nomad_app/shared/models/appointment.dart';
 import 'package:nomad_app/shared/shared.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
@@ -32,9 +34,6 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final trip = ref.watch(tripProvider);
-    
-
     // Move ref.listen into the build method
     ref.listen<TripState>(tripProvider, (previous, next) {
       if (previous?.daySelected != next.daySelected && next.daySelected != null) {
@@ -77,12 +76,73 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                     child: SfCalendar(
                       controller: _controller,
                       view: CalendarView.day,
+                      dataSource: GetEventDataSource(ref.watch(tripProvider).events),
                       onViewChanged: (viewChangedDetails) {
                         // Schedule the state change after the build phase
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           ref.read(tripProvider.notifier).selectDay(viewChangedDetails.visibleDates[0].toLocal());
                         });
                       },
+
+                      onTap: (calendarTapDetails) {
+                        final appointment = calendarTapDetails.appointments!.first as GetEvent;
+                        context.push('/map_activity_screen', extra: appointment);
+                      },
+
+                     appointmentBuilder: (context, calendarAppointmentDetails) {
+                      final appointment = calendarAppointmentDetails.appointments.first as GetEvent;
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: Colors.deepOrange,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded( // Ajustamos la columna con un Expanded
+                              flex: 1,
+                              child: Column(                                
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Expanded(child: Container()),
+                                  Text(
+                                    appointment.title,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    overflow: TextOverflow.ellipsis, // Evitar desbordamientos
+                                  ),
+                                  Text(
+                                    '${appointment.startTime} - ${appointment.finishTime}',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  Expanded(child: Container()),
+                                ],
+                              ),
+                            ),
+                            Expanded( // Ajustamos el texto de la descripción con un Expanded
+                              flex: 1,
+                              child: Center(
+                                child: Text(
+                                  appointment.eventDescription,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    overflow: TextOverflow.ellipsis, // Acortamos si se desborda
+                                  ),
+                                  maxLines: 2, // Limitar a una línea para evitar desbordes
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+
                               
                       backgroundColor: Colors.transparent,
                       cellBorderColor: Colors.transparent,

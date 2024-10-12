@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nomad_app/features/trips/trip.dart';
 import 'package:nomad_app/shared/shared.dart';
@@ -15,6 +16,8 @@ class _FindActivityScreenState extends ConsumerState<FindActivityScreen> {
   @override
   Widget build(BuildContext context) {
     final trip = ref.watch(tripProvider);
+    final createEvent = ref.watch(createEventProvider.notifier);
+
     final findActivity = ref.watch(findActivityProvider);
 
     return Scaffold(
@@ -23,9 +26,23 @@ class _FindActivityScreenState extends ConsumerState<FindActivityScreen> {
         children: [
           _buildBackgroundImage(),
           _buildDarkOverlay(),
-          _buildContent(context, trip, findActivity),
+          _buildContent(context, trip, findActivity, createEvent),
+
+          _buildVisibility(findActivity),
         ],
       ),
+    );
+  }
+
+  Widget _buildVisibility(FindActivityState findActivity) {
+    return Visibility(
+      visible: findActivity.isPosting,
+      child: Container(
+        color: Colors.black.withOpacity(0.5),
+        child: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      )
     );
   }
 
@@ -50,24 +67,24 @@ class _FindActivityScreenState extends ConsumerState<FindActivityScreen> {
 
   // Main content with SliverAppBar and SliverList
   Widget _buildContent(
-      BuildContext context, TripState trip, FindActivityState findActivity) {
+      BuildContext context, TripState trip, FindActivityState findActivity, CreateEventNotifier createEvent) {
     return CustomScrollView(
       slivers: [
-        _buildSliverAppBar(context, trip, findActivity),
-        _buildSliverList(context, findActivity),
+        _buildSliverAppBar(context, trip, findActivity, createEvent),
+        _buildSliverList(context, findActivity,createEvent),
       ],
     );
   }
 
 // SliverAppBar with search dropdowns and back button
   Widget _buildSliverAppBar(
-      BuildContext context, TripState trip, FindActivityState findActivity) {
+      BuildContext context, TripState trip, FindActivityState findActivity, CreateEventNotifier createEvent) {
     return SliverAppBar(
       expandedHeight: MediaQuery.of(context).size.height * 0.27,
       backgroundColor: Colors.transparent,
       flexibleSpace: FlexibleSpaceBar(
         background: _buildFlexibleSpace(
-            context, trip, findActivity), // Content of the AppBar
+            context, trip, findActivity, createEvent), // Content of the AppBar
       ),
     );
   }
@@ -89,7 +106,7 @@ class _FindActivityScreenState extends ConsumerState<FindActivityScreen> {
 
 // FlexibleSpace content (Dropdowns + Header Text)
   Widget _buildFlexibleSpace(
-      BuildContext context, TripState trip, FindActivityState findActivity) {
+      BuildContext context, TripState trip, FindActivityState findActivity, CreateEventNotifier createEvent) {
     return Padding(
       padding: const EdgeInsets.only(
           left: 10, right: 10, top: 10), // Adjust padding to align with leading
@@ -106,7 +123,7 @@ class _FindActivityScreenState extends ConsumerState<FindActivityScreen> {
           const SizedBox(height: 16), // Space between title and dropdown
           _buildCategorySearch(context, trip, findActivity), // First dropdown
           const SizedBox(height: 10), // Space between dropdowns
-          _buildLocationSearch(context, trip, findActivity), // Second dropdown
+          _buildLocationSearch(context, trip, findActivity, createEvent), // Second dropdown
         ],
       ),
     );
@@ -151,7 +168,7 @@ class _FindActivityScreenState extends ConsumerState<FindActivityScreen> {
   }
 
   Widget _buildLocationSearch(
-      BuildContext context, TripState trip, FindActivityState findActivity) {
+      BuildContext context, TripState trip, FindActivityState findActivity, CreateEventNotifier createEvent) {
     return Align(
       alignment: Alignment.center,
       child: Container(
@@ -169,24 +186,23 @@ class _FindActivityScreenState extends ConsumerState<FindActivityScreen> {
                 ),
                 child: CustomSearchDD(
                   list: trip.trip!.tripLocations!,
-                  texto: 'Seleccionar localidad',
+                  texto: findActivity.selectedLocation == null
+                      ? "Seleccionar localidad"
+                      : findActivity.selectedLocation!.localityName,
                   searchText: 'Buscar localidad',
                 ),
               ),
             ),
-            const SizedBox(
-                width: 10), // Add some space between dropdown and button
+            const SizedBox(width: 10), // Add some space between dropdown and button
 
             // "Buscar" button
-            Container(
+            SizedBox(
               height: MediaQuery.of(context).size.width * 0.13,
               child: ElevatedButton(
                 onPressed: () {
-                  ref.watch(findActivityProvider.notifier).getActivities(
-                      '${findActivity.selectedLocation!.latitude},${findActivity.selectedLocation!.longitude}',
-                      findActivity.selectedCategory!.categoryId);
+                  ref.watch(findActivityProvider.notifier).getActivities(context);
 
-                  _buildSliverList(context, findActivity);
+                  _buildSliverList(context, findActivity, createEvent);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.deepOrange,
@@ -209,13 +225,13 @@ class _FindActivityScreenState extends ConsumerState<FindActivityScreen> {
   }
 }
 
-Widget _buildSliverList(BuildContext context, FindActivityState findActivity) {
+Widget _buildSliverList(BuildContext context, FindActivityState findActivity, CreateEventNotifier createEvent) {
   return SliverList(
     delegate: SliverChildBuilderDelegate(
       (BuildContext context, int index) {
         if (findActivity.activities != null &&
             findActivity.activities!.isNotEmpty) {
-          return _buildActivityItem(context, findActivity.activities![index]);
+          return _buildActivityItem(context, findActivity.activities![index], createEvent);
         } else {
           return const Padding(
             padding: EdgeInsets.only(left: 5),
@@ -235,7 +251,7 @@ Widget _buildSliverList(BuildContext context, FindActivityState findActivity) {
 }
 
 // Build individual activity item
-Widget _buildActivityItem(BuildContext context, Activity activity) {
+Widget _buildActivityItem(BuildContext context, Activity activity, CreateEventNotifier createEvent) {
   return Padding(
     padding: const EdgeInsets.all(11),
     child: Container(
@@ -261,7 +277,10 @@ Widget _buildActivityItem(BuildContext context, Activity activity) {
           ),
         ),
         onPressed: () {
-          //aca tiene que ir a la pantalla de la actividad
+          
+          createEvent.selectActivity(activity);
+          context.push('/create_event_screen');
+
         },
       ),
     ),

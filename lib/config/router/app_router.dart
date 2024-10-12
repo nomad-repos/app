@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:nomad_app/features/home/home.dart';
 import 'package:nomad_app/features/trips/trip.dart';
+import 'package:nomad_app/shared/models/models.dart';
 
 import '../../features/auth/auth.dart';
 import 'app_router_notifier.dart';
@@ -75,7 +76,10 @@ final goRouterProvider = Provider((ref) {
 
         GoRoute(
           path: "/map_activity_screen",
-          builder: (context, state) => const MapActivityScreen(),
+          builder: (context, state){
+            final GetEvent? getEvent = state.extra as GetEvent?;
+            return MapActivityScreen(getEvent: getEvent);
+          }
         ),
         
         GoRoute(
