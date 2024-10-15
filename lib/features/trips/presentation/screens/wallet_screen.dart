@@ -28,7 +28,7 @@ class WalletScreen extends StatelessWidget {
         backgroundColor: Colors.deepOrange,
         child: const Icon(Icons.add)
       ),
-      bottomNavigationBar: CustomBottomNavigationBar(),
+      bottomNavigationBar: const CustomBottomNavigationBar(),
     );
   }
 }

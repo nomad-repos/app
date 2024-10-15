@@ -184,7 +184,7 @@ class _MapActivityScreenState extends ConsumerState<MapActivityScreen> {
                       IconButton(
                         icon: const Icon(Icons.edit),
                         onPressed: () {
-                          context.pop();
+                           ref.watch(createEventProvider.notifier).onEditChange( getEvent!, context);
                         },
                       ),
                       IconButton(

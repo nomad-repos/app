@@ -9,4 +9,6 @@ abstract class TripDs {
 
   Future getCategories(String token);
   Future getActivites(String token, String localityLocation, int categoryId);
+  //TODO: ver los parametros que lleva
+  Future updateEvent();
 }

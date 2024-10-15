@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -38,15 +40,35 @@ class CreateEventNotifier extends StateNotifier<CreateEventState> {
     required this.errorProvider,
   }): super( CreateEventState());
 
-  void loadEventForEdit() {
+  void loadEventForEdit( GetEvent getEvent ) {
     // Inicializar el estado con los valores del evento
     state = state.copyWith(
-      name: state.event!.eventTitle,
-      description: '', // Aca debería haber un campo de descripción.
-      date: state.event!.eventDate,
-      startTime: TimeOfDay.fromDateTime(state.event!.eventStartTime),
-      endTime: TimeOfDay.fromDateTime(state.event!.eventFinishTime),
+      name: getEvent.title,
+      description: getEvent.eventDescription,
+      date: HttpDate.parse(getEvent.date),
+      startTime: parseTimeOfDay(getEvent.startTime),
+      endTime: parseTimeOfDay(getEvent.finishTime),
     );
+  }
+
+  TimeOfDay parseTimeOfDay(String timeString) {
+    // Dividir el string en partes separadas por ':'
+    List<String> parts = timeString.split(':');
+    
+    // Verificar que al menos haya horas y minutos
+    if (parts.length >= 2) {
+      int hour = int.parse(parts[0]);
+      int minute = int.parse(parts[1]);
+
+      // Validar que las horas y minutos estén dentro del rango válido
+      if (hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59) {
+        return TimeOfDay(hour: hour, minute: minute);
+      } else {
+        throw const FormatException('Hora o minuto fuera de rango');
+      }
+    } else {
+      throw const FormatException('Formato de tiempo incorrecto');
+    }
   }
 
   
@@ -55,6 +77,25 @@ class CreateEventNotifier extends StateNotifier<CreateEventState> {
   void onDateChanged(DateTime date) {state = state.copyWith(date: date);}
   void onStartTimeChanged(TimeOfDay? startTime) {state = state.copyWith(startTime: startTime);}
   void onEndTimeChanged(TimeOfDay? endTime) {state = state.copyWith(endTime: endTime);}
+
+  void onEditChange( GetEvent getEvent, BuildContext context) async {
+    loadEventForEdit( getEvent );
+    state = state.copyWith(
+      isEditing: true,
+      getEvent: getEvent,
+    );
+    context.push('/create_event_screen');
+  }
+
+  void onCreateChange(){
+    state = state.copyWith(
+      isEditing: false,
+      name: '',
+      description: '',
+      startTime: null, 
+      endTime: null,
+    );
+  }
 
   void validateForm() {
     final isValid = state.name.isNotEmpty && state.description.isNotEmpty && state.date != null && state.startTime != null && state.endTime != null;
@@ -83,31 +124,52 @@ class CreateEventNotifier extends StateNotifier<CreateEventState> {
     state = state.copyWith(isPosting: true);
 
     try {
+      
       final token = await keyValueStorage.getValue<String>('token');
       final event = createObjectEvent();
       final activity = state.activity!; 
       final int locationId = tripNotifier.state.trip!.tripId;
+ 
+      await tripRepository.createEvent(event, activity, token!, locationId);
+      await tripNotifier.getEvents();
+      context.push('/home_trip_screen');
 
-      if (state.isEditing) {
 
-      } else {
-        await tripRepository.createEvent(event, activity, token!, locationId);
-        await tripNotifier.getEvents();
-        context.push('/home_trip_screen');
-      }
     } catch (e) {
       errorProvider.setError(ErrorTripStatus.errorCreatingEvent, null);
     } finally {
       state = state.copyWith(isPosting: false);
     }
+  }
 
+  void updateEvent( BuildContext context ) async {
+    validateForm();
+    if (!state.isValid){
+      errorProvider.setError(ErrorTripStatus.errorInvalidForm, null);
+      return;
+    }
+    
+    state = state.copyWith(isPosting: true);
+
+    try {
+      final token = await keyValueStorage.getValue<String>('token');
+
+      // Terminar esta funcion.
+      await tripRepository.updateEvent();
+      await tripNotifier.getEvents();
+      context.push('/home_trip_screen');
+
+
+    } catch (e) {
+      errorProvider.setError(ErrorTripStatus.errorCreatingEvent, null);
+    } finally {
+      state = state.copyWith(isPosting: false);
+    }
   }
 
   void selectActivity(Activity activity) {
     state = state.copyWith(activity: activity);
   }
-
-  
 }
 
 class CreateEventState {
@@ -123,6 +185,7 @@ class CreateEventState {
 
   final Event? event;
   final Activity? activity;
+  final GetEvent? getEvent; 
 
   CreateEventState({
     this.isPosting = false,
@@ -137,6 +200,7 @@ class CreateEventState {
 
     this.event,
     this.activity,
+    this.getEvent,
   });
 
   CreateEventState copyWith({
@@ -152,6 +216,7 @@ class CreateEventState {
 
     Event? event,
     Activity? activity,
+    GetEvent? getEvent, 
 
   }) => CreateEventState(
     isPosting: isPosting ?? this.isPosting,
@@ -166,5 +231,6 @@ class CreateEventState {
 
     event: event ?? this.event,
     activity: activity ?? this.activity,
+    getEvent: getEvent ?? this.getEvent,
   );
 }

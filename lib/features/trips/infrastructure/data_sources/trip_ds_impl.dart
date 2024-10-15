@@ -219,5 +219,11 @@ class TripDSimpl implements TripDs {
       throw Exception();
     }
   }
+  
+  @override
+  Future updateEvent() {
+    // TODO: implement updateEvent
+    throw UnimplementedError();
+  }
 }
       
