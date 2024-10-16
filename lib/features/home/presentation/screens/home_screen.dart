@@ -122,7 +122,7 @@ class ScrollHome extends ConsumerWidget {
         const Padding(
           padding: EdgeInsets.only(right:10, top:10, left: 13),
           child: CustomHomeText(
-            label: 'Mis Viajes',
+            label: 'Mis Proximos Viajes',
           ),
         ),
 
@@ -318,46 +318,51 @@ class TripSquare extends ConsumerWidget {
         tripNotifier.setTrip(trip);
         context.push('/home_trip_screen');
       },
-      child: Stack(
-        children: [
-          Padding(
-            padding: EdgeInsets.only(right: 10, left: index == 0 ? 13 : 0),
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.17,
-              width: MediaQuery.of(context).size.height * 0.17,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                image: DecorationImage(
-                  image: NetworkImage(trip.photoUrl),
-                  fit: BoxFit.cover,
-                )
-              ), 
-            ),
-          ),
-      
-           Positioned(
-            top: 5,
-            left: 20,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: Colors.white, width: 1),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Text(
-                  trip.tripName,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    overflow: TextOverflow.ellipsis,
+        child: Stack(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(right: 10, left: index == 0 ? 13 : 0),
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.17,
+                width: MediaQuery.of(context).size.height * 0.17,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  image: DecorationImage(
+                    image: NetworkImage(trip.photoUrl),
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),
-            )
-          ),
-        ],
-      ),
+            ),
+        
+            SizedBox(
+              width:MediaQuery.of(context).size.height * 0.15,
+              child: Align(
+                alignment: Alignment.topLeft, // Alinea el texto a la izquierda
+                child: Container(
+                  margin: EdgeInsets.only(top: 10, left: index == 0 ? 23 : 10), // Asegura el mismo espacio para todos
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(color: Colors.white, width: 1),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Text(
+                      trip.tripName,
+                      maxLines: 1, 
+                      overflow: TextOverflow.ellipsis,  // Muestra puntos suspensivos si el texto es largo
+                      softWrap: false,
+                      style: const TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
     );
   }
 }

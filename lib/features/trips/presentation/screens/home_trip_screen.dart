@@ -32,6 +32,7 @@ class _HomeTripScreenState extends ConsumerState<HomeTripScreen> {
   @override
   Widget build(BuildContext context) {
     final tripState = ref.watch(tripProvider);
+    trip = tripState.trip;
 
     return Scaffold(
       extendBody: true,
@@ -40,7 +41,7 @@ class _HomeTripScreenState extends ConsumerState<HomeTripScreen> {
           Positioned.fill(
             child: Image.asset(
               'assets/registro.jpg',
-              fit: BoxFit.fill,
+              fit: BoxFit.fitHeight,
             ),
           ),
           Positioned.fill(
@@ -65,9 +66,12 @@ class _HomeTripScreenState extends ConsumerState<HomeTripScreen> {
                           children: [
                             IconButton(
                               onPressed: () {
+                                // ignore: unused_result
+                                ref.refresh(tripProvider);
                                 context.go('/home_screen');
                               },
-                              icon: const Icon(Icons.arrow_back, color: Colors.white),
+                              icon: const Icon(Icons.arrow_back,
+                                  color: Colors.white),
                             ),
                             Expanded(child: Container()),
                             IconButton(
@@ -79,27 +83,26 @@ class _HomeTripScreenState extends ConsumerState<HomeTripScreen> {
                           ],
                         ),
                       ),
-                      SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+                      SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.045),
                       // Nombre del viaje
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        padding: const EdgeInsets.symmetric(horizontal: 22),
                         child: SizedBox(
                           width: double.infinity,
                           child: Text(
-                            trip != null
-                                ? "Mi viaje ${trip!.tripName}"
-                                : "Cargando viaje...",
+                            trip != null ? trip!.tripName : "Cargando viaje...",
                             textAlign: TextAlign.start,
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 30,
-                              fontWeight: FontWeight.w300,
+                              fontWeight: FontWeight.w500,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 35),
                       // Días restantes
                       Row(
                         children: [
@@ -109,7 +112,8 @@ class _HomeTripScreenState extends ConsumerState<HomeTripScreen> {
                             color: Colors.deepOrange,
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 12),
                             width: MediaQuery.of(context).size.width * 0.5,
                             decoration: BoxDecoration(
                               color: Colors.deepOrange,
@@ -118,7 +122,10 @@ class _HomeTripScreenState extends ConsumerState<HomeTripScreen> {
                             child: Text(
                               tripState.dayRemaining,
                               textAlign: TextAlign.center,
-                              style: const TextStyle(color: Colors.white, fontSize: 20),
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 21,
+                                  fontWeight: FontWeight.w400),
                             ),
                           ),
                           Container(
@@ -128,12 +135,13 @@ class _HomeTripScreenState extends ConsumerState<HomeTripScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 50),
+                      const SizedBox(height: 45),
                       // Te sugerimos
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
                           width: double.infinity,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(16),
@@ -144,7 +152,8 @@ class _HomeTripScreenState extends ConsumerState<HomeTripScreen> {
                             children: [
                               const Text(
                                 "Te sugerimos",
-                                style: TextStyle(color: Colors.white, fontSize: 20),
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 20),
                               ),
                               const SizedBox(height: 6),
                               SizedBox(
@@ -154,12 +163,14 @@ class _HomeTripScreenState extends ConsumerState<HomeTripScreen> {
                                   itemCount: tripState.categories.length,
                                   itemBuilder: (context, index) {
                                     return Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 4),
                                       child: CustomSuggestButton(
                                         category: tripState.categories[index],
                                         onTap: () {
                                           ref
-                                              .watch(findActivityProvider.notifier)
+                                              .watch(
+                                                  findActivityProvider.notifier)
                                               .onCategoryHomeChange(
                                                   tripState.categories[index]);
                                           context.go('/find_activity_screen');
@@ -169,31 +180,30 @@ class _HomeTripScreenState extends ConsumerState<HomeTripScreen> {
                                   },
                                 ),
                               ),
-                              const SizedBox(height: 5),
+                              const SizedBox(height: 6),
                             ],
                           ),
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 25),
                       // Mis archivos
                       buildSection(
                         title: "Mis archivos",
                         children: [], // Añadir tus widgets aquí
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 25),
                       // Guardados
                       buildSection(
                         title: "Guardados",
                         children: [], // Añadir tus widgets aquí
                       ),
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
               ),
             ),
           ),
-
           Visibility(
             visible: tripState.isPosting,
             child: Container(
@@ -206,20 +216,25 @@ class _HomeTripScreenState extends ConsumerState<HomeTripScreen> {
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await ref.read(tripProvider.notifier).getEvents();
-          context.push('/calendar_screen');
-        },
-        backgroundColor: Colors.deepOrange,
-        shape: const CircleBorder(),
-        child: const Icon(Icons.calendar_today),
+      floatingActionButton: SizedBox(
+        width: 70,
+        height: 65,
+        child: FloatingActionButton(
+          onPressed: () async {
+            await ref.read(tripProvider.notifier).getEvents();
+            context.push('/calendar_screen');
+          },
+          backgroundColor: Colors.deepOrange,
+          shape: const CircleBorder(),
+          child:  const Icon(Icons.calendar_today, color: Colors.white,),
+        ),
       ),
       bottomNavigationBar: const CustomBottomNavigationBar(),
     );
   }
 
-  Padding buildSection({required String title, required List<Widget> children}) {
+  Padding buildSection(
+      {required String title, required List<Widget> children}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(

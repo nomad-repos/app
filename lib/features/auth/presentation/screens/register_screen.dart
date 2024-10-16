@@ -35,77 +35,75 @@ class RegisterScreen extends ConsumerWidget {
             ),
           ),
           SafeArea(
-            child: SingleChildScrollView(
-              child: SizedBox(
-                width: double.infinity,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(height: MediaQuery.of(context).size.height * 0.1), // Espacio adicional en la parte superior
-                      const Text('Convertite en',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w200,
-                              fontSize: 25)),
-                      
-                      const Text('nomad.',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 40)),
-                      
-                      const SizedBox(height: 50), // Espacio antes de los campos de texto
-                      
-                      CustomTextFormFieldAuth(
-                        hint: 'Nombre',
-                        keyboardType: TextInputType.name,
-                        onChanged: (value) => ref.read(registerFormProvider.notifier).onNameChange(value),
-                        errorMessage: registerForm.isFormPosted ? registerForm.name.errorMessage : null,
-                      ),
-                      
-                      const SizedBox(height: 30),
-                
-                      CustomTextFormFieldAuth(
-                        hint: 'Apellido',
-                        keyboardType: TextInputType.name,
-                        onChanged: (value) => ref.read(registerFormProvider.notifier).onSurnameChange(value),
-                        errorMessage: registerForm.isFormPosted ? registerForm.surname.errorMessage : null,
-                      ),
-                
-                      const SizedBox(height: 30),
-                
-                      CustomTextFormFieldAuth(
-                        hint: 'Email',
-                        keyboardType: TextInputType.emailAddress,
-                        onChanged: (value) => ref.read(registerFormProvider.notifier).onEmailChange(value),
-                        errorMessage: registerForm.isFormPosted ? registerForm.email.errorMessage : null,
-                      ),
-                
-                      const SizedBox(height: 30),
-                
-                      CustomTextFormFieldAuth(
-                        hint: 'Contraseña',
-                        obscureText: true,
-                        onChanged: (value) => ref.read(registerFormProvider.notifier).onPasswordChanged(value),
-                        errorMessage: registerForm.isFormPosted ? registerForm.password.errorMessage : null,
-                      ),
-                      SizedBox(height: 50),
-                       // Espacio antes del botón
-                      CustomFilledButton(
-                        text: 'Unirme',
-                        width: double.infinity,
-                        onPressed: () {
-                          ref.read(registerFormProvider.notifier).onFormSubmit();    
-                          FocusScope.of(context).unfocus();
-                        },
-                      ),
-                
-                      SizedBox(height: MediaQuery.of(context).size.height * 0.1), // Espacio adicional en la parte inferior
+            child: SizedBox(
+              width: double.infinity,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.1), // Espacio adicional en la parte superior
+                    const Text('Convertite en',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w200,
+                            fontSize: 25)),
                     
-                    ],
-                  ),
+                    const Text('nomad.',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 40)),
+                    
+                    const SizedBox(height: 50), // Espacio antes de los campos de texto
+                    
+                    CustomTextFormFieldAuth(
+                      hint: 'Nombre',
+                      keyboardType: TextInputType.name,
+                      onChanged: (value) => ref.read(registerFormProvider.notifier).onNameChange(value),
+                      errorMessage: registerForm.isFormPosted ? registerForm.name.errorMessage : null,
+                    ),
+                    
+                    const SizedBox(height: 30),
+              
+                    CustomTextFormFieldAuth(
+                      hint: 'Apellido',
+                      keyboardType: TextInputType.name,
+                      onChanged: (value) => ref.read(registerFormProvider.notifier).onSurnameChange(value),
+                      errorMessage: registerForm.isFormPosted ? registerForm.surname.errorMessage : null,
+                    ),
+              
+                    const SizedBox(height: 30),
+              
+                    CustomTextFormFieldAuth(
+                      hint: 'Email',
+                      keyboardType: TextInputType.emailAddress,
+                      onChanged: (value) => ref.read(registerFormProvider.notifier).onEmailChange(value),
+                      errorMessage: registerForm.isFormPosted ? registerForm.email.errorMessage : null,
+                    ),
+              
+                    const SizedBox(height: 30),
+              
+                    CustomTextFormFieldAuth(
+                      hint: 'Contraseña',
+                      obscureText: true,
+                      onChanged: (value) => ref.read(registerFormProvider.notifier).onPasswordChanged(value),
+                      errorMessage: registerForm.isFormPosted ? registerForm.password.errorMessage : null,
+                    ),
+                    SizedBox(height: 50),
+                     // Espacio antes del botón
+                    CustomFilledButton(
+                      text: 'Unirme',
+                      width: double.infinity,
+                      onPressed: () {
+                        ref.read(registerFormProvider.notifier).onFormSubmit(context);    
+                        FocusScope.of(context).unfocus();
+                      },
+                    ),
+              
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.1), // Espacio adicional en la parte inferior
+                  
+                  ],
                 ),
               ),
             ),
