@@ -11,55 +11,102 @@ class CustomBottomNavigationBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final indexBottomNavbar = ref.watch(indexBottomNavbarProvider);
 
-    return  ClipRRect(                                                            
-          borderRadius: const BorderRadius.only(                                           
-          topLeft: Radius.circular(30.0),                                            
-          topRight: Radius.circular(30.0),                                           
-        ),   
-        child: BottomNavigationBar(
-          currentIndex: indexBottomNavbar,
-          onTap: (value) {
-            ref.read(indexBottomNavbarProvider.notifier).update((state) => value);
-        
-            switch (value) {
-              case 0:
-                context.replace('/home_trip_screen');
-                break;
-              case 1:
-                context.replace('/wallet_screen');
-                break;
-              case 2:
-                break;
-              case 3:
-                break;
-            }
-          },
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(25),
+        topRight: Radius.circular(25.0),
+      ),
+      child: BottomAppBar(
+        color: Colors.white,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween, // Espacio entre los íconos
+          children: [
+            _buildBottomNavItem(
+              context,
+              icon: Icons.home,
               label: 'Inicio',
+              index: 0,
+              currentIndex: indexBottomNavbar,
+              paddingLeft: 15,
+              ref: ref,
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.attach_money),
+            _buildBottomNavItem(
+              context,
+              icon: Icons.attach_money,
               label: 'Finanzas',
+              index: 1,
+              currentIndex: indexBottomNavbar,
+              ref: ref,
+              paddingLeft: 15,
+              paddingRight: 20 // Espacio a la izquierda para "Finanzas"
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.map),
+            _buildBottomNavItem(
+              context,
+              icon: Icons.map,
               label: 'Mapa',
+              index: 2,
+              currentIndex: indexBottomNavbar,
+              ref: ref,
+              paddingLeft: 20,
+              paddingRight: 15, // Espacio a la derecha para "Mapa"
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.group),
+            _buildBottomNavItem(
+              context,
+              icon: Icons.group,
               label: 'Perfil',
+              index: 3,
+              currentIndex: indexBottomNavbar,
+              paddingRight: 20,
+              ref: ref,
             ),
           ],
-          iconSize: 28,
-          selectedItemColor: Colors.deepOrange, // Color de los íconos seleccionados
-          unselectedItemColor: Colors.grey, // Color de los íconos no seleccionados
-          type: BottomNavigationBarType.fixed, // Asegura que los íconos no desaparezcan
         ),
+      ),
+    );
+  }
+
+  Widget _buildBottomNavItem(BuildContext context, {required IconData icon, required String label, required int index, required int currentIndex, required WidgetRef ref, double paddingLeft = 0, double paddingRight = 0}) {
+    return GestureDetector(
+      onTap: () {
+        ref.read(indexBottomNavbarProvider.notifier).update((state) => index);
+        switch (index) {
+          case 0:
+            context.replace('/home_trip_screen');
+            break;
+          case 1:
+            context.replace('/wallet_screen');
+            break;
+          case 2:
+            // Agregar navegación para "Mapa" si es necesario
+            break;
+          case 3:
+            // Agregar navegación para "Perfil" si es necesario
+            break;
+        }
+      },
+      child: Padding(
+        padding: EdgeInsets.only(left: paddingLeft, right: paddingRight, top: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: currentIndex == index ? Colors.deepOrange : Colors.grey,
+              size: 28,
+            ),
+            Text(
+              label,
+              style: TextStyle(
+                color: currentIndex == index ? Colors.deepOrange : Colors.grey,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
+
 
 
 // GNav(

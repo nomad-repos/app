@@ -39,7 +39,7 @@ class TripNotifier extends StateNotifier<TripState> {
 
     final String text = daysFromStart > 0
         ? 'Faltan $daysFromStart días'
-        : daysFromEnd > 0 
+        : daysFromEnd > 0
             ? 'Estas en tu viaje'
             : 'Tu viaje terminó';
 
@@ -52,13 +52,13 @@ class TripNotifier extends StateNotifier<TripState> {
       dayRemaining: text,
     );
   }
-
+  
   List<Widget> getDayWidgets() {
     final trip = state.trip;
     if (trip == null) return [];
 
     final DateTime tripStartDate = HttpDate.parse(trip.tripStartDate);
-    final DateTime tripEndDate =  HttpDate.parse(trip.tripFinishDate);
+    final DateTime tripEndDate = HttpDate.parse(trip.tripFinishDate);
 
     final List<Widget> days = [];
     for (int i = 0; i < tripEndDate.difference(tripStartDate).inDays; i++) {
@@ -74,7 +74,6 @@ class TripNotifier extends StateNotifier<TripState> {
       daySelected: day,
     );
   }
-
 
   Future<List<Location>?> getLocations(int tripId) async {
     List<Location>? locations;
@@ -103,7 +102,7 @@ class TripNotifier extends StateNotifier<TripState> {
     try {
       final token = await keyValueStorage.getValue<String>('token');
 
-      final resp = await tripRepository.getCategories(token!); 
+      final resp = await tripRepository.getCategories(token!);
 
       if (resp.statusCode == 200) {
         categories = (resp.data['categories'] as List).map((category) {
@@ -123,35 +122,34 @@ class TripNotifier extends StateNotifier<TripState> {
     try {
       final token = await keyValueStorage.getValue<String>('token');
 
-      final resp = await tripRepository.getAllEvent(state.trip!.tripId, token!); 
+      final resp = await tripRepository.getAllEvent(state.trip!.tripId, token!);
 
       events = (resp.data['events'] as List).map((event) {
         return GetEvent.fromJson(event);
       }).toList();
 
       state = state.copyWith(events: events);
-
     } catch (e) {
       //TODO: Manejar los errores
     }
     return events;
   }
 
-
   List<Appointment> getAppointments(List<GetEvent> events) {
-  return events.map((event) {
-    return Appointment(
-      startTime: DateTime.parse(event.date + ' ' + event.startTime), // Combinamos la fecha y la hora de inicio
-      endTime: DateTime.parse(event.date + ' ' + event.finishTime),  // Combinamos la fecha y la hora de finalización
-      subject: event.title,
-      notes: event.eventDescription,
-      id: event.eventId,
-    );
-  }).toList();
-}
-
-
-
+    return events.map((event) {
+      return Appointment(
+        startTime: DateTime.parse(event.date +
+            ' ' +
+            event.startTime), // Combinamos la fecha y la hora de inicio
+        endTime: DateTime.parse(event.date +
+            ' ' +
+            event.finishTime), // Combinamos la fecha y la hora de finalización
+        subject: event.title,
+        notes: event.eventDescription,
+        id: event.eventId,
+      );
+    }).toList();
+  }
 
   void selectCategory(String categoryName) {
     state = state.copyWith(selectedCategory: categoryName);
@@ -160,10 +158,10 @@ class TripNotifier extends StateNotifier<TripState> {
 
 class TripState {
   final bool isPosting;
-  
+
   final Trip? trip;
   final String dayRemaining;
-  final DateTime? daySelected;  
+  final DateTime? daySelected;
 
   final List<Category> categories;
   final String selectedCategory;
@@ -172,39 +170,30 @@ class TripState {
 
   TripState({
     this.isPosting = false,
-
     this.trip,
     this.dayRemaining = '',
     this.daySelected,
-    
     this.selectedCategory = '',
     this.categories = const [],
-
     this.events = const [],
   });
 
   TripState copyWith({
     bool? isPosting,
-
     Trip? trip,
-    String? dayRemaining, 
+    String? dayRemaining,
     DateTime? daySelected,
-
     List<Category>? categories,
     String? selectedCategory,
-
     List<GetEvent>? events,
-
-  }) => TripState(
-    isPosting: isPosting ?? this.isPosting,
-
-    trip: trip ?? this.trip,
-    dayRemaining: dayRemaining ?? this.dayRemaining,
-    daySelected: daySelected ?? this.daySelected,
-
-    categories: categories ?? this.categories,
-    selectedCategory: selectedCategory ?? this.selectedCategory,
-
-    events: events ?? this.events,
-  );
+  }) =>
+      TripState(
+        isPosting: isPosting ?? this.isPosting,
+        trip: trip ?? this.trip,
+        dayRemaining: dayRemaining ?? this.dayRemaining,
+        daySelected: daySelected ?? this.daySelected,
+        categories: categories ?? this.categories,
+        selectedCategory: selectedCategory ?? this.selectedCategory,
+        events: events ?? this.events,
+      );
 }
