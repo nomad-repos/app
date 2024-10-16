@@ -263,6 +263,7 @@ class HorizontalListView extends StatelessWidget {
           );
         },
       ),
+      bottomNavigationBar: const CustomBottomNavigationBar(),
     );
   }
 }

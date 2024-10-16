@@ -173,7 +173,7 @@ class _HomeTripScreenState extends ConsumerState<HomeTripScreen> {
                                                   findActivityProvider.notifier)
                                               .onCategoryHomeChange(
                                                   tripState.categories[index]);
-                                          context.go('/find_activity_screen');
+                                          context.push('/find_activity_screen');
                                         },
                                       ),
                                     );

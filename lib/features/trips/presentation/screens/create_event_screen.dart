@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nomad_app/features/trips/presentation/presentation.dart';
+import 'package:nomad_app/features/trips/trip.dart';
 import 'package:nomad_app/shared/utils/utils.dart'; // Asegúrate de tener el modelo de `Event`.
 
 class CreateEventScreen extends ConsumerStatefulWidget {
@@ -21,17 +22,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     @override
   void initState() {
     super.initState();
-    
-    // Leer el valor inicial sin reactividad
-    final isEditing = ref.read(createEventProvider).isEditing;
-
-    if (isEditing) {
-      Future.microtask(() => ref.read(createEventProvider.notifier).loadEventForEdit());
-    } else {
-      Future.microtask(() => ref.read(createEventProvider.notifier).onDateChanged(
-        HttpDate.parse(ref.read(tripProvider).trip!.tripStartDate) // Cambié aquí también a `ref.read`
-      ));
-    }
+    Future.microtask(() => ref.read(createEventProvider.notifier).onDateChanged(
+      HttpDate.parse(ref.read(tripProvider).trip!.tripStartDate) // Cambié aquí también a `ref.read`
+    ));
   }
 
   @override
@@ -67,12 +60,14 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
 
                       const SizedBox(height: 20),
 
-                      const Row(
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Crear Evento', // O "Editar Evento" según la situación
-                            style: TextStyle(
+                            ref.watch(createEventProvider).isEditing 
+                              ? "Editar evento"
+                              : "Crear evento",
+                            style: const TextStyle(
                               fontSize: 18, 
                               fontWeight: FontWeight.bold
                             )
@@ -190,13 +185,14 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                       ListTile(
                         leading: const Icon(Icons.description, color: Colors.grey),
                         title: TextFormField(
-                          decoration: InputDecoration(
-                            hintText: ref.watch(createEventProvider).name.isEmpty 
-                              ? 'Nombre del evento' 
-                              : ref.watch(createEventProvider).name,
-                            hintStyle: const TextStyle(color: Colors.grey),
+                          decoration: const InputDecoration(
+                            hintText:'Nombre del evento',  
+                            hintStyle: TextStyle(color: Colors.grey),
                             border: InputBorder.none,
                           ),
+                          initialValue: ref.watch(createEventProvider).name.isEmpty 
+                            ? null 
+                            : ref.watch(createEventProvider).name,
                           onChanged: (name) => ref.read(createEventProvider.notifier).onNameChanged(name),
                         ),
                       ),
@@ -206,29 +202,33 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                       ListTile(
                         leading: const Icon(Icons.description, color: Colors.grey),
                         title: TextFormField(
-                          decoration: InputDecoration(
-                            hintText: ref.watch(createEventProvider).description.isEmpty 
-                              ? 'Descripción' 
-                              : ref.watch(createEventProvider).description,
-                            hintStyle: const TextStyle(color: Colors.grey),
+                          decoration: const InputDecoration(
+                            hintText: 'Descripción',
+                            hintStyle: TextStyle(color: Colors.grey),
                             border: InputBorder.none,
                           ),
+                          initialValue: ref.watch(createEventProvider).description.isEmpty 
+                            ? null 
+                            : ref.watch(createEventProvider).description,
                           onChanged: (description) => ref.read(createEventProvider.notifier).onDescriptionChanged(description),
                         ),
                       ),
                       
                       const Divider(),
-
+                      
                       GestureDetector(
                         onTap: () {
-                          print("hola mundod");
                           context.push('/map_activity_screen');
                         },
                         child: ListTile(
                           leading: const Icon(Icons.place, color: Colors.grey),
                           title: TextFormField(
                             decoration: InputDecoration(
-                              hintText: ref.watch(createEventProvider).activity!.activityAddress,
+                              hintText: ref.watch(createEventProvider).isEditing 
+                                ? ref.watch(createEventProvider).getEvent!.activity.activityName
+                                : ref.watch(createEventProvider).activity == null 
+                                  ? 'Actividad' 
+                                  : ref.watch(createEventProvider).activity!.activityName,
                               hintStyle: const TextStyle(color: Colors.grey),
                               border: InputBorder.none,
                             ),
@@ -253,7 +253,10 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                           TextButton(
                             onPressed: () {
                               FocusScope.of(context).unfocus();
-                              ref.read(createEventProvider.notifier).createEvent(context);
+
+                              ref.watch(createEventProvider).isEditing
+                                ? ref.read(createEventProvider.notifier).updateEvent(context)
+                                : ref.read(createEventProvider.notifier).createEvent(context);
                             },
                             child: const Text('Guardar'),
                           ),

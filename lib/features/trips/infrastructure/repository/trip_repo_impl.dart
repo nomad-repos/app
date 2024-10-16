@@ -40,5 +40,11 @@ class TripRepositoryImpl implements TripRepository{
   Future getActivites(String token, String localityLocation, int categoryId) {
     return tripDs.getActivites(token, localityLocation, categoryId);
   }
+  
+  @override
+  Future updateEvent() {
+    // TODO: implement updateEvent
+    throw UnimplementedError();
+  }
 }
 

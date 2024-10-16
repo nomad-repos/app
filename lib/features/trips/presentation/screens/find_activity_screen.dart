@@ -77,6 +77,7 @@ class _FindActivityScreenState extends ConsumerState<FindActivityScreen> {
   Widget _buildSliverAppBar(BuildContext context, TripState trip,
       FindActivityState findActivity, CreateEventNotifier createEvent) {
     return SliverAppBar(
+      automaticallyImplyLeading: false,
       expandedHeight: MediaQuery.of(context).size.height * 0.27,
       backgroundColor: Colors.transparent,
       flexibleSpace: FlexibleSpaceBar(
@@ -303,6 +304,7 @@ Widget _buildActivityItem(
         ),
         onPressed: () {
           createEvent.selectActivity(activity);
+          createEvent.onCreateChange();
           context.push('/create_event_screen');
         },
       ),
