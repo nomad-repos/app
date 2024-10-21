@@ -1,8 +1,5 @@
 import 'dart:io';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nomad_app/features/trips/presentation/presentation.dart';
@@ -23,7 +20,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   void initState() {
     super.initState();
     Future.microtask(() => ref.read(createEventProvider.notifier).onDateChanged(
-      HttpDate.parse(ref.read(tripProvider).trip!.tripStartDate) // Cambié aquí también a `ref.read`
+      DateTime.parse(ref.read(tripProvider).trip!.tripStartDate) // Cambié aquí también a `ref.read`
     ));
   }
 
@@ -103,16 +100,16 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                         height: MediaQuery.of(context).size.height * 0.3,
                         child: CalendarDatePicker(
                           initialDate: trip.daySelected == null 
-                            ? HttpDate.parse(trip.trip!.tripStartDate).isBefore(DateTime.now()) 
+                            ? DateTime.parse(trip.trip!.tripStartDate).isBefore(DateTime.now()) 
                               ? DateTime.now() 
-                              : HttpDate.parse(trip.trip!.tripStartDate)
-                            : trip.daySelected!.isBefore(HttpDate.parse(trip.trip!.tripStartDate)) 
-                              ? HttpDate.parse(trip.trip!.tripStartDate) 
+                              : DateTime.parse(trip.trip!.tripStartDate)
+                            : trip.daySelected!.isBefore(DateTime.parse(trip.trip!.tripStartDate)) 
+                              ? DateTime.parse(trip.trip!.tripStartDate) 
                               : trip.daySelected!, 
-                          firstDate: HttpDate.parse(trip.trip!.tripStartDate).isBefore(DateTime.now()) 
+                          firstDate: DateTime.parse(trip.trip!.tripStartDate).isBefore(DateTime.now()) 
                             ? DateTime.now() 
-                            : HttpDate.parse(trip.trip!.tripStartDate),
-                          lastDate: HttpDate.parse(trip.trip!.tripFinishDate),
+                            : DateTime.parse(trip.trip!.tripStartDate),
+                          lastDate: DateTime.parse(trip.trip!.tripFinishDate),
                           onDateChanged: (date) => ref.read(createEventProvider.notifier).onDateChanged(date),
                         ),
                       ),

@@ -27,7 +27,7 @@ class Trip {
 
   factory Trip.fromJson(Map<String, dynamic> json) => Trip(
         tripId: json["trip_id"],
-        photoUrl: json["photo_url"],
+        photoUrl: json["trip_photo_url"],
         tripFinishDate: json["trip_finish_date"],
         tripStartDate: json["trip_start_date"],
         tripName: json["trip_name"],
@@ -36,7 +36,7 @@ class Trip {
 
   Map<String, dynamic> toJson() => {
         "trip_id": tripId,
-        "photo_url": photoUrl,
+        "trip_photo_url": photoUrl,
         "trip_finish_date": tripFinishDate,
         "trip_start_date": tripStartDate,
         "trip_name": tripName,

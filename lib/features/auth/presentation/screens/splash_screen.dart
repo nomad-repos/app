@@ -33,7 +33,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with TickerProvider
     _controller.forward();
 
     // Navegar a la siguiente pantalla después de 3 segundos
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 10), () {
       if (mounted) {
         context.go('/login'); // Cambia a la ruta /login después de la animación
       }

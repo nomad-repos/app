@@ -27,7 +27,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     final trip = ref.read(tripProvider);
     _controller.displayDate = trip.daySelected ??
         (trip.trip != null
-            ? HttpDate.parse(trip.trip!.tripStartDate)
+            ? DateTime.parse(trip.trip!.tripStartDate)
             : DateTime.now());
     _controller.selectedDate = _controller.displayDate;
   }

@@ -19,10 +19,10 @@ class User {
     });
 
     factory User.fromJson(Map<String, dynamic> json) => User(
-        userEmail: json["email"],
-        userId: json["id"],
-        userName: json["name"],
-        userSurname: json["surname"],
+        userEmail: json["user_email"],
+        userId: json["user_id"],
+        userName: json["user_name"],
+        userSurname: json["user_surname"],
     );
 
     Map<String, dynamic> toJson() => {

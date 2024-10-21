@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nomad_app/features/trips/trip.dart';
-import 'dart:io';
 import 'package:nomad_app/shared/shared.dart';
 import 'package:nomad_app/shared/widgets/trip/day_widget.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -31,8 +30,8 @@ class TripNotifier extends StateNotifier<TripState> {
   }
 
   Future<void> setTrip(Trip trip) async {
-    final DateTime tripStartDate = HttpDate.parse(trip.tripStartDate);
-    final DateTime tripEndDate = HttpDate.parse(trip.tripFinishDate);
+    final DateTime tripStartDate = DateTime.parse(trip.tripStartDate);
+    final DateTime tripEndDate = DateTime.parse(trip.tripFinishDate);
 
     final daysFromStart = tripStartDate.difference(DateTime.now()).inDays;
     final daysFromEnd = tripEndDate.difference(DateTime.now()).inDays;
@@ -52,13 +51,13 @@ class TripNotifier extends StateNotifier<TripState> {
       dayRemaining: text,
     );
   }
-  
+
   List<Widget> getDayWidgets() {
     final trip = state.trip;
     if (trip == null) return [];
 
-    final DateTime tripStartDate = HttpDate.parse(trip.tripStartDate);
-    final DateTime tripEndDate = HttpDate.parse(trip.tripFinishDate);
+    final DateTime tripStartDate = DateTime.parse(trip.tripStartDate);
+    final DateTime tripEndDate = DateTime.parse(trip.tripFinishDate);
 
     final List<Widget> days = [];
     for (int i = 0; i < tripEndDate.difference(tripStartDate).inDays; i++) {
@@ -86,7 +85,7 @@ class TripNotifier extends StateNotifier<TripState> {
 
       if (resp.statusCode == 200) {
         // Mapeo de la lista de países desde el JSON a objetos Country
-        locations = (resp.data['locations'] as List)
+        locations = (resp.data['localities'] as List)
             .map((location) => Location.fromJson(location))
             .toList();
       }
@@ -117,15 +116,15 @@ class TripNotifier extends StateNotifier<TripState> {
     return categories;
   }
 
-  Future<List<GetEvent>?> getEvents() async {
-    List<GetEvent>? events;
+  Future<List<Event>?> getEvents() async {
+    List<Event>? events;
     try {
       final token = await keyValueStorage.getValue<String>('token');
 
       final resp = await tripRepository.getAllEvent(state.trip!.tripId, token!);
 
       events = (resp.data['events'] as List).map((event) {
-        return GetEvent.fromJson(event);
+        return Event.fromJson(event);
       }).toList();
 
       state = state.copyWith(events: events);
@@ -166,7 +165,7 @@ class TripState {
   final List<Category> categories;
   final String selectedCategory;
 
-  final List<GetEvent> events;
+  final List<Event> events;
 
   TripState({
     this.isPosting = false,
@@ -185,7 +184,7 @@ class TripState {
     DateTime? daySelected,
     List<Category>? categories,
     String? selectedCategory,
-    List<GetEvent>? events,
+    List<Event>? events,
   }) =>
       TripState(
         isPosting: isPosting ?? this.isPosting,

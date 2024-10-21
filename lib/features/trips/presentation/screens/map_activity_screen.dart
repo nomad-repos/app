@@ -37,11 +37,9 @@ class _MapActivityScreenState extends ConsumerState<MapActivityScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     if(widget.getEvent != null){
       return getEventActivity(widget.getEvent);
     }
-
     return normalActivity(activity);
   }
   
@@ -122,16 +120,16 @@ class _MapActivityScreenState extends ConsumerState<MapActivityScreen> {
                           GoogleMap(
                             initialCameraPosition: CameraPosition(
                               target: LatLng(
-                                  activity.activityLocation.latitude,
-                                  activity.activityLocation.longitude),
+                                  activity.activityLongitude,
+                                  activity.activityLatitude),
                               zoom: 14.4746,
                             ),
                             markers: {
                               Marker(
                                 markerId: const MarkerId('1'),
                                 position: LatLng(
-                                    activity.activityLocation.latitude,
-                                    activity.activityLocation.longitude),
+                                    activity.activityLatitude,
+                                    activity.activityLongitude),
                                 infoWindow: InfoWindow(
                                   title: activity.activityName,
                                 ),

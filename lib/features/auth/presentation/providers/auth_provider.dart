@@ -1,4 +1,3 @@
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nomad_app/shared/shared.dart';
 
@@ -7,12 +6,11 @@ import '../../../../helpers/helpers.dart';
 import '../../domain/domain.dart';
 import '../../infrastructure/infrastructure.dart';
 
-final authProvider = StateNotifierProvider<AuthNotifier,AuthState>((ref) {
-
+final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final authRepository = AuthRepositoryImpl();
   final keyValueStorage = KeyValueStorageImpl();
 
-  final userNotifier = ref.watch(userProvider.notifier); 
+  final userNotifier = ref.watch(userProvider.notifier);
 
   return AuthNotifier(
     authRepository: authRepository,
@@ -21,30 +19,27 @@ final authProvider = StateNotifierProvider<AuthNotifier,AuthState>((ref) {
   );
 });
 
-
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthRepository authRepository;
   final KeyValueStorageServices keyValueStorage;
   final UserNotifier userNotifier;
 
-  AuthNotifier({ 
+  AuthNotifier({
     required this.authRepository,
     required this.keyValueStorage,
     required this.userNotifier,
-  }): super( AuthState() ) {
-    checkAuthStatus(); 
+  }) : super(AuthState()) {
+    checkAuthStatus();
   }
 
-  Future<void> loginUser( String email, String password ) async { 
+  Future<void> loginUser(String email, String password) async {
     try {
-      final resp = await authRepository.login( email, password );
+      final resp = await authRepository.login(email, password);
 
-      if (resp.statusCode == 200){ 
+      if (resp.statusCode == 200) {
         keyValueStorage.setKeyValue<String>('token', resp.data['access_token']);
 
-        final User user = User.fromJson(resp.data['user']);    
-
-        print(user);    
+        final User user = User.fromJson(resp.data['user']);
 
         userNotifier.saveUserData(user);
 
@@ -55,35 +50,34 @@ class AuthNotifier extends StateNotifier<AuthState> {
           registerStatus: RegisterStatus.registered,
         );
 
-        _setLoggedUser(resp); 
+        _setLoggedUser(resp);
       }
     } on CustomError catch (e) {
-      logout( e.message ); 
-    } catch (e){
-      logout( e.toString() );
+      logout(e.message);
+    } catch (e) {
+      logout(e.toString());
     }
   }
 
   //Verificamos el estado de la autentificación
   void checkAuthStatus() async {
-    final token = await keyValueStorage.getValue<String>('token'); //Se puede especificar el tipo de dato porque lo escribimos como generico el getValue.
+    final token = await keyValueStorage.getValue<String>(
+        'token'); //Se puede especificar el tipo de dato porque lo escribimos como generico el getValue.
+
+    print(token);
+
     if (token == null) return logout(); //Marco el estado como no autentificado
     try {
-      final resp = await authRepository.checkAuthStatus(token); //Hacemos el trabajo de ver si el usuario esta autentificado o no.
-      
-      print(resp.data['user']);
-      print(token);
-      
-      if (resp.statusCode == 200){
-        
-        final User user = User.fromJson(resp.data['user']);
+      final resp = await authRepository.checkAuthStatus(
+          token); //Hacemos el trabajo de ver si el usuario esta autentificado o no.
 
+      if (resp.statusCode == 200) {
+        final User user = User.fromJson(resp.data['user']);
         userNotifier.saveUserData(user);
-        
-        _setLoggedUser(resp); 
+        _setLoggedUser(resp);
       }
     } catch (e) {
-     logout();
+      logout();
     }
   }
 
@@ -98,7 +92,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   //Eliminamos el token y cambiamos el estado, esto ocurre cuando la persona le da al logout o ocurre algun error.
-  Future<void> logout([ String? errorMessage ]) async {
+  Future<void> logout([String? errorMessage]) async {
     keyValueStorage.deleteKeyValue('token');
     state = state.copyWith(
       errorMessage: errorMessage,
@@ -108,35 +102,38 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
   }
 
-  Future<void> registerUser( String name, String surname, String email, String password ) async {
+  Future<void> registerUser(
+      String name, String surname, String email, String password) async {
     try {
-      final resp = await authRepository.signUp( name, surname, email, password );
+      final resp = await authRepository.signUp(name, surname, email, password);
 
-      if (resp.statusCode == 200){
+      if (resp.statusCode == 200) {
         state = state.copyWith(
           registerStatus: RegisterStatus.registered,
           authStatus: AuthStatus.notAuthenticated,
           errorMessage: '',
-          statusMessage: 'Usuario registrado correctamente. Ahora debe iniciar sesión.',
+          statusMessage:
+              'Usuario registrado correctamente. Ahora debe iniciar sesión.',
         );
       }
     } catch (e) {
       state = state.copyWith(
-        registerStatus: RegisterStatus.notRegistered,
-        errorMessage: 'Error al registrarse, por favor intente de nuevo más tarde.',
-        statusMessage: ''
-      );
+          registerStatus: RegisterStatus.notRegistered,
+          errorMessage:
+              'Error al registrarse, por favor intente de nuevo más tarde.',
+          statusMessage: '');
     }
   }
 
   //Metodo para enviar el correo de recuperacion de contraseña
-  Future<bool> sendRecoveryEmail( String email ) async {
+  Future<bool> sendRecoveryEmail(String email) async {
     try {
-      final resp = await authRepository.sendRecoveryEmail( email );
+      final resp = await authRepository.sendRecoveryEmail(email);
 
-      if (resp.statusCode == 200){
+      if (resp.statusCode == 200) {
         state = state.copyWith(
-          statusMessage: 'Correo enviado correctamente, revise su bandeja de entrada.',
+          statusMessage:
+              'Correo enviado correctamente, revise su bandeja de entrada.',
           errorMessage: '',
         );
       }
@@ -144,18 +141,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } catch (e) {
       state = state.copyWith(
         statusMessage: '',
-        errorMessage: 'Error al enviar el correo, por favor intente de nuevo más tarde.',
+        errorMessage:
+            'Error al enviar el correo, por favor intente de nuevo más tarde.',
       );
     }
     return false;
   }
 
   //Metodo para verificar el codigo de recuperacion
-  Future<bool> verifyCode( String email, String code ) async {
+  Future<bool> verifyCode(String email, String code) async {
     try {
-      final resp = await authRepository.checkRecoveryCode( email, code );
+      final resp = await authRepository.checkRecoveryCode(email, code);
 
-      if (resp.statusCode == 200){
+      if (resp.statusCode == 200) {
         state = state.copyWith(
           statusMessage: 'Código verificado correctamente.',
           errorMessage: '',
@@ -165,18 +163,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } catch (e) {
       state = state.copyWith(
         statusMessage: '',
-        errorMessage: 'Error al verificar el código, por favor intente de nuevo más tarde.',
+        errorMessage:
+            'Error al verificar el código, por favor intente de nuevo más tarde.',
       );
     }
     return false;
   }
 
   //Metodo para cambiar la contraseña
-  Future<bool> resetPassword( String email, String password ) async {
+  Future<bool> resetPassword(String email, String password) async {
     try {
-      final resp = await authRepository.changePassword( email, password );
+      final resp = await authRepository.changePassword(email, password);
 
-      if (resp.statusCode == 200){
+      if (resp.statusCode == 200) {
         state = state.copyWith(
           statusMessage: 'Contraseña cambiada correctamente.',
           errorMessage: '',
@@ -186,7 +185,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } catch (e) {
       state = state.copyWith(
         statusMessage: '',
-        errorMessage: 'Error al cambiar la contraseña, por favor intente de nuevo más tarde.',
+        errorMessage:
+            'Error al cambiar la contraseña, por favor intente de nuevo más tarde.',
       );
     }
     return false;
@@ -195,7 +195,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
 //Clase para enumerar los estados de autentificacion posibles
 enum AuthStatus { checking, authenticated, notAuthenticated }
-enum RegisterStatus {checking, guest, notRegistered, registered }
+
+enum RegisterStatus { checking, guest, notRegistered, registered }
 
 //El provider necesita un notifier y un state, el state sirve como una representacion del estado actual en el proceso de logeo.
 class AuthState {
@@ -205,7 +206,7 @@ class AuthState {
   final String errorMessage;
 
   AuthState({
-    this.authStatus = AuthStatus.checking, 
+    this.authStatus = AuthStatus.checking,
     this.registerStatus = RegisterStatus.checking,
     this.statusMessage = '',
     this.errorMessage = '',
@@ -216,11 +217,11 @@ class AuthState {
     RegisterStatus? registerStatus,
     String? statusMessage,
     String? errorMessage,
-
-  }) => AuthState(
-    authStatus: authStatus ?? this.authStatus,
-    registerStatus: registerStatus ?? this.registerStatus,
-    statusMessage: statusMessage ?? this.statusMessage,
-    errorMessage: errorMessage ?? this.errorMessage,
-  );
+  }) =>
+      AuthState(
+        authStatus: authStatus ?? this.authStatus,
+        registerStatus: registerStatus ?? this.registerStatus,
+        statusMessage: statusMessage ?? this.statusMessage,
+        errorMessage: errorMessage ?? this.errorMessage,
+      );
 }

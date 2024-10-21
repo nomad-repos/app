@@ -50,6 +50,7 @@ class _WalletScreen extends ConsumerState<WalletScreen> {
         CustomScrollView(slivers: [
           SliverAppBar(
             expandedHeight: MediaQuery.of(context).size.height * 0.1,
+            automaticallyImplyLeading: false,
             backgroundColor: Colors.transparent,
             flexibleSpace: FlexibleSpaceBar(
               background:
@@ -60,17 +61,17 @@ class _WalletScreen extends ConsumerState<WalletScreen> {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                Container(
-                    width: MediaQuery.of(context).size.width * 0.9,
-                    height: MediaQuery.of(context).size.width * 0.3,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.white),
-                    child: const Row(
-                      children: [
-                        Align(
-                          alignment: Alignment.center,
-                          child: Padding(
+                Stack(
+                  alignment: Alignment.centerRight,
+                  children: [ Container(
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      height: MediaQuery.of(context).size.width * 0.3,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.white),
+                      child:  const Row(
+                        children: [
+                          Padding(
                             padding: EdgeInsets.all(25),
                             child: Column(
                               children: [
@@ -90,19 +91,27 @@ class _WalletScreen extends ConsumerState<WalletScreen> {
                                         fontSize: 30,
                                         fontWeight: FontWeight.w600),
                                   ),
+                            
                                 ])
                               ],
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(20),
-                          //CustomAddButton,),
-                        ),
-                      
-              
-                      ],
-                    )),
+                        ],
+                      )),
+                      Container(
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      height: MediaQuery.of(context).size.width * 0.3,
+                      decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.only(topRight: Radius.circular(20), bottomRight: Radius.circular(20)),
+                          color: Colors.deepOrange),
+                          child: CustomAddGastoButton() ,
+                      ),
+                      ]
+
+                    ),
+
+                  
+                
 
                     const SizedBox(height: 30),
                       
@@ -125,31 +134,32 @@ class _WalletScreen extends ConsumerState<WalletScreen> {
                               child: Row (
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                SizedBox(width: 30),
+                                SizedBox(width: 20),
                                 Text('Descripcion'),
-                                SizedBox(width: 30),
+                                SizedBox(width: 20),
                                 Text('Monto'),
-                                SizedBox(width: 30),
+                                SizedBox(width: 20),
                                 Text('Estado'),
-                                SizedBox(width: 30),
+                                SizedBox(width: 20),
+                                 Text('Fecha'),
+                                SizedBox(width: 20),
                                 Text('Categoria'),
-                                SizedBox(width: 30),
+                                SizedBox(width: 20),
                               
                                 //SliverList () aca tienen que ir todos los datos uno por uno
                                                   
                               ],
-                                                        ),
+                              ),
                             )
                           ]
                         ),
                        ),
                     ),
-                     
-                    
-                
-
-              ]))
-        ])
+                  ]
+                )
+              )
+        ]
+        )
       ]),
 
       //BARRA DE PANTALLAS
@@ -230,6 +240,29 @@ class _WalletScreen extends ConsumerState<WalletScreen> {
   }
 }
 
+class CustomAddGastoButton extends StatelessWidget {
+  const CustomAddGastoButton({super.key});
+  
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        context.push('/add_gasto_screen');
+      },
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.all<Color>(Colors.deepOrange),
+        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+          const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(topRight: Radius.circular(20), bottomRight: Radius.circular(20)),
+          ),
+        ),
+      ),
+      child: null
+    );
+    
+  }
+}
+
 class HorizontalListView extends StatelessWidget {
   final double? height;
   final int itemCount;
@@ -262,8 +295,7 @@ class HorizontalListView extends StatelessWidget {
             ),
           );
         },
-      ),
-      bottomNavigationBar: const CustomBottomNavigationBar(),
+      )
     );
   }
 }

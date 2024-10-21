@@ -7,32 +7,36 @@ String acivityToJson(Activity data) => json.encode(data.toJson());
 class Activity {
     String activityAddress;
     String activityExtId;
-    ActivityLocation activityLocation;
     String activityName;
     String activityPhotosUri;
+    double activityLatitude;
+    double activityLongitude;
 
     Activity({
         required this.activityAddress,
         required this.activityExtId,
-        required this.activityLocation,
         required this.activityName,
         required this.activityPhotosUri,
+        required this.activityLatitude,
+        required this.activityLongitude,
     });
 
     factory Activity.fromJson(Map<String, dynamic> json) => Activity(
         activityAddress: json["activity_address"],
         activityExtId: json["activity_ext_id"],
-        activityLocation: ActivityLocation.fromJson(json["activity_location"]),
+        activityLongitude: json["activity_longitude"],
+        activityLatitude: json["activity_latitude"],
         activityName: json["activity_name"],
-        activityPhotosUri: json["activity_photos_uri"],
+        activityPhotosUri: json["activity_url_photo"],
     );
 
     Map<String, dynamic> toJson() => {
         "activity_address": activityAddress,
         "activity_ext_id": activityExtId,
-        "activity_location": activityLocation.toJson(),
+        "activity_latitude": activityLatitude,
+        "activity_longitude": activityLongitude,
         "activity_name": activityName,
-        "activity_photos_uri": activityPhotosUri,
+        "activity_url_photo": activityPhotosUri,
     };
 }
 

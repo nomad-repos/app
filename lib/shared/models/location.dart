@@ -26,7 +26,7 @@ class Location {
         longitude: (json["locality_longitude"] is String)
             ? double.parse(json["locality_longitude"])
             : json["locality_longitude"],
-        isoCode: json["iso_code"],
+        isoCode: json["country_iso_code"],
         localityId: json["locality_id"],
       );
 

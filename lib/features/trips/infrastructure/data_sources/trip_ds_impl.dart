@@ -15,7 +15,7 @@ class TripDSimpl implements TripDs {
   @override
   Future getLocations(int tripId, String token) async {
     try {
-      final resp = await dio.get('/trips/get_trip_locations?trip_id=$tripId',
+      final resp = await dio.get('/trips/get_trip_localities?trip_id=$tripId',
           options: Options(
             headers: {
               "authorization": "Bearer $token",
@@ -118,8 +118,8 @@ class TripDSimpl implements TripDs {
               "activity_address": activity.activityAddress,
               "activity_ext_id": activity.activityExtId,
               "activity_title": activity.activityName,
-              "activity_latitude": activity.activityLocation.latitude,
-              "activity_longitude": activity.activityLocation.longitude,
+              "activity_latitude": activity.activityLatitude,
+              "activity_longitude": activity.activityLongitude,
               "activity_photo_url": activity.activityPhotosUri,
               "locality_id": locationId,
           }

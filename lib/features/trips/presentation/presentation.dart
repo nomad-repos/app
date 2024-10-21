@@ -9,5 +9,5 @@ export 'package:nomad_app/features/trips/presentation/screens/home_trip_screen.d
 export 'package:nomad_app/features/trips/presentation/screens/calendar_screen.dart';
 export 'package:nomad_app/features/trips/presentation/screens/create_event_screen.dart';
 export 'package:nomad_app/features/trips/presentation/screens/find_activity_screen.dart';
-
+export 'package:nomad_app/features/trips/presentation/screens/add_gasto_screen.dart';
 

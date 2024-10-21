@@ -85,7 +85,11 @@ final goRouterProvider = Provider((ref) {
         GoRoute(
           path: '/find_activity_screen',
           builder: (context, state) => const FindActivityScreen(),
-        )
+        ),
+
+        GoRoute(
+          path: '/add_gasto_screen', 
+          builder: (context, state) => const AddGastoScreen()),
       ],
       redirect: (context, state) async {
         final String isGoingTo = state.matchedLocation;

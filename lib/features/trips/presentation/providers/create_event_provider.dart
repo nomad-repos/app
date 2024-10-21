@@ -45,7 +45,7 @@ class CreateEventNotifier extends StateNotifier<CreateEventState> {
     state = state.copyWith(
       name: getEvent.title,
       description: getEvent.eventDescription,
-      date: HttpDate.parse(getEvent.date),
+      date: DateTime.parse(getEvent.date),
       startTime: parseTimeOfDay(getEvent.startTime),
       endTime: parseTimeOfDay(getEvent.finishTime),
     );
