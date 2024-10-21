@@ -43,7 +43,7 @@ class _CustomTextFormFieldGasto extends State<CustomTextFormFieldGasto> {
     final colors = Theme.of(context).colorScheme;
 
     final border = OutlineInputBorder(
-      borderSide: const BorderSide(color: Color.fromARGB(255, 65, 63, 63)),
+      borderSide: const BorderSide(color: Color.fromRGBO(51, 101, 138, 1)),
       borderRadius: BorderRadius.circular(40),
     );
 
@@ -51,6 +51,7 @@ class _CustomTextFormFieldGasto extends State<CustomTextFormFieldGasto> {
 
     return Container(
       width: MediaQuery.of(context).size.width * 0.7,
+      
       decoration: const BoxDecoration(
         color: Colors.transparent,
         borderRadius: BorderRadius.only(
@@ -87,13 +88,13 @@ class _CustomTextFormFieldGasto extends State<CustomTextFormFieldGasto> {
           label: widget.label != null ? Text(widget.label!) : null,
           hintText: widget.hint,
           hintStyle: const TextStyle(
-              color: Color.fromARGB(255, 65, 63, 63), fontSize: 15, fontWeight: FontWeight.w300),
+              color: Color.fromRGBO(51, 101, 138, 1), fontSize: 15, fontWeight: FontWeight.w300),
           helperText: widget.helper,
           alignLabelWithHint: true,
           errorText: widget.errorMessage,
           focusColor: colors.primary,
           contentPadding:
-              const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+              const EdgeInsets.symmetric(horizontal: 25, vertical: 9),
           suffixIcon: widget.obscureText
               ? IconButton(
                   icon: Icon(

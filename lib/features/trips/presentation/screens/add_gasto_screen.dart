@@ -58,8 +58,16 @@ class _AddGastoScreen extends ConsumerState<AddGastoScreen> {
           ),
           child: Column(
             children: [
+              SizedBox(height: 20),
               CustomTextFormFieldGasto(
                 hint: "Descripcion",
+                obscureText: false,
+                icon: Icons.description
+                //onChanged: ,
+              ),
+              SizedBox(height: 15),
+              CustomTextFormFieldGasto(
+                hint: "Monto",
                 obscureText: false,
                 icon: Icons.description
                 //onChanged: ,

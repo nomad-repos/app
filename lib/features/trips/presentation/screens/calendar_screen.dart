@@ -173,13 +173,24 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         ],
       ),
 
+      //BARRA DE PANTALLAS
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        onPressed: (){
-          context.push('/calendar_screen');   
-        }, 
-        backgroundColor: Colors.deepOrange,
-        child: const Icon(Icons.calendar_today),
+      floatingActionButton: SizedBox(
+        width: 70,
+        height: 65,
+        child: FloatingActionButton(
+          onPressed: () async {
+            await ref.read(tripProvider.notifier).getEvents();
+            ref.read(indexBottomNavbarProvider.notifier).update((state) => 4);
+            context.push('/calendar_screen');
+          },
+          backgroundColor: Colors.deepOrange,
+          shape: const CircleBorder(),
+          child: const Icon(
+            Icons.calendar_today,
+            color: Colors.white,
+          ),
+        ),
       ),
       bottomNavigationBar: const CustomBottomNavigationBar(),
 

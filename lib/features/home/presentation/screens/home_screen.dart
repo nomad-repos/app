@@ -193,6 +193,8 @@ class ScrollHome extends ConsumerWidget {
             itemCount: 10,
             url:
                 "https://media.istockphoto.com/id/1059713466/photo/teamwork-couple-climbing-helping-hand.webp?b=1&s=612x612&w=0&k=20&c=XqwznpAgGJapLnY2LonSJyMtVAay7aAMwSD184RTf6I="),
+        
+        const SizedBox(height: 5),
       ],
     );
   }

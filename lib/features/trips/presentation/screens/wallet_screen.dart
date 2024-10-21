@@ -26,6 +26,7 @@ class _WalletScreen extends ConsumerState<WalletScreen> {
           trip = tripState.trip;
         });
       }
+      ref.read(indexBottomNavbarProvider.notifier).update((state) => 1);
     });
   }
 
@@ -49,7 +50,7 @@ class _WalletScreen extends ConsumerState<WalletScreen> {
         ),
         CustomScrollView(slivers: [
           SliverAppBar(
-            expandedHeight: MediaQuery.of(context).size.height * 0.1,
+            expandedHeight: MediaQuery.of(context).size.height * 0.16,
             automaticallyImplyLeading: false,
             backgroundColor: Colors.transparent,
             flexibleSpace: FlexibleSpaceBar(
@@ -62,50 +63,42 @@ class _WalletScreen extends ConsumerState<WalletScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                 Stack(
-                  alignment: Alignment.centerRight,
+                  alignment: Alignment.topRight,
                   children: [ Container(
-                      width: MediaQuery.of(context).size.width * 0.9,
+                      width: MediaQuery.of(context).size.width * 0.85,
                       height: MediaQuery.of(context).size.width * 0.3,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          color: Colors.white),
-                      child:  const Row(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.all(25),
-                            child: Column(
+                          color: const Color.fromRGBO(244, 245, 246, 1)),
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 40),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('Gastos Totales:',
+                                style: TextStyle(
+                                    color: Color.fromRGBO(51, 101, 138, 1),
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600)),
+                            Row(
                               children: [
-                                Text('Balance Total:',
-                                    style: TextStyle(
-                                        color: Color.fromRGBO(51, 101, 138, 1),
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w500)),
-                                Row(children: [
-                                  Icon(Icons.monetization_on),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    '230,400',
-                                    style: TextStyle(
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                            
-                                ])
-                              ],
-                            ),
-                          ),
-                        ],
+                              Icon(Icons.attach_money, color: Colors.black),
+                              Text(
+                                '230,400',
+                                style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                        
+                            ])
+                          ],
+                        ),
                       )),
-                      Container(
-                      width: MediaQuery.of(context).size.width * 0.1,
-                      height: MediaQuery.of(context).size.width * 0.3,
-                      decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.only(topRight: Radius.circular(20), bottomRight: Radius.circular(20)),
-                          color: Colors.deepOrange),
-                          child: CustomAddGastoButton() ,
-                      ),
+                      const Padding(
+                        padding: EdgeInsets.all(8),
+                        child: CustomAddGastoButton(),
+                      )
                       ]
 
                     ),
@@ -119,42 +112,31 @@ class _WalletScreen extends ConsumerState<WalletScreen> {
 
                     const SizedBox(height: 30),
 
-                    Align(
-                      alignment: Alignment.center,
-                      child: Container(
-                        height: 100000,
-                        decoration: const BoxDecoration(
-                          color: Colors.white
+                    Container(
+                      height: 100000,
+                      decoration: const BoxDecoration(
+                        color: Color.fromRGBO(244, 245, 246, 1)
+                      ),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: DataTable(columns: const [
+                          DataColumn(label: Text('Descripcion')),
+                          DataColumn(label: Text('Monto')),
+                          DataColumn(label: Text('Estado')),
+                          DataColumn(label: Text('Fecha')),
+                          DataColumn(label: Text('Categoria')),
+                        ], rows: [
+                          DataRow(cells: [
+                            DataCell(Text('Comida')),
+                            DataCell(Text('200')),
+                            DataCell(Text('Pagado')),
+                            DataCell(Text('12/12/2021')),
+                            DataCell(Text('Comida')),
+                          ]),
+                        ]
                         ),
-                        child: const Column(
-                          children: [ 
-                         
-                            Padding(
-                              padding: EdgeInsets.all(10),
-                              child: Row (
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(width: 20),
-                                Text('Descripcion'),
-                                SizedBox(width: 20),
-                                Text('Monto'),
-                                SizedBox(width: 20),
-                                Text('Estado'),
-                                SizedBox(width: 20),
-                                 Text('Fecha'),
-                                SizedBox(width: 20),
-                                Text('Categoria'),
-                                SizedBox(width: 20),
-                              
-                                //SliverList () aca tienen que ir todos los datos uno por uno
-                                                  
-                              ],
-                              ),
-                            )
-                          ]
-                        ),
-                       ),
-                    ),
+                      ),
+                     ),
                   ]
                 )
               )
@@ -170,6 +152,7 @@ class _WalletScreen extends ConsumerState<WalletScreen> {
         child: FloatingActionButton(
           onPressed: () async {
             await ref.read(tripProvider.notifier).getEvents();
+            ref.read(indexBottomNavbarProvider.notifier).update((state) => 4);
             context.push('/calendar_screen');
           },
           backgroundColor: Colors.deepOrange,
@@ -188,7 +171,7 @@ class _WalletScreen extends ConsumerState<WalletScreen> {
   Widget _buildFlexibleSpace(BuildContext context, TripState trip) {
     return Padding(
       padding: const EdgeInsets.only(
-          left: 10, right: 10, top: 10), // Adjust padding to align with leading
+          left: 10, right: 10,), // Adjust padding to align with leading
       child: Column(
         // Align to start
         mainAxisAlignment:
@@ -200,7 +183,6 @@ class _WalletScreen extends ConsumerState<WalletScreen> {
               _buildBackButton(
                 context,
               ),
-              const SizedBox(width: 5),
               _buildHeaderText(),
             ]),
           ), // Title text
@@ -218,6 +200,7 @@ class _WalletScreen extends ConsumerState<WalletScreen> {
       child: IconButton(
         icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
         onPressed: () {
+           ref.read(indexBottomNavbarProvider.notifier).update((state) => 0);
           context.go('/home_trip_screen');
         },
       ),
@@ -245,22 +228,22 @@ class CustomAddGastoButton extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {
-        context.push('/add_gasto_screen');
-      },
-      style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all<Color>(Colors.deepOrange),
-        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-          const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(topRight: Radius.circular(20), bottomRight: Radius.circular(20)),
-          ),
-        ),
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.12, 
+      height: MediaQuery.of(context).size.height * 0.07,
+      decoration: BoxDecoration(
+        color: Colors.deepOrange, // Color de fondo
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: null
+      child: IconButton(
+        icon: const Icon(Icons.add, color: Colors.white),
+        onPressed: () {
+          context.push('/add_gasto_screen');
+        },
+      ),
     );
-    
   }
+
 }
 
 class HorizontalListView extends StatelessWidget {
@@ -289,7 +272,7 @@ class HorizontalListView extends StatelessWidget {
             child: Container(
               width: MediaQuery.of(context).size.height * 0.17,
               decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Color.fromRGBO(244, 245, 246, 1),
                   borderRadius: BorderRadius.circular(20),
                   ),
             ),

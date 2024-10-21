@@ -222,6 +222,7 @@ class _HomeTripScreenState extends ConsumerState<HomeTripScreen> {
         child: FloatingActionButton(
           onPressed: () async {
             await ref.read(tripProvider.notifier).getEvents();
+             ref.read(indexBottomNavbarProvider.notifier).update((state) => 4);
             context.push('/calendar_screen');
           },
           backgroundColor: Colors.deepOrange,

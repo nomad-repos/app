@@ -82,6 +82,9 @@ class CustomBottomNavigationBar extends ConsumerWidget {
           case 3:
             // Agregar navegación para "Perfil" si es necesario
             break;
+          case 4:
+          //toca calender y no es ninguno de estos
+            break;
         }
       },
       child: Padding(
