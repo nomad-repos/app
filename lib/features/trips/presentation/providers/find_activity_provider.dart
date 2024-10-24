@@ -53,7 +53,7 @@ class FindActivityNotifier extends StateNotifier<FindActivityState> {
     );
   }
 
-  Future<List<Activity>?> getActivities(BuildContext context) async {
+  Future<List<GoogleActivity>?> getActivities(BuildContext context) async {
     state = state.copyWith(isPosting: true);
     
     validateFields();
@@ -64,7 +64,7 @@ class FindActivityNotifier extends StateNotifier<FindActivityState> {
       return null;
     }
 
-    List<Activity>? activities;
+    List<GoogleActivity>? activities;
     try {
       final token = await keyValueStorage.getValue<String>('token');
       final String location = '${state.selectedLocation!.latitude},${state.selectedLocation!.longitude}';
@@ -73,9 +73,8 @@ class FindActivityNotifier extends StateNotifier<FindActivityState> {
       final resp = await tripRepository.getActivites(token!, location, categoryId); 
 
       if (resp.statusCode == 200) {
-        // Mapeo de la lista de países desde el JSON a objetos Country
         activities = (resp.data['activities'] as List).map((activities) {
-          return Activity.fromJson(activities);
+          return GoogleActivity.fromJson(activities);
         }).toList();
 
         state = state.copyWith(activities: activities);
@@ -110,7 +109,7 @@ class FindActivityState {
 
   final Category? selectedCategory;
   final Location? selectedLocation;
-  final List<Activity>? activities;
+  final List<GoogleActivity>? activities;
 
   FindActivityState({
     this.isValid = false,
@@ -129,7 +128,7 @@ class FindActivityState {
     Category? categoryHome,
     Category? selectedCategory,
     Location? selectedLocation,
-    List<Activity>? activities,
+    List<GoogleActivity>? activities,
   }) =>
       FindActivityState(
         isValid: isValid ?? this.isValid,

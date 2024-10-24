@@ -2,8 +2,6 @@ import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nomad_app/features/trips/trip.dart';
-import 'package:nomad_app/shared/models/category.dart';
-import 'dart:developer';
 
 import '../models/models.dart';
 

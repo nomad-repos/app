@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -44,12 +42,13 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     });
 
     return Scaffold(
+      extendBody: true,
       body: Stack(
         children: [
           Positioned.fill(
             child: Image.asset(
               'assets/iniciarsesion.jpg',
-              fit: BoxFit.cover,
+              fit: BoxFit.fitHeight,
             ),
           ),
           Positioned.fill(
@@ -85,12 +84,12 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                       },
 
                       onTap: (calendarTapDetails) {
-                        final appointment = calendarTapDetails.appointments!.first as GetEvent;
+                        final appointment = calendarTapDetails.appointments!.first as Event;
                         context.push('/map_activity_screen', extra: appointment);
                       },
 
                      appointmentBuilder: (context, calendarAppointmentDetails) {
-                      final appointment = calendarAppointmentDetails.appointments.first as GetEvent;
+                      final appointment = calendarAppointmentDetails.appointments.first as Event;
                       return Container(
                         decoration: BoxDecoration(
                           color: Colors.deepOrange,
@@ -105,7 +104,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                 children: [
                                   Expanded(child: Container()),
                                   Text(
-                                    appointment.title,
+                                    appointment.eventTitle,
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 16,
@@ -114,7 +113,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                     overflow: TextOverflow.ellipsis, // Evitar desbordamientos
                                   ),
                                   Text(
-                                    '${appointment.startTime} - ${appointment.finishTime}',
+                                    '${appointment.eventStartTime} - ${appointment.eventFinishTime}',
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 12,

@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,14 +39,14 @@ class CreateEventNotifier extends StateNotifier<CreateEventState> {
     required this.errorProvider,
   }): super( CreateEventState());
 
-  void loadEventForEdit( GetEvent getEvent ) {
+  void loadEventForEdit( Event event ) {
     // Inicializar el estado con los valores del evento
     state = state.copyWith(
-      name: getEvent.title,
-      description: getEvent.eventDescription,
-      date: DateTime.parse(getEvent.date),
-      startTime: parseTimeOfDay(getEvent.startTime),
-      endTime: parseTimeOfDay(getEvent.finishTime),
+      name: event.eventTitle,
+      description: event.eventDescription,
+      date: event.eventDate,
+      startTime: parseTimeOfDay(event.eventStartTime),
+      endTime: parseTimeOfDay(event.eventFinishTime),
     );
   }
 
@@ -78,12 +77,13 @@ class CreateEventNotifier extends StateNotifier<CreateEventState> {
   void onStartTimeChanged(TimeOfDay? startTime) {state = state.copyWith(startTime: startTime);}
   void onEndTimeChanged(TimeOfDay? endTime) {state = state.copyWith(endTime: endTime);}
 
-  void onEditChange( GetEvent getEvent, BuildContext context) async {
-    loadEventForEdit( getEvent );
+  void onEditChange( Event event, BuildContext context) async {
+    loadEventForEdit( event );
     state = state.copyWith(
       isEditing: true,
-      getEvent: getEvent,
+      event: event,
     );
+
     context.push('/create_event_screen');
   }
 
@@ -107,9 +107,10 @@ class CreateEventNotifier extends StateNotifier<CreateEventState> {
       eventTitle: state.name, 
       eventDescription: state.description,
       eventDate: state.date!, 
-      eventStartTime: DateTime(state.date!.year, state.date!.month, state.date!.day, state.startTime!.hour, state.startTime!.minute),
-      eventFinishTime: DateTime(state.date!.year, state.date!.month, state.date!.day, state.endTime!.hour, state.endTime!.minute),
-      tripId: tripNotifier.state.trip!.tripId,
+      eventStartTime: '${state.date!.year}-${state.date!.month}-${state.date!.day} ${state.startTime!.hour}:${state.startTime!.minute}',
+      eventFinishTime: '${state.date!.year}-${state.date!.month}-${state.date!.day} ${state.endTime!.hour}:${state.endTime!.minute}',
+      tripId: tripNotifier.state.trip!.tripId, 
+      activity: null,
     );
     return event;
   }
@@ -127,8 +128,19 @@ class CreateEventNotifier extends StateNotifier<CreateEventState> {
       
       final token = await keyValueStorage.getValue<String>('token');
       final event = createObjectEvent();
-      final activity = state.activity!; 
       final int locationId = tripNotifier.state.trip!.tripId;
+
+      
+      final activity = Activity(
+        activityAddress: state.activity!.activityAddress, 
+        activityExtId: state.activity!.activityExtId, 
+        activityId: 1, 
+        activityLatitude: state.activity!.activityLocation.latitude, 
+        activityLongitude: state.activity!.activityLocation.longitude, 
+        activityName: state.activity!.activityName, 
+        activityUrlPhoto: state.activity!.activityPhotosUri, 
+        localityId: locationId
+      );
  
       await tripRepository.createEvent(event, activity, token!, locationId);
       await tripNotifier.getEvents();
@@ -154,11 +166,12 @@ class CreateEventNotifier extends StateNotifier<CreateEventState> {
     try {
       final token = await keyValueStorage.getValue<String>('token');
 
-      // Terminar esta funcion.
-      await tripRepository.updateEvent();
+      final event = createObjectEvent(); 
+      event.eventId = state.event!.eventId; 
+
+      await tripRepository.updateEvent(event, token!);
       await tripNotifier.getEvents();
       context.push('/home_trip_screen');
-
 
     } catch (e) {
       errorProvider.setError(ErrorTripStatus.errorCreatingEvent, null);
@@ -167,7 +180,7 @@ class CreateEventNotifier extends StateNotifier<CreateEventState> {
     }
   }
 
-  void selectActivity(Activity activity) {
+  void selectActivity(GoogleActivity activity) {
     state = state.copyWith(activity: activity);
   }
 }
@@ -184,8 +197,7 @@ class CreateEventState {
   final TimeOfDay? endTime;
 
   final Event? event;
-  final Activity? activity;
-  final GetEvent? getEvent; 
+  final GoogleActivity? activity;
 
   CreateEventState({
     this.isPosting = false,
@@ -200,7 +212,6 @@ class CreateEventState {
 
     this.event,
     this.activity,
-    this.getEvent,
   });
 
   CreateEventState copyWith({
@@ -215,8 +226,7 @@ class CreateEventState {
     TimeOfDay? endTime,
 
     Event? event,
-    Activity? activity,
-    GetEvent? getEvent, 
+    GoogleActivity? activity,
 
   }) => CreateEventState(
     isPosting: isPosting ?? this.isPosting,
@@ -231,6 +241,5 @@ class CreateEventState {
 
     event: event ?? this.event,
     activity: activity ?? this.activity,
-    getEvent: getEvent ?? this.getEvent,
   );
 }

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -222,7 +221,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                           title: TextFormField(
                             decoration: InputDecoration(
                               hintText: ref.watch(createEventProvider).isEditing 
-                                ? ref.watch(createEventProvider).getEvent!.activity.activityName
+                                ? ref.watch(createEventProvider).event!.activity!.activityName
                                 : ref.watch(createEventProvider).activity == null 
                                   ? 'Actividad' 
                                   : ref.watch(createEventProvider).activity!.activityName,

@@ -3,8 +3,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:nomad_app/features/trips/trip.dart';
 import 'package:nomad_app/helpers/helpers.dart';
-import 'package:nomad_app/shared/models/activity.dart';
 import 'package:nomad_app/shared/models/event.dart';
+import 'package:nomad_app/shared/utils/utils.dart';
+
+import '../../../../shared/models/activity.dart';
 
 class TripDSimpl implements TripDs {
   final dio = Dio(BaseOptions(
@@ -81,6 +83,8 @@ class TripDSimpl implements TripDs {
               "authorization": "Bearer $token",
             },
           ));
+
+
       if (resp.statusCode == 200) {
         return resp;
       }
@@ -102,7 +106,6 @@ class TripDSimpl implements TripDs {
   Future<void> createEvent(Event event, Activity activity, String token, int locationId) async {
     try {
 
-      final DateFormat timeFormat = DateFormat('HH:mm:ss');
       final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
 
       final createEventJson = {    
@@ -110,8 +113,8 @@ class TripDSimpl implements TripDs {
               "event_title": event.eventTitle,
               "event_description": event.eventDescription,
               "event_date": dateFormat.format(event.eventDate),
-              "event_start_time": timeFormat.format(event.eventStartTime),
-              "event_finish_time": timeFormat.format(event.eventFinishTime),
+              "event_start_time": event.eventStartTime,
+              "event_finish_time": event.eventFinishTime,
               "trip_id": event.tripId,
             },
             "activity":{
@@ -120,7 +123,7 @@ class TripDSimpl implements TripDs {
               "activity_title": activity.activityName,
               "activity_latitude": activity.activityLatitude,
               "activity_longitude": activity.activityLongitude,
-              "activity_photo_url": activity.activityPhotosUri,
+              "activity_photo_url": activity.activityUrlPhoto,
               "locality_id": locationId,
           }
       };
@@ -221,9 +224,54 @@ class TripDSimpl implements TripDs {
   }
   
   @override
-  Future updateEvent() {
-    // TODO: implement updateEvent
-    throw UnimplementedError();
+  Future updateEvent( Event event, String token) async {
+    try {
+
+      final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+
+      final createEventJson = {    
+        "event_id": event.eventId,
+        "event_title": event.eventTitle,
+        "event_date": dateFormat.format(event.eventDate),
+        "event_start_time": extractTime(event.eventStartTime),
+        "event_finish_time": extractTime(event.eventFinishTime),
+        "trip_id": event.tripId,
+      };
+
+      print(createEventJson);
+
+
+      final resp = await dio.post(
+        '/events/update_event',
+        data: createEventJson,
+        options: Options(headers: {
+          "authorization": "Bearer $token",
+        }),
+      );
+
+      print(resp);
+
+      if (resp.statusCode == 200) {
+        return resp.data;
+      }
+
+    } on DioException catch (e) {
+      print(e.response?.data);
+      if (e.response?.statusCode == 400) {
+        throw CustomError(
+            e.response?.data['msg'] ?? 'Invalid format');
+      }
+      if (e.type == DioExceptionType.connectionTimeout) {
+        throw CustomError('Revisar conexión a internet.');
+      }
+
+      if (e.response?.statusCode == 500) {
+      throw CustomError(e.response?.data['msg'] ?? 'Error en el servidor');
+    }
+    throw Exception();
+    } catch (e) {
+      throw Exception();
+    }
   }
 }
       

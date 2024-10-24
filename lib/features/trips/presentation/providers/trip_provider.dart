@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -119,6 +120,7 @@ class TripNotifier extends StateNotifier<TripState> {
   Future<List<Event>?> getEvents() async {
     List<Event>? events;
     try {
+      state = state.copyWith(isPosting: true);
       final token = await keyValueStorage.getValue<String>('token');
 
       final resp = await tripRepository.getAllEvent(state.trip!.tripId, token!);
@@ -127,22 +129,51 @@ class TripNotifier extends StateNotifier<TripState> {
         return Event.fromJson(event);
       }).toList();
 
+
+      for (Event event in events) {
+        // Obtener la fecha del evento
+        DateTime eventDate = event.eventDate; // Suponiendo que `date` es de tipo DateTime
+        
+        // Extraer las horas y minutos (suponiendo que están en formato "HH:mm")
+        List<String> startTimeParts = event.eventStartTime.split(':');
+        List<String> finishTimeParts = event.eventFinishTime.split(':');
+
+        // Crear el DateTime para el inicio y el fin
+        DateTime parsedStartTime = DateTime(
+          eventDate.year,
+          eventDate.month,
+          eventDate.day,
+          int.parse(startTimeParts[0]), // Hora de inicio
+          int.parse(startTimeParts[1]), // Minuto de inicio
+        );
+
+        DateTime parsedFinishTime = DateTime(
+          eventDate.year,
+          eventDate.month,
+          eventDate.day,
+          int.parse(finishTimeParts[0]), // Hora de fin
+          int.parse(finishTimeParts[1]), // Minuto de fin
+        );
+
+        // Asignar los valores de tiempo procesado a las propiedades del evento
+        event.setParsedStartTime = parsedStartTime; // o usa el formato que necesites
+        event.setParsedFinishTime = parsedFinishTime; // o usa el formato que necesites
+      }
+
       state = state.copyWith(events: events);
     } catch (e) {
-      //TODO: Manejar los errores
-    }
+      print(e.toString());
+    } finally {
+      state = state.copyWith(isPosting: false);
+    } 
     return events;
   }
 
   List<Appointment> getAppointments(List<GetEvent> events) {
     return events.map((event) {
       return Appointment(
-        startTime: DateTime.parse(event.date +
-            ' ' +
-            event.startTime), // Combinamos la fecha y la hora de inicio
-        endTime: DateTime.parse(event.date +
-            ' ' +
-            event.finishTime), // Combinamos la fecha y la hora de finalización
+        startTime: DateTime.parse('${event.date} ${event.startTime}'), // Combinamos la fecha y la hora de inicio
+        endTime: DateTime.parse('${event.date} ${event.finishTime}'), // Combinamos la fecha y la hora de finalización
         subject: event.title,
         notes: event.eventDescription,
         id: event.eventId,

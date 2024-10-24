@@ -5,12 +5,13 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:nomad_app/features/trips/trip.dart';
 
 import 'package:nomad_app/shared/models/models.dart';
+import 'package:nomad_app/shared/shared.dart';
 import 'package:nomad_app/shared/utils/utils.dart';
 
 class MapActivityScreen extends ConsumerStatefulWidget {
-  final GetEvent? getEvent;
+  final Event? event;
 
-  const MapActivityScreen({required this.getEvent, super.key});
+  const MapActivityScreen({required this.event, super.key});
 
   @override
   ConsumerState<MapActivityScreen> createState() => _MapActivityScreenState();
@@ -19,7 +20,7 @@ class MapActivityScreen extends ConsumerStatefulWidget {
 class _MapActivityScreenState extends ConsumerState<MapActivityScreen> {
   late GoogleMapController _mapController;
   bool _isMapInitialized = false;
-  Activity? activity;
+  GoogleActivity? activity;
 
   @override
   void initState() {
@@ -37,13 +38,13 @@ class _MapActivityScreenState extends ConsumerState<MapActivityScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if(widget.getEvent != null){
-      return getEventActivity(widget.getEvent);
+    if(widget.event != null){
+      return getEventActivity(widget.event);
     }
     return normalActivity(activity);
   }
   
-  Widget normalActivity(Activity? activity) {
+  Widget normalActivity(GoogleActivity? activity) {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -120,16 +121,17 @@ class _MapActivityScreenState extends ConsumerState<MapActivityScreen> {
                           GoogleMap(
                             initialCameraPosition: CameraPosition(
                               target: LatLng(
-                                  activity.activityLongitude,
-                                  activity.activityLatitude),
+                                  activity.activityLocation.longitude,
+                                  activity.activityLocation.latitude),
                               zoom: 14.4746,
                             ),
                             markers: {
                               Marker(
                                 markerId: const MarkerId('1'),
                                 position: LatLng(
-                                    activity.activityLatitude,
-                                    activity.activityLongitude),
+                                    activity.activityLocation.longitude,
+                                    activity.activityLocation.latitude
+                                  ),
                                 infoWindow: InfoWindow(
                                   title: activity.activityName,
                                 ),
@@ -162,7 +164,7 @@ class _MapActivityScreenState extends ConsumerState<MapActivityScreen> {
     );
   }
 
-  Widget getEventActivity(GetEvent? getEvent){
+  Widget getEventActivity(Event? event){
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -182,7 +184,7 @@ class _MapActivityScreenState extends ConsumerState<MapActivityScreen> {
                       IconButton(
                         icon: const Icon(Icons.edit),
                         onPressed: () {
-                           ref.watch(createEventProvider.notifier).onEditChange( getEvent!, context);
+                           ref.watch(createEventProvider.notifier).onEditChange( event!, context);
                         },
                       ),
                       IconButton(
@@ -205,19 +207,19 @@ class _MapActivityScreenState extends ConsumerState<MapActivityScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          getEvent?.activity.activityName ?? 'Sin nombre', // Cargar dinámicamente
+                          event?.activity?.activityName ?? 'Sin nombre', // Cargar dinámicamente
                           style: const TextStyle(
                               fontSize: 20, fontWeight: FontWeight.w300),
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          getFormattedDate(DateTime.tryParse(getEvent!.date)), // Cargar fecha dinámica si aplica
+                          getFormattedDate(event!.eventDate), // Cargar fecha dinámica si aplica
                           style: const TextStyle(
                               fontSize: 16, fontWeight: FontWeight.w300),
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          "${getEvent.startTime}-${getEvent.finishTime}", // Cargar hora dinámica si aplica
+                          "${event.eventStartTime}-${event.eventFinishTime}", // Cargar hora dinámica si aplica
                           style: const TextStyle(
                               fontSize: 16, fontWeight: FontWeight.w300),
                         ),
@@ -239,8 +241,8 @@ class _MapActivityScreenState extends ConsumerState<MapActivityScreen> {
                           GoogleMap(
                             initialCameraPosition: CameraPosition(
                               target: LatLng(
-                                  getEvent.activity.activityLatitude,
-                                  getEvent.activity.activityLongitude
+                                  event.activity!.activityLatitude,
+                                  event.activity!.activityLongitude
                                 ),
                               zoom: 14.4746,
                             ),
@@ -248,11 +250,11 @@ class _MapActivityScreenState extends ConsumerState<MapActivityScreen> {
                               Marker(
                                 markerId: const MarkerId('1'),
                                 position:  LatLng(
-                                  getEvent.activity.activityLatitude,
-                                  getEvent.activity.activityLongitude
+                                  event.activity!.activityLatitude,
+                                  event.activity!.activityLongitude
                                 ),
                                 infoWindow: InfoWindow(
-                                  title: getEvent.activity.activityName,
+                                  title: event.activity!.activityName,
                                 ),
                               ),
                             },

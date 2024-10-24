@@ -77,8 +77,8 @@ final goRouterProvider = Provider((ref) {
         GoRoute(
           path: "/map_activity_screen",
           builder: (context, state){
-            final GetEvent? getEvent = state.extra as GetEvent?;
-            return MapActivityScreen(getEvent: getEvent);
+            final Event? event = state.extra as Event?;
+            return MapActivityScreen(event: event);
           }
         ),
         

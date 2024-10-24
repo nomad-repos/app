@@ -39,3 +39,14 @@ String getMonthName(int month) {
       default: return '';
     }
   }
+
+
+String extractTime(String datetimeStr) {
+  // Parsear la cadena a un objeto DateTime
+  DateTime datetime = DateFormat("yyyy-MM-dd HH:mm").parse(datetimeStr);
+
+  // Formatear el objeto DateTime para extraer solo la hora
+  String time = DateFormat("HH:mm:ss").format(datetime);
+
+  return time;
+}

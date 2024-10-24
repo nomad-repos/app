@@ -141,7 +141,17 @@ class _WalletScreen extends ConsumerState<WalletScreen> {
                 )
               )
         ]
-        )
+        ),
+
+        Visibility(
+            visible: ref.watch(tripProvider).isPosting,
+            child: Container(
+              color: Colors.black.withOpacity(0.5),
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          )
       ]),
 
       //BARRA DE PANTALLAS

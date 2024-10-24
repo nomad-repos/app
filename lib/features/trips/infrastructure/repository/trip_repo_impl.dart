@@ -1,7 +1,6 @@
 
 import 'package:nomad_app/features/trips/trip.dart';
-import 'package:nomad_app/shared/models/activity.dart';
-import 'package:nomad_app/shared/models/event.dart';
+import 'package:nomad_app/shared/models/models.dart';
 
 class TripRepositoryImpl implements TripRepository{
 
@@ -42,9 +41,8 @@ class TripRepositoryImpl implements TripRepository{
   }
   
   @override
-  Future updateEvent() {
-    // TODO: implement updateEvent
-    throw UnimplementedError();
+  Future updateEvent( Event event, String token) {
+    return tripDs.updateEvent(event, token);
   }
 }
 

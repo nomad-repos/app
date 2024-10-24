@@ -255,7 +255,7 @@ Widget _buildSliverList(BuildContext context, FindActivityState findActivity,
 
 // Build individual activity item
 Widget _buildActivityItem(
-    BuildContext context, Activity activity, CreateEventNotifier createEvent) {
+    BuildContext context, GoogleActivity activity, CreateEventNotifier createEvent) {
   return Padding(
     padding: const EdgeInsets.only(top: 9, left: 20, right: 20, bottom: 9),
     child: Container(
