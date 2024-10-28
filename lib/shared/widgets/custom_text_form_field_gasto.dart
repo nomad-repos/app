@@ -44,13 +44,13 @@ class _CustomTextFormFieldGasto extends State<CustomTextFormFieldGasto> {
 
     final border = OutlineInputBorder(
       borderSide: const BorderSide(color: Color.fromRGBO(51, 101, 138, 1)),
-      borderRadius: BorderRadius.circular(40),
+      borderRadius: BorderRadius.circular(16),
     );
 
-    const borderRadius = Radius.circular(15);
+    const borderRadius = Radius.circular(5);
 
     return Container(
-      width: MediaQuery.of(context).size.width * 0.7,
+      width: MediaQuery.of(context).size.width * 0.75,
       
       decoration: const BoxDecoration(
         color: Colors.transparent,
@@ -62,7 +62,7 @@ class _CustomTextFormFieldGasto extends State<CustomTextFormFieldGasto> {
         boxShadow: [
           BoxShadow(
             color: Colors.transparent,
-            blurRadius: 10,
+            blurRadius: 5,
             offset: Offset(0, 5),
           ),
         ],
@@ -74,7 +74,7 @@ class _CustomTextFormFieldGasto extends State<CustomTextFormFieldGasto> {
         obscureText: _obscureText,
         keyboardType: widget.keyboardType,
         initialValue: widget.initialValue,
-        style: const TextStyle(fontSize: 15, color: Colors.white),
+        style: const TextStyle(fontSize: 18, color: Color.fromRGBO(51, 101, 138, 1), fontWeight: FontWeight.w400),
         decoration: InputDecoration(
           floatingLabelStyle:
               const TextStyle(color: Color.fromARGB(255, 65, 63, 63), fontSize: 18),
@@ -88,13 +88,13 @@ class _CustomTextFormFieldGasto extends State<CustomTextFormFieldGasto> {
           label: widget.label != null ? Text(widget.label!) : null,
           hintText: widget.hint,
           hintStyle: const TextStyle(
-              color: Color.fromRGBO(51, 101, 138, 1), fontSize: 15, fontWeight: FontWeight.w300),
+              color: Color.fromRGBO(51, 101, 138, 1), fontSize: 18, fontWeight: FontWeight.w400),
           helperText: widget.helper,
           alignLabelWithHint: true,
           errorText: widget.errorMessage,
           focusColor: colors.primary,
           contentPadding:
-              const EdgeInsets.symmetric(horizontal: 25, vertical: 9),
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           suffixIcon: widget.obscureText
               ? IconButton(
                   icon: Icon(

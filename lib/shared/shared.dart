@@ -7,6 +7,7 @@ export 'package:nomad_app/shared/widgets/custom_filled_button.dart';
 export 'package:nomad_app/shared/widgets/custom_text_form_field_auth.dart';
 export 'package:nomad_app/shared/widgets/custom_search_dd.dart';
 export 'package:nomad_app/shared/widgets/custom_text_form_field_gasto.dart';
+export 'package:nomad_app/shared/widgets/custom_search_status_dd.dart';
 
 export 'inputs/inputs.dart';
 export 'models/models.dart';

@@ -142,7 +142,7 @@ class _WalletScreen extends ConsumerState<WalletScreen> {
               )
         ]
         ),
-
+        
         Visibility(
             visible: ref.watch(tripProvider).isPosting,
             child: Container(

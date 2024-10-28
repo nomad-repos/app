@@ -9,6 +9,12 @@ abstract class TripDs {
 
   Future getCategories(String token);
   Future getActivites(String token, String localityLocation, int categoryId);
-  //TODO: ver los parametros que lleva
+  
   Future updateEvent( Event event, String token );
+
+  Future<void> addExpense( Expense expense, String token );
+  Future getExpenses (int tripId, String token);
+
+  //TODO: ver los parametros que lleva
+
 }

@@ -114,10 +114,9 @@ class _FindActivityScreenState extends ConsumerState<FindActivityScreen> {
         children: [
           Row(children: [
             _buildBackButton(context, findActivity),
-            const SizedBox(width: 5),
             _buildHeaderText(),
           ]), // Title text
-          const SizedBox(height: 16), // Space between title and dropdown
+          const SizedBox(height: 5), // Space between title and dropdown
           _buildCategorySearch(context, trip, findActivity), // First dropdown
           const SizedBox(height: 10), // Space between dropdowns
           _buildLocationSearch(
@@ -155,6 +154,7 @@ class _FindActivityScreenState extends ConsumerState<FindActivityScreen> {
           color: Colors.transparent, // Background color for dropdown
         ),
         child: CustomSearchDD(
+          color: Colors.white,
           list: trip.categories,
           texto: findActivity.categoryHome == null
               ? "Seleccionar categoría"
@@ -183,6 +183,7 @@ class _FindActivityScreenState extends ConsumerState<FindActivityScreen> {
                   color: Colors.transparent,
                 ),
                 child: CustomSearchDD(
+                  color: Colors.white,
                   list: trip.trip!.tripLocations!,
                   texto: findActivity.selectedLocation == null
                       ? "Seleccionar localidad"
@@ -237,7 +238,7 @@ Widget _buildSliverList(BuildContext context, FindActivityState findActivity,
               context, findActivity.activities![index], createEvent);
         } else {
           return const Padding(
-            padding: EdgeInsets.only(left: 5),
+            padding: EdgeInsets.only(left: 5, top: 30),
             child: Text(
               'No hay actividades.',
               style: TextStyle(color: Colors.white, fontSize: 18),

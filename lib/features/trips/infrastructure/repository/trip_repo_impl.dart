@@ -44,5 +44,15 @@ class TripRepositoryImpl implements TripRepository{
   Future updateEvent( Event event, String token) {
     return tripDs.updateEvent(event, token);
   }
+  
+  @override
+  Future addExpense(Expense expense, String token) {
+    return tripDs.addExpense(expense, token);
+  }
+  
+  @override
+  Future getExpenses(int tripId, String token) {
+    return tripDs.getExpenses(tripId, token);
+  }
 }
 

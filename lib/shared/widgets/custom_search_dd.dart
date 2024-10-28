@@ -1,6 +1,7 @@
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nomad_app/features/trips/presentation/providers/expense_provider.dart';
 import 'package:nomad_app/features/trips/trip.dart';
 
 import '../models/models.dart';
@@ -9,12 +10,14 @@ class CustomSearchDD extends ConsumerWidget {
   final List list;
   final String texto;
   final String searchText;
+  final Color color;
 
   const CustomSearchDD(
       {super.key,
       required this.list,
       required this.texto,
-      required this.searchText});
+      required this.searchText,
+      required this.color});
 
   List<dynamic> verifyListContent() {
     List<dynamic> listaItem = [];
@@ -47,10 +50,19 @@ class CustomSearchDD extends ConsumerWidget {
     }
   }
 
+  // Esta función ahora solo devolverá el valor categoryId directamente.
+  int? getCategoryId(dynamic value) {
+    if (value is Category) {
+      return value.categoryId;
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     List<dynamic> items = verifyListContent(); // Ahora contiene las instancias
     final findActivityPro = ref.watch(findActivityProvider.notifier);
+    final expenseNotifier = ref.read(expenseProvider.notifier); 
 
     return CustomDropdown(
       hintText: texto,
@@ -71,21 +83,23 @@ class CustomSearchDD extends ConsumerWidget {
           }
           return false;
         });
-        setSelectedOption(selectedItem, findActivityPro); // Pasar la instancia completa
+        setSelectedOption(selectedItem, findActivityPro); 
+        expenseNotifier.onCategoryChanged(selectedItem.categoryId);
       },
+
       decoration: CustomDropdownDecoration(
-        listItemStyle: TextStyle( fontSize: 19),
+        listItemStyle: const TextStyle( fontSize: 19),
         closedBorderRadius: BorderRadius.circular(16),
         closedBorder: Border.all(
-          color: Colors.white,
+          color: color,
           width: 1.0,
         ),
-        hintStyle: const TextStyle(
+        hintStyle:  TextStyle(
           fontSize: 19,
-          color: Colors.white,
+          color: color,
         ),
-        headerStyle: const TextStyle(
-          color: Colors.white,
+        headerStyle:  TextStyle(
+          color: color,
           fontSize: 20,
         ),
         closedFillColor: Colors.transparent,
