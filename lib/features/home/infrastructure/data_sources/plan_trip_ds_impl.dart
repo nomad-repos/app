@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:nomad_app/features/home/home.dart';
+import 'package:nomad_app/shared/utils/utils.dart';
 
 import '../../../../helpers/helpers.dart';
 
@@ -45,12 +46,13 @@ class PlanTripDSimpl implements PlanTripDS {
   Future getCities(String isoCode, String token) async {
     try {
       final resp =
-          await dio.get('/trips/get_location?country_iso_code=$isoCode',
-              options: Options(
-                headers: {
-                  "authorization": "Bearer $token",
-                },
-              ));
+        await dio.get('/countries/get_localities?country_iso_code=$isoCode',
+          options: Options(
+            headers: {
+              "authorization": "Bearer $token",
+            },
+          )
+        );
 
       if (resp.statusCode == 200) {
         return resp;
@@ -80,12 +82,10 @@ class PlanTripDSimpl implements PlanTripDS {
       final createTripJson = {
         "user_id": userId,
         "trip_name": name,
-        "start_date": initDate,
-        "end_date": endDate,
-        "locations": locations
+        "trip_start_date": initDate,
+        "trip_finish_date": endDate,
+        "localities": locations
       };
-
-      print(createTripJson);
 
       final resp = await dio.post(
         '/trips/create_trip',

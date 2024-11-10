@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nomad_app/features/trips/trip.dart';
 import 'package:nomad_app/helpers/helpers.dart';
-import 'package:nomad_app/shared/models/models.dart';
 import 'package:nomad_app/shared/shared.dart';
 
 final expenseProvider =
@@ -38,27 +37,22 @@ class ExpenseNotifier extends StateNotifier<ExpenseState> {
 
   void onDescriptionChanged(String description) {
     state = state.copyWith(description: description);
-    print(state.description);
   }
 
   void onAmountChanged(double amount) {
     state = state.copyWith(amount: amount);
-    print(state.amount);
   }
 
   void onDateChanged(DateTime date) {
     state = state.copyWith(date: date);
-    print(state.date);
   }
 
   void onStatusChanged(String status) {
     state = state.copyWith(status: status);
-    print (state.status);  
   }
 
   void onCategoryChanged(int categoryId) {
     state = state.copyWith(categoryId: categoryId);
-    print (state.categoryId);
   }
 
   void validateForm() {
@@ -100,14 +94,13 @@ class ExpenseNotifier extends StateNotifier<ExpenseState> {
       if (expense == null) {
         return null;
       }
-      print(expense.expenseAmount);
-      print(expense.expenseDescription);
       await tripRepository.addExpense(expense, token!);
-      print ('Expense added');
       // await tripNotifier.getExpenses(tripNotifier.state.trip!.tripId);
+      
       context.push('/wallet_screen');
     
     } catch (e) {
+      //TODO: Mostrar algun mensaje o algo
     } finally {
       state = state.copyWith(isPosting: false);
     }

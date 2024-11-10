@@ -40,8 +40,6 @@ class HomeNotifier extends StateNotifier<HomeState> {
 
       final resp = await homeRepository.getTrips( userId, token! ); // Si o si hay un token porque si no hay token no se puede acceder a esta pantalla.
 
-      print(resp.data["trips"]);
-
       if (resp.statusCode == 200) {
         // Mapeo de la lista de países desde el JSON a objetos Country
         final List<Trip> trips = (resp.data['trips'] as List)

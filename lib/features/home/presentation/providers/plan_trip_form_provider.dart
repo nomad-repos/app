@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nomad_app/features/home/home.dart';
 import 'package:nomad_app/helpers/helpers.dart';
 import 'package:nomad_app/shared/shared.dart';
+import 'package:nomad_app/shared/utils/utils.dart';
 
 final planTripFormProvider =
     StateNotifierProvider<PlanTripNotifier, PlanTripState>((ref) {
@@ -53,7 +54,7 @@ class PlanTripNotifier extends StateNotifier<PlanTripState> {
 
       if (resp.statusCode == 200) {
         // Mapeo de la lista de países desde el JSON a objetos Country
-        final List<Country> countries = (resp.data as List)
+        final List<Country> countries = (resp.data['countries'] as List)
             .map((country) => Country.fromJson(country))
             .toList();
 
@@ -63,7 +64,7 @@ class PlanTripNotifier extends StateNotifier<PlanTripState> {
         );
       }
     } catch (e) {
-      //TODO: Manejar errores
+      
     }
   }
 
@@ -74,9 +75,11 @@ class PlanTripNotifier extends StateNotifier<PlanTripState> {
       // Asumes que siempre hay token, porque si no hay no se accede a esta pantalla.
       final resp = await planTripRepository.getCities(isoCode, token!);
 
+      print(resp.data);
+
       if (resp.statusCode == 200) {
         // Mapeo de la lista de países desde el JSON a objetos Country
-        final List<Location> locations = (resp.data as List)
+        final List<Location> locations = (resp.data['localities'] as List)
             .map((location) => Location.fromJson(location))
             .toList();
 
@@ -153,17 +156,6 @@ class PlanTripNotifier extends StateNotifier<PlanTripState> {
         state.selectedLocations.isNotEmpty;
   }
 
-  String formatDate(String date) {
-    // Parsear la fecha desde el formato dd/MM/yyyy
-    DateTime parsedDate = DateTime.parse(
-        '${date.split('/')[2]}-${date.split('/')[1]}-${date.split('/')[0]}');
-    
-    // Convertir al formato yyyy-MM-dd
-    String formattedDate = '${parsedDate.year}-${parsedDate.month.toString().padLeft(2, '0')}-${parsedDate.day.toString().padLeft(2, '0')}';
-    
-    return formattedDate;
-  }
-
 
   Future<bool> createTrip() async {
     if (!isFormValid()) {
@@ -184,8 +176,8 @@ class PlanTripNotifier extends StateNotifier<PlanTripState> {
 
       final locations = state.selectedLocations
           .map((location) => {
-                "country_iso": location.isoCode,
-                "location_id": location.localityId,
+                "country_iso_code": location.isoCode,
+                "locality_id": location.localityId,
               })
           .toList();
 

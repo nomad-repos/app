@@ -115,8 +115,8 @@ class TripDSimpl implements TripDs {
           "event_title": event.eventTitle,
           "event_description": event.eventDescription,
           "event_date": dateFormat.format(event.eventDate),
-          "event_start_time": event.eventStartTime,
-          "event_finish_time": event.eventFinishTime,
+          "event_start_time": extractTime(event.eventStartTime),
+          "event_finish_time": extractTime(event.eventFinishTime),
           "trip_id": event.tripId,
         },
         "activity": {
@@ -142,7 +142,6 @@ class TripDSimpl implements TripDs {
         return resp.data;
       }
     } on DioException catch (e) {
-      print(e.response?.data);
       if (e.response?.statusCode == 400) {
         throw CustomError(e.response?.data['msg'] ?? 'Invalid format');
       }
@@ -233,8 +232,6 @@ class TripDSimpl implements TripDs {
         "trip_id": event.tripId,
       };
 
-      print(createEventJson);
-
       final resp = await dio.post(
         '/events/update_event',
         data: createEventJson,
@@ -243,13 +240,10 @@ class TripDSimpl implements TripDs {
         }),
       );
 
-      print(resp);
-
       if (resp.statusCode == 200) {
         return resp.data;
       }
     } on DioException catch (e) {
-      print(e.response?.data);
       if (e.response?.statusCode == 400) {
         throw CustomError(e.response?.data['msg'] ?? 'Invalid format');
       }
@@ -269,36 +263,33 @@ class TripDSimpl implements TripDs {
   @override
   Future<void> addExpense(Expense expense, String token) async{
     try {
-      print (expense.expenseAmount);
       final addExpenseJson = {
-        
-        "expense_description": expense.expenseDescription,
-        "expense_amount": expense.expenseAmount,
-        "expense_date": expense.expenseDate,
         "trip_id": expense.tripId,
+        "expense_description": expense.expenseDescription,
+        "expense_date": formatDateDateTime(expense.expenseDate),
+        "expense_amount": expense.expenseAmount,
         "category_id" : expense.categoryId,
         "user_id" : expense.userId,
         "expense_status" : expense.expenseStatus
-    
       };
 
-      print (addExpenseJson);
+      print(addExpenseJson);
 
       final resp = await dio.post(
-        '/wallet_screen',
+        '/expenses/add_expense',
         data: addExpenseJson,
         options: Options(headers: {
           "authorization": "Bearer $token",
         }),
       );
-       print (resp.data);
+       print(resp.data);
 
       if (resp.statusCode == 200) {
         return resp.data;
       }
 
     } on DioException catch (e) {
-      print(e.response?.data);
+      print(e.message);
       if (e.response?.statusCode == 400) {
         throw CustomError(e.response?.data['msg'] ?? 'Invalid format');
       }

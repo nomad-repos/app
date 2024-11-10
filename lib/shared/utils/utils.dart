@@ -50,3 +50,21 @@ String extractTime(String datetimeStr) {
 
   return time;
 }
+
+String formatDateDateTime(DateTime date) {
+  // Formatear la fecha al formato dd/MM/yyyy
+  String formattedDate = DateFormat('yyyy-MM-dd').format(date);
+
+  return formattedDate;
+}
+
+String formatDate(String date) {
+  // Parsear la fecha desde el formato dd/MM/yyyy
+  DateTime parsedDate = DateTime.parse(
+      '${date.split('/')[2]}-${date.split('/')[1]}-${date.split('/')[0]}');
+  
+  // Convertir al formato yyyy-MM-dd
+  String formattedDate = '${parsedDate.year}-${parsedDate.month.toString().padLeft(2, '0')}-${parsedDate.day.toString().padLeft(2, '0')}';
+  
+  return formattedDate;
+}

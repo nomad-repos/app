@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nomad_app/features/trips/presentation/presentation.dart';
 import 'package:nomad_app/features/trips/trip.dart';
+import 'package:nomad_app/helpers/utils.dart';
 import 'package:nomad_app/shared/utils/utils.dart'; // Asegúrate de tener el modelo de `Event`.
 
 class CreateEventScreen extends ConsumerStatefulWidget {
@@ -26,6 +27,12 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   @override
   Widget build(BuildContext context) {
     final trip = ref.watch(tripProvider);
+
+    ref.listen(errorTripProvider, (previous, next) {
+      if (next.errorMessage.isNotEmpty) {
+        showSnackbar(context, next.errorMessage, Colors.red);
+      }
+    });
 
     return Scaffold(
       backgroundColor: Colors.transparent,
