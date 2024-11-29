@@ -144,6 +144,7 @@ class CreateEventNotifier extends StateNotifier<CreateEventState> {
  
       await tripRepository.createEvent(event, activity, token!, locationId);
       await tripNotifier.getEvents();
+      resetForm();
       context.push('/home_trip_screen');
 
 
@@ -152,6 +153,17 @@ class CreateEventNotifier extends StateNotifier<CreateEventState> {
     } finally {
       state = state.copyWith(isPosting: false);
     }
+  }
+
+  void resetForm () {
+    state = state.copyWith(
+      name: '',
+      description: '',
+      date: null,
+      startTime: null,
+      endTime: null,
+      activity: null,
+    );
   }
 
   void updateEvent( BuildContext context ) async {

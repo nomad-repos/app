@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nomad_app/features/trips/presentation/presentation.dart';
+import 'package:nomad_app/features/trips/presentation/providers/expense_provider.dart';
 import 'package:nomad_app/features/trips/trip.dart';
+import 'package:nomad_app/helpers/helpers.dart';
 import 'package:nomad_app/shared/shared.dart';
 
 class WalletScreen extends ConsumerStatefulWidget {
@@ -33,6 +35,7 @@ class _WalletScreen extends ConsumerState<WalletScreen> {
   @override
   Widget build(BuildContext context) {
     final trip = ref.watch(tripProvider);
+    final expense = ref.watch(expenseProvider);
 
     return Scaffold(
       //FONDO DE PANTALLA
@@ -70,23 +73,23 @@ class _WalletScreen extends ConsumerState<WalletScreen> {
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
                           color: const Color.fromRGBO(244, 245, 246, 1)),
-                      child: const Padding(
-                        padding: EdgeInsets.only(left: 40),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 40),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text('Gastos Totales:',
+                            const Text('Gastos Totales:',
                                 style: TextStyle(
                                     color: Color.fromRGBO(51, 101, 138, 1),
                                     fontSize: 20,
                                     fontWeight: FontWeight.w600)),
                             Row(
                               children: [
-                              Icon(Icons.attach_money, color: Colors.black),
+                              const Icon(Icons.attach_money, color: Colors.black),
                               Text(
-                                '230,400',
-                                style: TextStyle(
+                                ref.read(expenseProvider).total.toString(),
+                                style: const TextStyle(
                                     fontSize: 30,
                                     fontWeight: FontWeight.w600),
                               ),
@@ -103,12 +106,6 @@ class _WalletScreen extends ConsumerState<WalletScreen> {
 
                     ),
 
-                  
-                
-
-                    const SizedBox(height: 30),
-                      
-                    const HorizontalListView(itemCount: 10),
 
                     const SizedBox(height: 30),
 
@@ -124,16 +121,8 @@ class _WalletScreen extends ConsumerState<WalletScreen> {
                           DataColumn(label: Text('Monto')),
                           DataColumn(label: Text('Estado')),
                           DataColumn(label: Text('Fecha')),
-                          DataColumn(label: Text('Categoria')),
-                        ], rows: [
-                          DataRow(cells: [
-                            DataCell(Text('Comida')),
-                            DataCell(Text('200')),
-                            DataCell(Text('Pagado')),
-                            DataCell(Text('12/12/2021')),
-                            DataCell(Text('Comida')),
-                          ]),
-                        ]
+                          DataColumn(label: Text('Agrado')),
+                        ], rows: createExpenseRows(expense.expenses),
                         ),
                       ),
                      ),
@@ -230,6 +219,35 @@ class _WalletScreen extends ConsumerState<WalletScreen> {
         ),
       ),
     );
+  }
+  
+  List<DataRow> createExpenseRows(List<Expense> expenses) {
+
+    List<DataRow> rows = [];
+    for (var expense in expenses) {
+      rows.add(
+        DataRow(
+          cells: [
+            DataCell(Text(expense.expenseDescription)),
+            DataCell(Text(expense.expenseAmount.toString())),
+            DataCell(Text(expense.expenseStatus == 'pending' ? 'Pendiente' : 'Pagado')),
+            DataCell(Text(expense.expenseDate.toString().split(' ')[0]),),
+            DataCell(Text(expense.isMine ? 'Agrado por mi' : 'Agrado por otro')),
+          ],
+
+          onLongPress: () {
+            if (expense.isMine) {
+              ref.read(expenseProvider.notifier).formToUpdate(expense);
+              context.push('/add_gasto_screen');
+            } else {
+              showSnackbar(context, 'No puedes editar un gasto que no es tuyo', Colors.red);
+            }
+          },
+        )
+      );
+    }
+    return rows;
+
   }
 }
 

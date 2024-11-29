@@ -84,7 +84,7 @@ class CustomSearchDD extends ConsumerWidget {
           return false;
         });
         setSelectedOption(selectedItem, findActivityPro); 
-        expenseNotifier.onCategoryChanged(selectedItem.categoryId);
+        //expenseNotifier.onCategoryChanged(selectedItem.categoryId);
       },
 
       decoration: CustomDropdownDecoration(

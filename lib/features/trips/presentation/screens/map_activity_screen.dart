@@ -67,12 +67,7 @@ class _MapActivityScreenState extends ConsumerState<MapActivityScreen> {
                           context.pop();
                         },
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.menu),
-                        onPressed: () {
-                          context.pop();
-                        },
-                      ),
+                      
                     ],
                   )
                 ],
@@ -188,9 +183,9 @@ class _MapActivityScreenState extends ConsumerState<MapActivityScreen> {
                         },
                       ),
                       IconButton(
-                        icon: const Icon(Icons.menu),
+                        icon: const Icon(Icons.delete),
                         onPressed: () {
-                          context.pop();
+                          ref.watch(tripProvider.notifier).deleteEvent(widget.event!.eventId!, context);
                         },
                       ),
                     ],
@@ -269,6 +264,16 @@ class _MapActivityScreenState extends ConsumerState<MapActivityScreen> {
                             const Center(
                               child: CircularProgressIndicator(),
                             ),
+
+                          Visibility(
+                            visible: ref.watch(tripProvider).isPosting ,
+                            child: Container(
+                              color: Colors.black.withOpacity(0.5),
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            )
+                          ),
                         ],
                       ),
                     ),

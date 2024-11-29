@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:nomad_app/features/home/home.dart';
+import 'package:nomad_app/features/trips/presentation/screens/profile_screen.dart';
 import 'package:nomad_app/features/trips/trip.dart';
 import 'package:nomad_app/shared/models/models.dart';
 
 import '../../features/auth/auth.dart';
+import '../../features/trips/presentation/screens/general_map_screen.dart';
 import 'app_router_notifier.dart';
 
 
@@ -89,7 +91,18 @@ final goRouterProvider = Provider((ref) {
 
         GoRoute(
           path: '/add_gasto_screen', 
-          builder: (context, state) => const AddGastoScreen()),
+          builder: (context, state) => const AddGastoScreen()
+        ),
+
+        GoRoute(
+          path: '/general_map_screen',
+          builder: (context, state) => const GeneralMapScreen()
+        ),
+
+        GoRoute(
+          path: '/profile_screen',
+          builder: (context, state) => const ProfileScreen()
+        )
       ],
       redirect: (context, state) async {
         final String isGoingTo = state.matchedLocation;
@@ -126,10 +139,6 @@ final goRouterProvider = Provider((ref) {
 
         if (authStatus == AuthStatus.notAuthenticated &&
             registerStatus == RegisterStatus.notRegistered) {
-          if (isGoingTo == '/splash') {
-            return '/login';
-          }
-
           if (isGoingTo == '/splash') {
             return '/login';
           }

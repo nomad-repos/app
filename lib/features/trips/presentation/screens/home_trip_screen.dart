@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nomad_app/features/trips/presentation/presentation.dart';
+import 'package:nomad_app/features/trips/presentation/providers/expense_provider.dart';
 import 'package:nomad_app/features/trips/trip.dart';
 import 'package:nomad_app/shared/shared.dart';
 
@@ -75,10 +76,8 @@ class _HomeTripScreenState extends ConsumerState<HomeTripScreen> {
                             ),
                             Expanded(child: Container()),
                             IconButton(
-                              onPressed: () {
-                                context.go('/home_screen');
-                              },
-                              icon: const Icon(Icons.add, color: Colors.white),
+                              onPressed: () => null,
+                              icon: const Icon(Icons.add, color: Colors.transparent),
                             ),
                           ],
                         ),
@@ -205,7 +204,7 @@ class _HomeTripScreenState extends ConsumerState<HomeTripScreen> {
             ),
           ),
           Visibility(
-            visible: tripState.isPosting,
+            visible: tripState.isPosting || ref.watch(expenseProvider).isPosting,
             child: Container(
               color: Colors.black.withOpacity(0.5),
               child: const Center(

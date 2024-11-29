@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
@@ -188,6 +190,8 @@ class TripDSimpl implements TripDs {
     }
   }
 
+  
+
   @override
   Future<void> getEvent(int eventId, String token) async {
     try {
@@ -307,8 +311,102 @@ class TripDSimpl implements TripDs {
   }
 
   @override
-  Future getExpenses(int tripId, String token) {
-    // TODO: implement getExpenses
-    throw UnimplementedError();
+  Future getExpenses(int tripId, String token) async {
+    try {
+      final resp = await dio.get(
+        '/expenses/get_expenses',
+        queryParameters: {
+          "trip_id": tripId
+        },
+        options: Options(headers: {
+          "authorization": "Bearer $token",
+        }),
+      );
+      if (resp.statusCode == 200) {
+        return resp.data;
+      }
+    } on DioException catch (e) {
+      print(e.message);
+    } catch (e) {
+      throw Exception();
+    }
+  }
+  
+  @override
+  Future deleteExpense(int expenseId, int userId, String token) async {
+    try {
+      final resp = await dio.get(
+        '/expenses/delete_expense',
+        queryParameters: {
+          "expense_id": expenseId,
+          "user_id": userId,
+        },
+        options: Options(headers: {
+          "authorization": "Bearer $token",
+        }),
+      );
+      if (resp.statusCode == 200) {
+        return resp.data;
+      }
+    } on DioException catch (e) {
+      print(e.message);
+    } catch (e) {
+      throw Exception();
+    }
+  }
+  
+  @override
+  Future updateExpense(Expense expense, String token) async {
+    try {
+      final data = {
+        "expense_description": expense.expenseDescription,
+        "expense_amount": expense.expenseAmount,
+        "expense_date": formatDateDateTime(expense.expenseDate),
+        "expense_status": expense.expenseStatus,
+        "category_id": expense.categoryId,
+        "expense_id": expense.expenseId,
+        "user_id": expense.userId,
+      };
+
+      final resp = await dio.post(
+        '/expenses/update_expense',
+        data: data, 
+        options: Options(headers: {
+          "authorization": "Bearer $token",
+        }),
+      );
+
+      print(resp.data); 
+
+      if (resp.statusCode == 200) {
+        return resp.data;
+      }
+    } on DioException catch (e) {
+      print(e.message);
+    } catch (e) {
+      throw Exception();
+    } 
+  }
+  
+  @override
+  Future deleteEvent(int eventId, String token) async {
+    try {
+      final resp = await dio.get(
+        '/events/delete_event',
+        queryParameters: {
+          "event_id": eventId,
+        },
+        options: Options(headers: {
+          "authorization": "Bearer $token",
+        }),
+      );
+      if (resp.statusCode == 200) {
+        return resp.data;
+      }
+    } on DioException catch (e) {
+      print(e.message);
+    } catch (e) {
+      throw Exception();
+    }
   }
 }

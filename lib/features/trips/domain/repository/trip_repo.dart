@@ -6,6 +6,7 @@ abstract class TripRepository {
   Future createEvent( Event event, Activity activity, String token, int locationId );
   Future getEvent( int eventId, String token );
   Future getAllEvent( int tripId, String token );
+  Future deleteEvent( int eventId, String token );
 
   Future getCategories(String token);
   Future getActivites(String token, String localityLocation, int categoryId);
@@ -14,5 +15,6 @@ abstract class TripRepository {
 
   Future addExpense( Expense expense, String token );
   Future getExpenses (int tripId, String token);
-    //TODO: ver los parametros que lleva
+  Future updateExpense( Expense expense, String token );
+  Future deleteExpense( int expenseId, int userId, String token );
 }

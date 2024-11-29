@@ -3,9 +3,9 @@
     <uses-permission android:name="android.permission.INTERNET"/> 
     
     <application
-        android:label="nomad_app"
+        android:label="Nomad."
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         <meta-data android:name="com.google.android.geo.API_KEY"
                android:value="AIzaSyB9jXhCtKr1Jt-KTdgLVY3HPkC87FnOZtY"/>
         <activity

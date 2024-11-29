@@ -51,6 +51,7 @@ class _PlanTripFormState extends ConsumerState<PlanTripForm> {
                           children: [
                             
                             CustomTextFormFieldTrip(
+                              initialValue: ref.watch(planTripFormProvider).name,
                               hintText: 'Nombre del viaje',
                               onChanged: (value) {
                                 planTripProvider.onValueChange('name', value);
@@ -280,11 +281,13 @@ class _CustomAppBar extends StatelessWidget {
 }
 
 class CustomTextFormFieldTrip extends ConsumerWidget {
+  final String initialValue;
   final String hintText;
   final Function(String)? onChanged;
   
   const CustomTextFormFieldTrip({
     super.key,
+    required this.initialValue,
     required this.hintText,
     this.onChanged,
   });
@@ -295,6 +298,7 @@ class CustomTextFormFieldTrip extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TextFormField(
+          initialValue: initialValue,
           style: TextStyle(
             color: AppTheme().getTheme().primaryColor, 
             fontSize: 17,

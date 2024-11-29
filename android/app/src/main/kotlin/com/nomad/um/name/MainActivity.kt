@@ -1,4 +1,4 @@
-package com.example.nomad_app
+package com.nomad.um.name
 
 import io.flutter.embedding.android.FlutterActivity
 

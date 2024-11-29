@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nomad_app/features/auth/auth.dart';
 import 'package:nomad_app/features/home/home.dart';
 import 'package:nomad_app/shared/shared.dart';
 
@@ -30,24 +31,38 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         automaticallyImplyLeading: false,
         floating: true,
         expandedHeight: MediaQuery.of(context).size.height * 0.2,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center, 
+        title: Row( 
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+
+            const Icon(Icons.person, color: Colors.transparent),
             
-            const Text(
-              'Bienvenido ', 
-              style: TextStyle(color: Colors.white,
-              fontWeight: FontWeight.w400,
-              fontSize: 25)
+            Row(
+              children: [
+                const Text(
+                  'Bienvenido ', 
+                  style: TextStyle(color: Colors.white,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 25)
+                ),
+                
+                Text(
+                  userInfo.user!.userSurname,
+                  style: const TextStyle(
+                    color: Colors.white, 
+                    fontWeight: FontWeight.w900,
+                    fontSize: 25
+                  ),
+                ),
+              ],
             ),
 
-            Text(
-              userInfo.user!.userSurname,
-              style: const TextStyle(
-                color: Colors.white, 
-                fontWeight: FontWeight.w900,
-                fontSize: 25
-              ),
+            IconButton(
+              onPressed: () {
+                ref.watch(authProvider.notifier).logout();
+                context.go('/login');
+              },   
+              icon: const Icon(Icons.logout, color: Colors.white),
             )
           ]
         ),

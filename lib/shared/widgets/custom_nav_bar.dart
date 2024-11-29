@@ -1,8 +1,12 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:nomad_app/shared/presentation/presentation.dart';
+
+import '../../features/trips/presentation/providers/expense_provider.dart';
 
 class CustomBottomNavigationBar extends ConsumerWidget {
   const CustomBottomNavigationBar({super.key});
@@ -74,16 +78,14 @@ class CustomBottomNavigationBar extends ConsumerWidget {
             context.replace('/home_trip_screen');
             break;
           case 1:
+            ref.read(expenseProvider.notifier).getExpenses();
             context.replace('/wallet_screen');
             break;
           case 2:
-            // Agregar navegación para "Mapa" si es necesario
+            context.replace('/general_map_screen');
             break;
           case 3:
-            // Agregar navegación para "Perfil" si es necesario
-            break;
-          case 4:
-          //toca calender y no es ninguno de estos
+            context.replace('/profile_screen');
             break;
         }
       },

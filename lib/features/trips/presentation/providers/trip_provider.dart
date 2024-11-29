@@ -2,7 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:nomad_app/features/trips/trip.dart';
+import 'package:nomad_app/helpers/helpers.dart';
 import 'package:nomad_app/shared/shared.dart';
 import 'package:nomad_app/shared/widgets/trip/day_widget.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -51,6 +54,8 @@ class TripNotifier extends StateNotifier<TripState> {
       trip: trip,
       dayRemaining: text,
     );
+
+    await getEvents();
   }
 
   List<Widget> getDayWidgets() {
@@ -104,12 +109,16 @@ class TripNotifier extends StateNotifier<TripState> {
 
       final resp = await tripRepository.getCategories(token!);
 
+      print(resp.data); 
+
       if (resp.statusCode == 200) {
         categories = (resp.data['categories'] as List).map((category) {
           return Category.fromJson(category);
         }).toList();
 
         state = state.copyWith(categories: categories);
+
+        print(categories);
       }
     } catch (e) {
       //TODO: Manejar los errores
@@ -159,8 +168,9 @@ class TripNotifier extends StateNotifier<TripState> {
         event.setParsedStartTime = parsedStartTime; // o usa el formato que necesites
         event.setParsedFinishTime = parsedFinishTime; // o usa el formato que necesites
       }
-
       state = state.copyWith(events: events);
+      
+      createMarkers();
     } catch (e) {
       print(e.toString());
     } finally {
@@ -184,6 +194,47 @@ class TripNotifier extends StateNotifier<TripState> {
   void selectCategory(String categoryName) {
     state = state.copyWith(selectedCategory: categoryName);
   }
+
+  void createMarkers() {
+    final List<Event> events = state.events;
+    final Set<Marker> markers = {};
+
+    for (Event event in events) {
+      markers.add(
+        Marker(
+          markerId: MarkerId(event.eventId.toString()),
+          position: LatLng(event.activity!.activityLatitude, event.activity!.activityLongitude),
+          infoWindow: InfoWindow(
+            title: event.activity!.activityName,
+            snippet: "${event.eventDate.toString().split(' ')[0]}, ${event.eventStartTime} - ${event.eventFinishTime}",
+          ),
+        ),
+      );
+    }
+
+    print(markers.length); 
+
+    state = state.copyWith(markers: markers);
+
+  }
+
+  void deleteEvent(int eventId, BuildContext context) async {
+    state = state.copyWith(isPosting: true);
+    try {
+      final token = await keyValueStorage.getValue<String>('token');
+
+      await tripRepository.deleteEvent(eventId, token!);
+
+      await getEvents();
+
+      context.pop();
+    
+    } catch (e) {
+      print(e.toString());
+    } finally {
+      state = state.copyWith(isPosting: false);
+    } 
+  }
 }
 
 class TripState {
@@ -198,6 +249,8 @@ class TripState {
 
   final List<Event> events;
 
+  final Set<Marker> markers;
+
   TripState({
     this.isPosting = false,
     this.trip,
@@ -206,6 +259,9 @@ class TripState {
     this.selectedCategory = '',
     this.categories = const [],
     this.events = const [],
+
+    this.markers = const {},
+
   });
 
   TripState copyWith({
@@ -216,6 +272,8 @@ class TripState {
     List<Category>? categories,
     String? selectedCategory,
     List<Event>? events,
+
+    Set<Marker>? markers,
   }) =>
       TripState(
         isPosting: isPosting ?? this.isPosting,
@@ -225,5 +283,7 @@ class TripState {
         categories: categories ?? this.categories,
         selectedCategory: selectedCategory ?? this.selectedCategory,
         events: events ?? this.events,
+
+        markers: markers ?? this.markers,
       );
 }
